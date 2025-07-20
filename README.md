@@ -85,6 +85,7 @@ This app aims to provide an intuitive interface to:
 - [ ] Console log for sent/received messages
 - [ ] Request/response mappers (JS-based pre/post transforms)
 - [ ] Import/export collections (JSON)
+- [ ] i18n support
 
 ### 🧪 Future Enhancements
 
