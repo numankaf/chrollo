@@ -55,10 +55,7 @@ function App() {
   };
   return (
     <div>
-      <button
-        className="bg-red-500 p-3 rounded-md cursor-pointer"
-        onClick={() => sendMessage('Some Bsi Message')}
-      >
+      <button className="bg-red-500 p-3 rounded-md cursor-pointer" onClick={() => sendMessage('Some Bsi Message')}>
         Send Bsi Message
       </button>
     </div>

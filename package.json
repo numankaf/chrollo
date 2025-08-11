@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
   "dependencies": {
     "@stomp/stompjs": "^7.1.1",
@@ -28,10 +29,13 @@
     "@types/react-dom": "^19.1.6",
     "@types/sockjs-client": "^1.5.4",
     "@vitejs/plugin-react": "^4.6.0",
-    "eslint": "^9.30.1",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "prettier": "^3.6.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4"
