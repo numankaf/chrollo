@@ -24,5 +24,8 @@ export default ({ mode }: { mode: string }) => {
         usePolling: true,
       },
     },
+    define: {
+      global: 'globalThis',
+    },
   });
 };
