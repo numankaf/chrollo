@@ -1,94 +1,53 @@
-import { Button } from '@/components/common/button';
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/common/dialog';
-import { Input } from '@/components/common/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
-import { use } from 'react';
-import { toast } from 'sonner';
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/common/breadcrumb';
+import { Separator } from '@radix-ui/react-dropdown-menu';
 import './App.css';
-import { ThemeProviderContext } from './context/ThemeProviderContext';
+import { AppSidebar } from './components/app-sidebar';
+import Topbar from './components/app-topbar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/common/sidebar';
 
 function App() {
-  const { theme, setTheme } = use(ThemeProviderContext);
-
   return (
-    <div className="flex flex-col gap-3 flex-1 items-center justify-center ">
-      <Button
-        className=" p-3 rounded-md cursor-pointer bg-primary"
-        onClick={() => (theme === 'dark' ? setTheme('light') : setTheme('dark'))}
+    <div>
+      <Topbar></Topbar>
+      <SidebarProvider
+        style={
+          {
+            '--sidebar-width': '350px',
+          } as React.CSSProperties
+        }
       >
-        Change Theme
-      </Button>
-      <Button
-        className=" p-3 rounded-md cursor-pointer bg-primary"
-        onClick={() => toast.success('Event has been created.')}
-      >
-        Toast
-      </Button>
-      <Dialog>
-        <form>
-          <DialogTrigger asChild>
-            <Button variant="outline">Open Dialog</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
-              <DialogDescription>
-                Make changes to your profile here. Click save when you&apos;re done.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4">
-              <div className="grid gap-3">
-                <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
-              </div>
-              <div className="grid gap-3">
-                <Input id="username-1" name="username" defaultValue="@peduarte" />
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </form>
-      </Dialog>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline">Open popover</Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-80">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <h4 className="leading-none font-medium">Dimensions</h4>
-              <p className="text-muted-foreground text-sm">Set the dimensions for the layer.</p>
-            </div>
-            <div className="grid gap-2">
-              <div className="grid grid-cols-3 items-center gap-4">
-                <Input id="width" defaultValue="100%" className="col-span-2 h-8" />
-              </div>
-              <div className="grid grid-cols-3 items-center gap-4">
-                <Input id="maxWidth" defaultValue="300px" className="col-span-2 h-8" />
-              </div>
-              <div className="grid grid-cols-3 items-center gap-4">
-                <Input id="height" defaultValue="25px" className="col-span-2 h-8" />
-              </div>
-              <div className="grid grid-cols-3 items-center gap-4">
-                <Input id="maxHeight" defaultValue="none" className="col-span-2 h-8" />
-              </div>
-            </div>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="bg-background sticky top-0 flex shrink-0 items-center gap-2 border-b p-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">All Inboxes</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Inbox</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            {Array.from({ length: 24 }).map((_, index) => (
+              <div key={index} className="bg-muted/50 aspect-video h-12 w-full rounded-lg" />
+            ))}
           </div>
-        </PopoverContent>
-      </Popover>
+        </SidebarInset>
+      </SidebarProvider>
+      <div className="fixed bottom-0 w-full h-16 bg-red-200">footer</div>
     </div>
   );
 }
