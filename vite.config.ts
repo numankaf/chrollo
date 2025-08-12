@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import ReactCompiler from 'babel-plugin-react-compiler';
+import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 
 const DEFAULT_PORT = '3000';
@@ -26,6 +27,11 @@ export default ({ mode }: { mode: string }) => {
     },
     define: {
       global: 'globalThis',
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
     },
   });
 };
