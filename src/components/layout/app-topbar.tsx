@@ -1,6 +1,8 @@
-import { ChevronDown } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/avatar';
+import { Button } from '@/components/common/button';
+import { ChevronDown, Search } from 'lucide-react';
 import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
-import { Button } from '../common/button';
+import ThemeSwitcher from './theme-switch';
 
 const Topbar = () => {
   return (
@@ -10,16 +12,33 @@ const Topbar = () => {
           '--sidebar-top-offset': SIDEBAR_TOP_OFFSET,
         } as React.CSSProperties
       }
-      className="h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center p-3 gap-2"
+      className="h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center justify-between p-3 "
     >
-      <div className="flex items-center gap-2 cursor-pointer">
-        <img className="w-8 h-8" src="/app-logo.svg" alt="App Logo" />
-        <span>Scope WS Inspector</span>
+      <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2 cursor-pointer">
+          <img className="w-8 h-8" src="/app-logo.svg" alt="App Logo" />
+          <span>Scope WS Inspector</span>
+        </div>
+        <Button variant="ghost">Home</Button>
+        <Button variant="ghost">
+          Workspaces <ChevronDown />
+        </Button>
       </div>
-      <Button variant="ghost">Home</Button>
-      <Button variant="ghost">
-        Workspaces <ChevronDown />
-      </Button>
+      <div className="flex items-center justify-center flex-1">
+        <Button variant="outline" className="bg-background! hover:border-foreground!">
+          <Search />
+          <span>Search Inspector</span>
+          <span className="text-2xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>
+          <span className="text-2xs bg-card! py-0.5 px-1.5 rounded-md">K</span>
+        </Button>
+      </div>
+      <div className="flex items-center justify-end gap-2 flex-1">
+        <ThemeSwitcher />
+        <Avatar>
+          <AvatarImage src="BROKEN_URL" />
+          <AvatarFallback>AN</AvatarFallback>
+        </Avatar>
+      </div>
     </nav>
   );
 };
