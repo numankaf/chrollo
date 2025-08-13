@@ -15,17 +15,17 @@ const Footer = () => {
     >
       <div className="flex items-center gap-1">
         <SidebarTrigger />
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="2xs">
           <CircleCheck />
           Online
         </Button>
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="2xs">
           <SquareChevronRight />
           Console
         </Button>
       </div>
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="2xs">
           <CircleQuestionMark />
           Help
         </Button>
