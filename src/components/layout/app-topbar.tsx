@@ -25,7 +25,7 @@ const Topbar = () => {
         </Button>
       </div>
       <div className="flex items-center justify-center flex-1">
-        <Button variant="outline" className="bg-background! hover:border-foreground!">
+        <Button variant="outline" className="bg-background! hover:border-primary!">
           <Search />
           <span>Search Inspector</span>
           <span className="text-2xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>

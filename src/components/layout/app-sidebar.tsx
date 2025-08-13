@@ -1,12 +1,15 @@
-import { ChevronRight, Columns3Cog, File, Folder, History, LibraryBig, Waypoints } from 'lucide-react';
+import { ChevronRight, Columns3Cog, File, Folder, History, LibraryBig, Plus, Waypoints } from 'lucide-react';
 import * as React from 'react';
 
+import { Button } from '@/components/common/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
+import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -92,6 +95,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </Sidebar>
       <Sidebar collapsible="none" className="hidden flex-1 md:flex">
         <SidebarContent>
+          <SidebarHeader className="m-0! p-0!">
+            <div className="flex items-center justify-between gap-1 pt-1 px-1">
+              <Button size="sm" variant="ghost">
+                <Plus className="w-4! h-4!" />
+              </Button>
+              <SearchBar placeholder="Search collections" className="flex-1" onSearchChange={() => {}} />
+            </div>
+          </SidebarHeader>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
