@@ -12,7 +12,7 @@ const SidebarWorkspaceMainHeader = () => {
       <div className="hover:text-primary cursor-pointer flex items-center justify-center gap-2 text-xs flex-1 min-w-0 [data-side=right][data-state=collapsed]&:hidden">
         <Container className="w-4 h-4" />
         {state === 'expanded' && (
-          <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">Workspace Name</span>
+          <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">My Workspace</span>
         )}
       </div>
       {state === 'expanded' && (
