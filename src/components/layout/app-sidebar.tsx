@@ -1,4 +1,4 @@
-import { ArchiveX, ChevronRight, File, Folder, Inbox, Send, Trash2 } from 'lucide-react';
+import { ChevronRight, Columns3Cog, File, Folder, History, LibraryBig, Waypoints } from 'lucide-react';
 import * as React from 'react';
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
@@ -16,41 +16,26 @@ import {
 
 // This is sample data
 const data1 = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navMain: [
     {
-      title: 'Inbox',
+      title: 'Connections',
       url: '#',
-      icon: Inbox,
-      isActive: true,
+      icon: Waypoints,
     },
     {
-      title: 'Drafts',
+      title: 'Collections',
       url: '#',
-      icon: File,
-      isActive: false,
+      icon: LibraryBig,
     },
     {
-      title: 'Sent',
+      title: 'Enviroments',
       url: '#',
-      icon: Send,
-      isActive: false,
+      icon: Columns3Cog,
     },
     {
-      title: 'Junk',
+      title: 'History',
       url: '#',
-      icon: ArchiveX,
-      isActive: false,
-    },
-    {
-      title: 'Trash',
-      url: '#',
-      icon: Trash2,
-      isActive: false,
+      icon: History,
     },
   ],
 };

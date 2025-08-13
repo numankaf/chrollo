@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import {
+  FOOTER_BOTTOM_OFFSET,
   SIDEBAR_COOKIE_MAX_AGE,
   SIDEBAR_COOKIE_NAME,
   SIDEBAR_KEYBOARD_SHORTCUT,
@@ -122,6 +123,7 @@ function SidebarProvider({
               '--sidebar-top-offset': SIDEBAR_TOP_OFFSET,
               '--sidebar-width': SIDEBAR_WIDTH,
               '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
+              '--footer-bottom-offset': FOOTER_BOTTOM_OFFSET,
               ...style,
             } as React.CSSProperties
           }
@@ -210,7 +212,7 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          'fixed top-[var(--sidebar-top-offset)] z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
+          'fixed bottom-[var(--footer-bottom-offset)] top-[var(--sidebar-top-offset)] z-10 hidden w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -250,7 +252,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <PanelLeftIcon className="w-3! h-3!" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
@@ -284,6 +286,9 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
   return (
     <main
       data-slot="sidebar-inset"
+      style={{
+        height: `calc(100vh - ${SIDEBAR_TOP_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
+      }}
       className={cn(
         'bg-background relative flex w-full flex-1 flex-col top-[var(--sidebar-top-offset)]',
         'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2',
