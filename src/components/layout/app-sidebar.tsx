@@ -44,7 +44,7 @@ const SIDEBAR_DATA = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [activeItem, setActiveItem] = React.useState(SIDEBAR_DATA[0]);
+  const [activeItem, setActiveItem] = React.useState(SIDEBAR_DATA[1]);
 
   return (
     <>

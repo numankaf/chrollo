@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/avatar';
 import { Button } from '@/components/common/button';
-import { ChevronDown, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
+import WorkspaceSelector from '../workspace/WorkspaceSelector';
 import ThemeSwitcher from './theme-switch';
 
 const Topbar = () => {
@@ -20,9 +21,7 @@ const Topbar = () => {
           <span>Scope WS Inspector</span>
         </div>
         <Button variant="ghost">Home</Button>
-        <Button variant="ghost">
-          Workspaces <ChevronDown />
-        </Button>
+        <WorkspaceSelector />
       </div>
       <div className="flex items-center justify-center flex-1">
         <Button variant="outline" className="bg-background! hover:border-primary!">
