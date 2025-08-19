@@ -34,7 +34,7 @@ const EnviromentsSidebar = () => {
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>
         <SidebarHeader className="m-0! p-0!">
-          <div className="flex items-center justify-between gap-1 pt-1 px-1">
+          <div className="flex items-center justify-between p-1 gap-1">
             <Button size="sm" variant="ghost">
               <Plus className="w-4! h-4!" />
             </Button>

@@ -15,7 +15,7 @@ const Topbar = () => {
       className="h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center justify-between p-3 "
     >
       <div className="flex items-center gap-2 flex-1">
-        <div className="flex items-center gap-2 cursor-pointer">
+        <div className="flex items-center gap-2 cursor-pointer hover:text-primary">
           <img className="w-8 h-8" src="/app-logo.svg" alt="App Logo" />
           <span>Scope WS Inspector</span>
         </div>

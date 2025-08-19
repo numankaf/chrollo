@@ -166,6 +166,7 @@
   --shadow-2xl: var(--shadow-2xl);
 
   --text-2xs: 0.625rem;
+  --text-3xs: 0.5rem;
 }
 
 @layer base {

@@ -17,13 +17,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('flex items-center justify-between gap-1 pt-1 px-1', className)}>
+    <div className={cn('flex items-center justify-between', className)}>
       <div className="relative w-full">
-        <span className="absolute left-3 top-2 z-10 text-muted-foreground">{searchIcon}</span>
+        <span className="absolute left-3 top-1.5 z-10 text-muted-foreground">{searchIcon}</span>
         <Input
           type="text"
           placeholder={placeholder}
-          className="pl-8 pr-3 text-xs bg-background shadow-none h-7"
+          className="pl-8 pr-3 text-xs! bg-background shadow-none h-7!"
           onChange={(e) => onSearchChange?.(e.target.value)}
         />
       </div>

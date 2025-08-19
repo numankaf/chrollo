@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import ReactCompiler from 'babel-plugin-react-compiler';
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
+import packageJson from './package.json';
 
 const DEFAULT_PORT = '3000';
 
@@ -27,6 +28,7 @@ export default ({ mode }: { mode: string }) => {
     },
     define: {
       global: 'globalThis',
+      APP_VERSION: JSON.stringify(packageJson.version),
     },
     resolve: {
       alias: {

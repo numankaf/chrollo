@@ -6,6 +6,7 @@ export interface BaseItem {
 
 export interface RequestItem extends BaseItem {
   type: 'request';
+  commandType: 'command' | 'query';
   path: string;
 }
 
