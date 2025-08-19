@@ -1,12 +1,18 @@
+export type CollectionItemType = 'request' | 'folder' | 'collection';
+
+export type CommandType = 'command' | 'query';
+
+export type ConnectionType = 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error';
+
 export interface BaseItem {
   id: string;
   name: string;
-  type: 'request' | 'folder' | 'collection';
+  type: CollectionItemType;
 }
 
 export interface RequestItem extends BaseItem {
   type: 'request';
-  commandType: 'command' | 'query';
+  commandType: CommandType;
   path: string;
 }
 
@@ -25,7 +31,7 @@ export type CollectionTreeItem = RequestItem | FolderItem | CollectionItem;
 export interface SocketConnetionItem {
   id: string;
   name: string;
-  state: 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error';
+  state: ConnectionType;
 }
 
 export interface EnviromentItem {

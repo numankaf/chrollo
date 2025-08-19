@@ -1,5 +1,12 @@
 import { Button } from '@/components/common/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/common/dropdown-menu';
 import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
@@ -13,9 +20,9 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { ChevronRight, FolderOpen, Plus } from 'lucide-react';
+import { ChevronRight, Ellipsis, FolderOpen, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import type { CollectionTreeItem } from '../../../types/layout';
+import type { CollectionTreeItem, CommandType } from '../../../types/layout';
 
 const dataTree: CollectionTreeItem[] = [
   {
@@ -91,7 +98,7 @@ const dataTree: CollectionTreeItem[] = [
   },
 ];
 
-function RequestIcon({ commandType }: { commandType: 'command' | 'query' }) {
+function RequestIcon({ commandType }: { commandType: CommandType }) {
   return (
     <div className="text-3xs w-[40px] text-end">
       {commandType === 'command' ? (
@@ -103,27 +110,65 @@ function RequestIcon({ commandType }: { commandType: 'command' | 'query' }) {
   );
 }
 
+function OperationsButton({ item }: { item: CollectionTreeItem }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="opacity-0 transition-opacity">
+        <Button size="sm" variant="ghost" className="hover:text-primary hover:bg-transparent!">
+          <Ellipsis className="w-4! h-4!" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="right" align="start" className="bg-background w-[160px]">
+        {(item.type === 'collection' || item.type === 'folder') && (
+          <>
+            <DropdownMenuItem className="text-xs">Add Request</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs">Add Folder</DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem className="text-xs">Copy Link</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="text-xs">Rename</DropdownMenuItem>
+        <DropdownMenuItem className="text-xs">Duplicate</DropdownMenuItem>
+        <DropdownMenuItem className="text-red-500 text-xs hover:bg-red-500! hover:text-white!">Delete</DropdownMenuItem>
+        {item.type === 'collection' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-xs">Export</DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function Tree({ item }: { item: CollectionTreeItem }) {
   const hasChildren = (item.type === 'folder' || item.type === 'collection') && item.children?.length > 0;
 
   if (!hasChildren) {
     return (
-      <SidebarMenuButton className="data-[active=true]:bg-transparent">
-        {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
-        {item.type === 'folder' && <FolderOpen />}
-        <span className="text-xs">{item.name}</span>
+      <SidebarMenuButton className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100">
+        <div className="flex items-center justify-center gap-1">
+          {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
+          {item.type === 'folder' && <FolderOpen />}
+          <span className="text-xs">{item.name}</span>
+        </div>
+        <OperationsButton item={item} />
       </SidebarMenuButton>
     );
   }
 
   return (
     <SidebarMenuItem className="p-0!">
-      <Collapsible className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90">
+      <Collapsible className="group/collapsible [&[data-state=open]>button>div>svg:first-child]:rotate-90">
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton>
-            <ChevronRight className="transition-transform" />
-            {item.type === 'folder' && <FolderOpen />}
-            <span className="text-xs">{item.name}</span>
+          <SidebarMenuButton className="flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100">
+            <div className="flex items-center justify-center gap-1">
+              <ChevronRight className="transition-transform w-4! h-4!" />
+              {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
+              <span className="text-xs">{item.name}</span>
+            </div>
+            <OperationsButton item={item} />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
