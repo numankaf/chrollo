@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
-import { ThemeProviderContext } from '../context/ThemeProviderContext';
 import type { Theme, ThemeProviderProps } from '../types/common';
+
+import { createContext } from 'react';
+import type { ThemeProviderState } from '../types/common';
+
+const initialState: ThemeProviderState = {
+  theme: 'system',
+  setTheme: () => null,
+};
+
+export const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,

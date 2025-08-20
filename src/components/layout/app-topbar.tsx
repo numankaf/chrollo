@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/avatar'
 import { Button } from '@/components/common/button';
 import { Search } from 'lucide-react';
 import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
-import WorkspaceSelector from '../workspace/WorkspaceSelector';
+import WorkspaceSelector from '../workspace/workspace-selector';
 import ThemeSwitcher from './theme-switch';
 
 const Topbar = () => {
