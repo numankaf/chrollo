@@ -1,8 +1,8 @@
 import './App.css';
-import LayoutWorkspace from './layout/layout-workspace';
+import LayoutConnection from './layout/layout-connection';
 
 function App() {
-  return <LayoutWorkspace></LayoutWorkspace>;
+  return <LayoutConnection />;
 }
 
 export default App;
