@@ -114,7 +114,7 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="opacity-0 transition-opacity">
-        <Button size="sm" variant="ghost" className="hover:text-primary hover:bg-transparent!">
+        <Button asChild size="sm" variant="ghost" className="hover:text-primary hover:bg-transparent!">
           <Ellipsis className="w-4! h-4!" />
         </Button>
       </DropdownMenuTrigger>
@@ -147,7 +147,10 @@ function Tree({ item }: { item: CollectionTreeItem }) {
 
   if (!hasChildren) {
     return (
-      <SidebarMenuButton className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100">
+      <SidebarMenuButton
+        asChild
+        className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100"
+      >
         <div className="flex items-center justify-center gap-1">
           {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
           {item.type === 'folder' && <FolderOpen />}

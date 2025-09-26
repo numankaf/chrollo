@@ -45,7 +45,7 @@ const ConnectionMainContainer = () => {
                   Time (ms) to wait before trying to reconnect after connection loss.
                 </p>
               </div>
-              <Input className="w-30 h-8" type="number" value={5000} />
+              <Input className="w-30 h-8" type="number" value={5000} onChange={() => {}} />
             </div>
             <div className="flex justify-between items-center">
               <div className="flex-1 space-y-1">
@@ -54,16 +54,16 @@ const ConnectionMainContainer = () => {
                   Maximum reconnection attempts when the connection closes abruptly.
                 </p>
               </div>
-              <Input className="w-30 h-8" type="number" value={10} />
+              <Input className="w-30 h-8" type="number" value={10} onChange={() => {}} />
             </div>
             <div className="flex justify-between items-center">
               <div className="flex-1 space-y-1">
                 <p className="text-sm">Connection Timeout</p>
-                <p className="text-muted-foreground text-xs">
+                <div className="text-muted-foreground text-xs">
                   <p className="text-sm">Max time to wait for CONNECT frame before failing.</p>
-                </p>
+                </div>
               </div>
-              <Input className="w-30 h-8" type="number" value={10000} />
+              <Input className="w-30 h-8" type="number" value={10000} onChange={() => {}} />
             </div>
           </div>
         </TabsContent>

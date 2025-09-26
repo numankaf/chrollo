@@ -21,15 +21,29 @@ const data: HistoryItem[] = [
   {
     id: nanoid(8),
     date: 'Today',
-    requests: [{ id: nanoid(8), name: 'queryCandidateTarget', type: 'request', path: '/oppplan/queryCandidateTarget' }],
+    requests: [
+      {
+        id: nanoid(8),
+        name: 'queryCandidateTarget',
+        type: 'request',
+        path: '/oppplan/queryCandidateTarget',
+        commandType: 'query',
+      },
+    ],
   },
   {
     id: nanoid(8),
     date: 'August 10',
     requests: [
-      { id: nanoid(8), name: 'getUnit', type: 'request', path: '/bsi/unit/getUnit' },
-      { id: nanoid(8), name: 'getUnit', type: 'request', path: '/bsi/unit/getUnit' },
-      { id: nanoid(8), name: 'queryCandidateTarget', type: 'request', path: '/oppplan/queryCandidateTarget' },
+      { id: nanoid(8), name: 'getUnit', type: 'request', path: '/bsi/unit/getUnit', commandType: 'query' },
+      { id: nanoid(8), name: 'getUnit', type: 'request', path: '/bsi/unit/getUnit', commandType: 'query' },
+      {
+        id: nanoid(8),
+        name: 'queryCandidateTarget',
+        type: 'request',
+        path: '/oppplan/queryCandidateTarget',
+        commandType: 'query',
+      },
     ],
   },
 ];
