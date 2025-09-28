@@ -1,0 +1,131 @@
+// electron.vite.config.ts
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import ReactCompiler from "babel-plugin-react-compiler";
+import { defineConfig, externalizeDepsPlugin } from "electron-vite";
+import path, { resolve } from "path";
+
+// package.json
+var package_default = {
+  name: "scope-ws-inspector",
+  description: "A Postman-like tool for inspecting, testing, and debugging WebSocket APIs, built specifically for the SCOPE Platform.",
+  private: true,
+  version: "0.0.0",
+  type: "module",
+  main: "./out/main/index.js",
+  scripts: {
+    lint: "eslint .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    typecheck: "npm run typecheck:node && npm run typecheck:web",
+    format: "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'",
+    start: "electron-vite preview",
+    dev: "electron-vite dev",
+    build: "npm run typecheck && electron-vite build",
+    postinstall: "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:linux": "electron-vite build && electron-builder --linux"
+  },
+  dependencies: {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "electron-updater": "^6.3.9",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.12",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@stomp/stompjs": "^7.1.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "babel-plugin-react-compiler": "^19.1.0-rc.2",
+    "class-variance-authority": "^0.7.1",
+    clsx: "^2.1.1",
+    dotenv: "^17.2.0",
+    "lucide-react": "^0.539.0",
+    nanoid: "^5.1.5",
+    "next-themes": "^0.4.6",
+    react: "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sockjs-client": "^1.6.1",
+    sonner: "^2.0.7",
+    "tailwind-merge": "^3.3.1",
+    tailwindcss: "^4.1.11",
+    zustand: "^5.0.6"
+  },
+  devDependencies: {
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
+    "@eslint/js": "^9.30.1",
+    "@types/node": "^24.0.15",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/sockjs-client": "^1.5.4",
+    "@vitejs/plugin-react": "^4.6.0",
+    electron: "^38.1.2",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^4.0.1",
+    eslint: "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    globals: "^16.3.0",
+    prettier: "^3.6.2",
+    "tw-animate-css": "^1.3.6",
+    typescript: "~5.8.3",
+    "typescript-eslint": "^8.35.1",
+    vite: "^7.0.4"
+  }
+};
+
+// electron.vite.config.ts
+var __electron_vite_injected_dirname = "C:\\Users\\smurf\\Desktop\\gitclones\\scope-ws-inspector";
+var DEFAULT_PORT = "3000";
+var electron_vite_config_default = defineConfig({
+  main: {
+    plugins: [externalizeDepsPlugin()]
+  },
+  preload: {
+    plugins: [externalizeDepsPlugin()]
+  },
+  renderer: {
+    resolve: {
+      alias: {
+        "@renderer": resolve("src/renderer/src"),
+        "@": path.resolve(__electron_vite_injected_dirname, "src/renderer/src")
+      }
+    },
+    server: {
+      host: true,
+      port: parseInt(process.env.VITE_PORT ?? DEFAULT_PORT),
+      watch: {
+        usePolling: true
+      }
+    },
+    define: {
+      global: "globalThis",
+      APP_VERSION: JSON.stringify(package_default.version)
+    },
+    plugins: [
+      react({
+        babel: {
+          plugins: [ReactCompiler]
+        }
+      }),
+      tailwindcss()
+    ]
+  }
+});
+export {
+  electron_vite_config_default as default
+};
