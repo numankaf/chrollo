@@ -20,7 +20,7 @@ const buttonVariants = cva(
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
-        '2xs': 'text-2xs h-4 rounded-sm gap-1.5 px-2 has-[>svg]:px-1 [&>svg]:w-3! [&>svg]:h-3!',
+        '2xs': 'text-2xs leading-[0] h-4 rounded-sm gap-1.5 px-2 has-[>svg]:px-1 [&>svg]:w-3! [&>svg]:h-3!',
         xs: 'text-xs h-7 rounded-sm gap-1.5 py-1.5 px-2 has-[>svg]:px-1 [&>svg]:w-3! [&>svg]:h-3!',
         sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',

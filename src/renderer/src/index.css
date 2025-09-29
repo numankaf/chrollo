@@ -165,6 +165,9 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 
+  --text-base: 0.95rem;
+  --text-sm: 0.825rem;
+  --text-xs: 0.75rem;
   --text-2xs: 0.625rem;
   --text-3xs: 0.5rem;
 }
@@ -175,7 +178,7 @@
     color: var(--color-foreground);
     background-repeat: no-repeat;
     background-attachment: fixed;
-    font-size: 15px;
+    font-size: var(--text-base);
   }
 }
 

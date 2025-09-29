@@ -6,10 +6,14 @@ import icon from '../../resources/app-logo.png?asset';
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1280,
+    width: 1350,
     height: 800,
+    minWidth: 800,
+    minHeight: 600,
     show: false,
     autoHideMenuBar: true,
+    frame: false,
+    titleBarStyle: 'hidden',
     // ...(process.platform === 'linux' ? { icon } : { icon }),
     icon: icon,
     webPreferences: {

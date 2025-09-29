@@ -1,8 +1,9 @@
 export const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 export const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-export const SIDEBAR_TOP_OFFSET = '50px';
+export const SIDEBAR_TOP_OFFSET = '45px';
+export const SIDEBAR_WORKSPACE_OFFSET = '40px';
 export const FOOTER_BOTTOM_OFFSET = '20px';
-export const SIDEBAR_WIDTH = '16rem';
+export const SIDEBAR_WIDTH = '23rem';
 export const SIDEBAR_WIDTH_MOBILE = '18rem';
-export const SIDEBAR_WIDTH_ICON = '90px';
+export const SIDEBAR_WIDTH_ICON = '80px';
 export const SIDEBAR_KEYBOARD_SHORTCUT = 'b';

@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/common/sidebar';
+import { SIDEBAR_WIDTH_ICON } from '../../constants/layout-constants';
 import SidebarWorkspaceMainHeader from './app-sidebar-main-header';
 import CollectionSidebar from './sidebar/app-collection-sidebar';
 import ConnectionSidebar from './sidebar/app-connection-sidebar';
@@ -50,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <>
       <SidebarWorkspaceMainHeader />
       <Sidebar collapsible="icon" className="overflow-hidden *:data-[sidebar=sidebar]:flex-row" {...props}>
-        <Sidebar collapsible="none" className="w-[90px]! border-r">
+        <Sidebar collapsible="none" className={`w-[${SIDEBAR_WIDTH_ICON}] border-r`}>
           <SidebarContent className="w-[var(--sidebar-width-icon)]!">
             <SidebarGroup>
               <SidebarGroupContent className="px-1.5 md:px-0">

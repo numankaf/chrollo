@@ -20,6 +20,7 @@ import {
   SIDEBAR_WIDTH,
   SIDEBAR_WIDTH_ICON,
   SIDEBAR_WIDTH_MOBILE,
+  SIDEBAR_WORKSPACE_OFFSET,
 } from '../../constants/layout-constants';
 
 type SidebarContextProps = {
@@ -121,6 +122,7 @@ function SidebarProvider({
           style={
             {
               '--sidebar-top-offset': SIDEBAR_TOP_OFFSET,
+              '--sidebar-workspace-offset': SIDEBAR_WORKSPACE_OFFSET,
               '--sidebar-width': SIDEBAR_WIDTH,
               '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
               '--footer-bottom-offset': FOOTER_BOTTOM_OFFSET,
@@ -212,7 +214,7 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          'fixed bottom-[var(--footer-bottom-offset)] top-[90px] z-10 hidden w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
+          'fixed bottom-[var(--footer-bottom-offset)] top-[calc(var(--sidebar-top-offset)+var(--sidebar-workspace-offset))] z-10 hidden w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
