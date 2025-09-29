@@ -6,7 +6,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config([
-  globalIgnores(['dist']),
+  globalIgnores(['**/node_modules', '**/dist', '**/out']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -20,7 +20,8 @@ export default tseslint.config([
       globals: globals.browser,
     },
     rules: {
-      'react-refresh/only-export-components': 'off',
+      ...eslintPluginReactHooks.configs.recommended.rules,
+      ...eslintPluginReactRefresh.configs.vite.rules,
     },
   },
 ]);

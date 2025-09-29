@@ -1,6 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/avatar';
 import { Button } from '@/components/common/button';
-import { Search } from 'lucide-react';
+import { Maximize, Minus, Search, X } from 'lucide-react';
 import AppLogo from '../../../../../resources/app-logo.svg';
 import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
 import WorkspaceSelector from '../workspace/workspace-selector';
@@ -13,10 +12,9 @@ const Topbar = () => {
           '--sidebar-top-offset': SIDEBAR_TOP_OFFSET,
         } as React.CSSProperties
       }
-      className="h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center justify-between p-3 "
+      className="draggable h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center justify-between"
     >
-      <div className="flex items-center gap-2">
-        {/* removed flex-1 */}
+      <div className="flex items-center gap-2 px-2">
         <div className="flex items-center gap-2 cursor-pointer hover:text-primary flex-shrink-0">
           <img className="w-8 h-8 flex-shrink-0" src={AppLogo} alt="App Logo" />
           <span className="whitespace-nowrap flex-shrink-0">Scope WS Inspector</span>
@@ -25,7 +23,7 @@ const Topbar = () => {
         <WorkspaceSelector />
       </div>
 
-      <div className="flex items-center justify-center flex-1">
+      <div className="flex items-center justify-center">
         <Button variant="outline" className="bg-background! hover:border-primary!">
           <Search />
           <span>Search Inspector</span>
@@ -34,13 +32,38 @@ const Topbar = () => {
         </Button>
       </div>
 
-      <div className="flex items-center justify-end gap-2 flex-1">
+      <div className="flex items-center justify-end">
         <ThemeSwitcher />
-        <Avatar>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => window.electron.ipcRenderer.send('window:minimize')}
+          aria-label="Minimize"
+        >
+          <Minus />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => window.electron.ipcRenderer.send('window:maximize')}
+          aria-label="Maximize"
+        >
+          <Maximize />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-red-400!"
+          onClick={() => window.electron.ipcRenderer.send('window:close')}
+          aria-label="Close"
+        >
+          <X />
+        </Button>
+      </div>
+      {/* <Avatar>
           <AvatarImage src="BROKEN_URL" />
           <AvatarFallback>AN</AvatarFallback>
-        </Avatar>
-      </div>
+        </Avatar> */}
     </nav>
   );
 };
