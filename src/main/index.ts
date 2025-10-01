@@ -1,11 +1,15 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
+import { Client } from '@stomp/stompjs';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { join } from 'path';
 import icon from '../../resources/app-logo.png?asset';
+import { initStompIpc } from './ipc-socket';
+
+let mainWindow: BrowserWindow;
+let stompClient: Client | null = null;
 
 function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1350,
     height: 800,
     minWidth: 800,
@@ -14,7 +18,6 @@ function createWindow(): void {
     autoHideMenuBar: true,
     frame: false,
     titleBarStyle: 'hidden',
-    // ...(process.platform === 'linux' ? { icon } : { icon }),
     icon: icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.mjs'),
@@ -31,8 +34,6 @@ function createWindow(): void {
     return { action: 'deny' };
   });
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
   } else {
@@ -40,6 +41,9 @@ function createWindow(): void {
   }
 }
 
+export function getMainWindow(): BrowserWindow | null {
+  return mainWindow;
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -54,8 +58,8 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'));
+  createWindow();
+
   ipcMain.on('window:minimize', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.minimize();
@@ -72,7 +76,8 @@ app.whenReady().then(() => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.close();
   });
-  createWindow();
+
+  initStompIpc();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

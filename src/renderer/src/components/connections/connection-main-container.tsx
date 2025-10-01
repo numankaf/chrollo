@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/common/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import { Waypoints } from 'lucide-react';
+import { openStompSocket, sendStompMessage } from '../../utils/socket-util';
 import { Input } from '../common/input';
 
 const ConnectionMainContainer = () => {
@@ -28,7 +29,8 @@ const ConnectionMainContainer = () => {
       </Breadcrumb>
       <div className="flex gap-2">
         <Input placeholder="Enter Url" />
-        <Button>Connect</Button>
+        <Button onClick={() => openStompSocket('http://localhost:8080/ws')}>Connect</Button>
+        <Button onClick={() => sendStompMessage()}>Send Message</Button>
       </div>
       <Tabs defaultValue="settings" className="w-full mt-3" variant="link">
         <TabsList>
