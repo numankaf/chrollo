@@ -48,8 +48,8 @@ const ConnectionSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {data.map((item) => (
-                <SidebarMenuButton className="data-[active=true]:bg-transparent" key={item.id}>
-                  <span className="text-xs">{item.name}</span>
+                <SidebarMenuButton size="sm" className="data-[active=true]:bg-transparent" key={item.id}>
+                  <span>{item.name}</span>
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

@@ -114,23 +114,38 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="opacity-0 transition-opacity">
-        <Button asChild size="sm" variant="ghost" className="hover:text-primary hover:bg-transparent!">
+        <Button size="sm" variant="ghost" className="hover:text-primary hover:bg-transparent!">
           <Ellipsis className="w-4! h-4!" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" align="start" className="bg-background w-[160px]">
         {(item.type === 'collection' || item.type === 'folder') && (
           <>
-            <DropdownMenuItem className="text-xs">Add Request</DropdownMenuItem>
-            <DropdownMenuItem className="text-xs">Add Folder</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+              Add Request
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+              Add Folder
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem className="text-xs">Copy Link</DropdownMenuItem>
+        <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+          Copy Link
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-xs">Rename</DropdownMenuItem>
-        <DropdownMenuItem className="text-xs">Duplicate</DropdownMenuItem>
-        <DropdownMenuItem className="text-red-500 text-xs hover:bg-red-500! hover:text-white!">Delete</DropdownMenuItem>
+        <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+          Rename
+        </DropdownMenuItem>
+        <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+          Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-red-500 text-xs hover:bg-red-500! hover:text-white!"
+          onClick={(e) => e.preventDefault()}
+        >
+          Delete
+        </DropdownMenuItem>
         {item.type === 'collection' && (
           <>
             <DropdownMenuSeparator />
@@ -148,13 +163,14 @@ function Tree({ item }: { item: CollectionTreeItem }) {
   if (!hasChildren) {
     return (
       <SidebarMenuButton
+        size="sm"
         asChild
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100"
       >
         <div className="flex items-center justify-center gap-1">
           {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
           {item.type === 'folder' && <FolderOpen />}
-          <span className="text-xs">{item.name}</span>
+          <span>{item.name}</span>
         </div>
         <OperationsButton item={item} />
       </SidebarMenuButton>
@@ -165,11 +181,14 @@ function Tree({ item }: { item: CollectionTreeItem }) {
     <SidebarMenuItem className="p-0!">
       <Collapsible className="group/collapsible [&[data-state=open]>button>div>svg:first-child]:rotate-90">
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton className="flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100">
+          <SidebarMenuButton
+            size="sm"
+            className="flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100"
+          >
             <div className="flex items-center justify-center gap-1">
               <ChevronRight className="transition-transform w-4! h-4!" />
               {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
-              <span className="text-xs">{item.name}</span>
+              <span>{item.name}</span>
             </div>
             <OperationsButton item={item} />
           </SidebarMenuButton>

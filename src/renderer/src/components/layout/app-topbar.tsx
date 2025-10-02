@@ -12,9 +12,9 @@ const Topbar = () => {
           '--sidebar-top-offset': SIDEBAR_TOP_OFFSET,
         } as React.CSSProperties
       }
-      className="draggable h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center justify-between"
+      className="h-[var(--sidebar-top-offset)] fixed w-full bg-sidebar border-1 flex items-center justify-between"
     >
-      <div className="flex items-center gap-2 px-2">
+      <div className="flex items-center gap-2 px-2 flex-1 draggable">
         <div className="flex items-center gap-2 cursor-pointer hover:text-primary flex-shrink-0">
           <img className="w-8 h-8 flex-shrink-0" src={AppLogo} alt="App Logo" />
           <span className="whitespace-nowrap flex-shrink-0">Scope WS Inspector</span>
@@ -23,7 +23,7 @@ const Topbar = () => {
         <WorkspaceSelector />
       </div>
 
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center flex-1 draggable">
         <Button variant="outline" className="bg-background! hover:border-primary!">
           <Search />
           <span>Search Inspector</span>
@@ -32,7 +32,7 @@ const Topbar = () => {
         </Button>
       </div>
 
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end flex-1 draggable">
         <ThemeSwitcher />
         <Button
           variant="ghost"

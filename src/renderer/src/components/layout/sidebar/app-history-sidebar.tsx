@@ -56,17 +56,17 @@ function Tree({ item }: { item: HistoryItem }) {
         defaultOpen={true}
       >
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton>
+          <SidebarMenuButton size="sm">
             <ChevronRight className="transition-transform" />
-            <span className="text-xs">{item.date}</span>
+            <span>{item.date}</span>
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
             {item.requests!.map((child) => (
-              <SidebarMenuButton key={child.id}>
+              <SidebarMenuButton key={child.id} size="sm">
                 <ChevronsLeftRightEllipsis className="text-green-500" />
-                <span className="text-xs">{child.name}</span>
+                <span>{child.name}</span>
               </SidebarMenuButton>
             ))}
           </SidebarMenuSub>

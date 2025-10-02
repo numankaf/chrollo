@@ -1,12 +1,10 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { Client } from '@stomp/stompjs';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { join } from 'path';
 import icon from '../../resources/app-logo.png?asset';
 import { initStompIpc } from './ipc-socket';
 
 let mainWindow: BrowserWindow;
-let stompClient: Client | null = null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
