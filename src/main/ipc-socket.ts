@@ -22,17 +22,6 @@ export function initStompIpc() {
       },
     });
 
-    stompClient.onConnect = () => {
-      console.log('✅ STOMP connected');
-      stompClient?.subscribe('/topic/scope-bsi-command', (msg: Message) => {
-        console.log('📩 Received:', msg.body);
-      });
-
-      stompClient?.subscribe('/topic/scope-bsi-event', (msg: Message) => {
-        console.log('📩 Received:', msg.body);
-      });
-    };
-
     stompClient.onStompError = (frame) => {
       console.error('❌ STOMP Error', frame.headers['message']);
       mainWindow.webContents.send('console-log', `❌ STOMP Error ${frame.headers['message']}`);
@@ -42,11 +31,10 @@ export function initStompIpc() {
   });
 
   ipcMain.on('stomp:subscribe', (_, topic: string) => {
-    if (stompClient) {
-      stompClient?.subscribe(topic, (msg: Message) => {
+    if (stompClient && stompClient.connected && stompClient.active)
+      stompClient.subscribe(topic, (msg: Message) => {
         console.log('📩 Received:', msg.body);
       });
-    }
   });
 
   ipcMain.on('stomp:unsubscribe', (_, topic: string) => {
