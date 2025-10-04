@@ -20,25 +20,25 @@ import HistorySidebar from './sidebar/app-history-sidebar';
 const SIDEBAR_DATA = [
   {
     title: 'Connections',
-    url: '#',
+    url: '/connections',
     icon: Waypoints,
     subSidebarComponent: ConnectionSidebar,
   },
   {
     title: 'Collections',
-    url: '#',
+    url: '/collections',
     icon: LibraryBig,
     subSidebarComponent: CollectionSidebar,
   },
   {
     title: 'Enviroments',
-    url: '#',
+    url: '/enviroments',
     icon: Columns3Cog,
     subSidebarComponent: EnviromentsSidebar,
   },
   {
     title: 'History',
-    url: '#',
+    url: '/history',
     icon: History,
     subSidebarComponent: HistorySidebar,
   },
@@ -61,7 +61,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <SidebarMenuButton
                         isActive={activeItem?.title === item.title}
                         className="flex flex-col items-center h-auto"
-                        onClick={() => setActiveItem(item)}
+                        onClick={() => {
+                          setActiveItem(item);
+                        }}
                       >
                         <item.icon className="w-4! h-4!" />
                         <span className="text-2xs">{item.title}</span>

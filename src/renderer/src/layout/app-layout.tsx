@@ -1,11 +1,11 @@
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
+import Footer from '@/components/layout/app-footer';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import Topbar from '@/components/layout/app-topbar';
-import ConnectionMainContainer from '../components/connections/connection-main-container';
-import Footer from '../components/layout/app-footer';
+import { Outlet } from 'react-router';
 import { SIDEBAR_WIDTH } from '../constants/layout-constants';
 
-const LayoutConnection = () => {
+const AppLayout = () => {
   return (
     <>
       <SidebarProvider
@@ -18,7 +18,7 @@ const LayoutConnection = () => {
         <Topbar></Topbar>
         <AppSidebar />
         <SidebarInset>
-          <ConnectionMainContainer />
+          <Outlet></Outlet>
         </SidebarInset>
         <Footer></Footer>
       </SidebarProvider>
@@ -26,4 +26,4 @@ const LayoutConnection = () => {
   );
 };
 
-export default LayoutConnection;
+export default AppLayout;
