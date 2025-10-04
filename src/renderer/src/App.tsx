@@ -31,7 +31,7 @@ function App() {
     },
     {
       path: '*',
-      element: <Navigate to="/collections" replace={true} />,
+      element: <Navigate to="/connections" replace={true} />,
     },
   ]);
   return <RouterProvider router={router} />;

@@ -44,3 +44,12 @@ export interface HistoryItem {
   date: string;
   requests?: RequestItem[];
 }
+
+export type TabItemType = 'connection' | 'collection' | 'history' | 'enviroment';
+
+export interface Tab {
+  id: string;
+  itemId: string;
+  itemType: TabItemType;
+  title: string;
+}
