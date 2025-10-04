@@ -60,10 +60,6 @@ const Topbar = () => {
           <X />
         </Button>
       </div>
-      {/* <Avatar>
-          <AvatarImage src="BROKEN_URL" />
-          <AvatarFallback>AN</AvatarFallback>
-        </Avatar> */}
     </nav>
   );
 };

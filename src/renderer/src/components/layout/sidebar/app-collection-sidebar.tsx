@@ -113,10 +113,10 @@ function RequestIcon({ commandType }: { commandType: CommandType }) {
 function OperationsButton({ item }: { item: CollectionTreeItem }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="opacity-0 transition-opacity">
-        <Button size="sm" variant="ghost" className="hover:text-primary hover:bg-transparent!">
-          <Ellipsis className="w-4! h-4!" />
-        </Button>
+      <DropdownMenuTrigger asChild className="opacity-0 transition-opacity">
+        <div className="cursor-pointer hover:text-primary hover:bg-transparent!" id="operations-trigger">
+          <Ellipsis className="w-4 h-4" />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" align="start" className="bg-background w-[160px]">
         {(item.type === 'collection' || item.type === 'folder') && (
@@ -165,7 +165,7 @@ function Tree({ item }: { item: CollectionTreeItem }) {
       <SidebarMenuButton
         size="sm"
         asChild
-        className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100"
+        className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
       >
         <div className="flex items-center justify-center gap-1">
           {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
@@ -179,14 +179,14 @@ function Tree({ item }: { item: CollectionTreeItem }) {
 
   return (
     <SidebarMenuItem className="p-0!">
-      <Collapsible className="group/collapsible [&[data-state=open]>button>div>svg:first-child]:rotate-90">
+      <Collapsible className="group/collapsible [&[data-state=open]>button>div>#chevron-icon:first-child]:rotate-90">
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
             size="sm"
-            className="flex items-center justify-between [&:hover>button]:opacity-100 [&>button[data-state=open]]:opacity-100"
+            className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
           >
             <div className="flex items-center justify-center gap-1">
-              <ChevronRight className="transition-transform w-4! h-4!" />
+              <ChevronRight id="chevron-icon" className="transition-transform w-4! h-4!" />
               {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
               <span>{item.name}</span>
             </div>
