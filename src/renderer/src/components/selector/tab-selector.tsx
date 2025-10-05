@@ -7,9 +7,10 @@ import { SearchBar } from '../common/search-input';
 import TabItemContent from '../tab/tab-item-content';
 
 const TabSelector = () => {
-  const { tabs } = useTabsStore(
+  const { tabs, setActiveTab } = useTabsStore(
     useShallow((state) => ({
       tabs: state.tabs,
+      setActiveTab: state.setActiveTab,
     }))
   );
 
@@ -26,7 +27,13 @@ const TabSelector = () => {
         </div>
         <div className="mt-3 space-y-1 text-xs">
           {tabs?.map((tab) => (
-            <Button variant="ghost" key={tab.id} className=" w-full justify-start gap-2" size="sm">
+            <Button
+              variant="ghost"
+              key={tab.id}
+              className=" w-full justify-start gap-2"
+              size="sm"
+              onClick={() => setActiveTab(tab.id)}
+            >
               <TabItemContent {...tab} />
             </Button>
           ))}

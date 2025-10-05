@@ -23,6 +23,8 @@ import {
 import RequestIcon from '@/components/icon/request-icon';
 import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { useShallow } from 'zustand/react/shallow';
+import useTabsStore from '../../../store/tabs-store';
 import type { CollectionTreeItem } from '../../../types/layout';
 
 const dataTree: CollectionTreeItem[] = [
@@ -148,13 +150,18 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
 
 function Tree({ item }: { item: CollectionTreeItem }) {
   const hasChildren = (item.type === 'folder' || item.type === 'collection') && (item.children?.length ?? 0) > 0;
-
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
   if (!hasChildren) {
     return (
       <SidebarMenuButton
         size="sm"
         asChild
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
+        onClick={() => openTab(item)}
       >
         <div className="flex items-center justify-center gap-1">
           {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
@@ -173,6 +180,7 @@ function Tree({ item }: { item: CollectionTreeItem }) {
           <SidebarMenuButton
             size="sm"
             className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
+            onClick={() => openTab(item)}
           >
             <div className="flex items-center justify-center gap-1">
               <ChevronRight id="chevron-icon" className="transition-transform w-4! h-4!" />

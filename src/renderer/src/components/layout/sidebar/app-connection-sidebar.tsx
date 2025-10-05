@@ -12,6 +12,8 @@ import {
 } from '@/components/common/sidebar';
 import { ChevronsLeftRightEllipsis, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { useShallow } from 'zustand/react/shallow';
+import useTabsStore from '../../../store/tabs-store';
 import type { SocketConnetionItem } from '../../../types/layout';
 
 const data: SocketConnetionItem[] = [
@@ -36,6 +38,11 @@ const data: SocketConnetionItem[] = [
 ];
 
 const ConnectionSidebar = () => {
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>
@@ -51,7 +58,12 @@ const ConnectionSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {data.map((item) => (
-                <SidebarMenuButton size="sm" className="data-[active=true]:bg-transparent" key={item.id}>
+                <SidebarMenuButton
+                  size="sm"
+                  className="data-[active=true]:bg-transparent"
+                  key={item.id}
+                  onClick={() => openTab(item)}
+                >
                   <ChevronsLeftRightEllipsis className="w-4 h-4 text-orange-500" />
                   <span>{item.name}</span>
                 </SidebarMenuButton>

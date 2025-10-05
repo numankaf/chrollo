@@ -12,6 +12,8 @@ import {
 } from '@/components/common/sidebar';
 import { Container, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { useShallow } from 'zustand/react/shallow';
+import useTabsStore from '../../../store/tabs-store';
 import type { EnviromentItem } from '../../../types/layout';
 
 const data: EnviromentItem[] = [
@@ -33,6 +35,11 @@ const data: EnviromentItem[] = [
 ];
 
 const EnviromentsSidebar = () => {
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>
@@ -48,7 +55,12 @@ const EnviromentsSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {data.map((item) => (
-                <SidebarMenuButton className="data-[active=true]:bg-transparent" key={item.id} size="sm">
+                <SidebarMenuButton
+                  onClick={() => openTab(item)}
+                  className="data-[active=true]:bg-transparent"
+                  key={item.id}
+                  size="sm"
+                >
                   <Container className="w-4 h-4" />
                   <span className="text-xs">{item.name}</span>
                 </SidebarMenuButton>
