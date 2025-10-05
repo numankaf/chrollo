@@ -23,8 +23,7 @@ import {
 import RequestIcon from '@/components/icon/request-icon';
 import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { useShallow } from 'zustand/react/shallow';
-import useTabsStore from '../../../store/tab-store';
+import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import type { CollectionTreeItem } from '../../../types/layout';
 
 const dataTree: CollectionTreeItem[] = [
@@ -150,11 +149,8 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
 
 function Tree({ item }: { item: CollectionTreeItem }) {
   const hasChildren = (item.type === 'folder' || item.type === 'collection') && (item.children?.length ?? 0) > 0;
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openAndNavigateToTab } = useTabNavigation();
+
   if (!hasChildren) {
     return (
       <SidebarMenuButton
@@ -163,11 +159,11 @@ function Tree({ item }: { item: CollectionTreeItem }) {
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
         onClick={(e) => {
           e.preventDefault();
-          if (item.type === 'request') openTab(item);
+          if (item.type === 'request') openAndNavigateToTab(item);
         }}
         onDoubleClick={(e) => {
           e.preventDefault();
-          if (item.type === 'folder') openTab(item);
+          if (item.type === 'folder') openAndNavigateToTab(item);
         }}
       >
         <div className="flex items-center justify-center gap-1">
@@ -188,7 +184,7 @@ function Tree({ item }: { item: CollectionTreeItem }) {
           className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
           onDoubleClick={(e) => {
             e.preventDefault();
-            openTab(item);
+            openAndNavigateToTab(item);
           }}
         >
           <div className="flex items-center justify-center gap-1">

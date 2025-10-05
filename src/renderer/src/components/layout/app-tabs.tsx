@@ -6,13 +6,15 @@ import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
+import { useTabNavigation } from '../../hooks/use-tab-navigation';
 import useTabsStore from '../../store/tab-store';
 import EnviromentSelector from '../selector/enviroment-selector';
 
 const AppTabs = () => {
-  const { tabs, activeTabId, setActiveTab, closeTab, addTab } = useTabsStore();
+  const { tabs, activeTabId, closeTab, addTab } = useTabsStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const { openAndNavigateToTab } = useTabNavigation();
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -76,7 +78,9 @@ const AppTabs = () => {
                 <div
                   className={`w-[160px] p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md font-medium whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    openAndNavigateToTab(tab.item);
+                  }}
                 >
                   <TabItemContent {...tab} />
                   <Button

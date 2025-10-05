@@ -2,9 +2,12 @@ import { useEffect } from 'react';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 import './App.css';
 import CollectionView from './features/collections/view/collection-view';
+import FolderView from './features/collections/view/folder-view';
+import RequestView from './features/collections/view/request-view';
 import ConnectionView from './features/connections/view/connection-view';
 import EnviromentView from './features/enviroments/view/enviroment-view';
 import HistoryView from './features/history/view/history-view';
+import HomeView from './features/home/view/home-view';
 import AppLayout from './layout/app-layout';
 import './styles/main.css';
 
@@ -26,15 +29,27 @@ function App() {
       element: <AppLayout />,
       children: [
         {
-          path: '/connections',
+          path: '/',
+          element: <HomeView />,
+        },
+        {
+          path: '/connection/:id',
           element: <ConnectionView />,
         },
         {
-          path: '/collections',
+          path: '/collection/:id',
           element: <CollectionView />,
         },
         {
-          path: '/enviroments',
+          path: '/collection/folder/:id',
+          element: <FolderView />,
+        },
+        {
+          path: '/collection/folder/request/:id',
+          element: <RequestView />,
+        },
+        {
+          path: '/enviroment/:id',
           element: <EnviromentView />,
         },
         {

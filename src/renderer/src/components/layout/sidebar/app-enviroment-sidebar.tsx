@@ -12,15 +12,11 @@ import {
 } from '@/components/common/sidebar';
 import { Container, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
+import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import useEnviromentStore from '../../../store/enviroment-store';
-import useTabsStore from '../../../store/tab-store';
 
 const EnviromentsSidebar = () => {
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openAndNavigateToTab } = useTabNavigation();
 
   const { enviroments } = useEnviromentStore(
     useShallow((state) => ({
@@ -43,7 +39,7 @@ const EnviromentsSidebar = () => {
             <SidebarMenu>
               {enviroments.map((item) => (
                 <SidebarMenuButton
-                  onClick={() => openTab(item)}
+                  onClick={() => openAndNavigateToTab(item)}
                   className="data-[active=true]:bg-transparent"
                   key={item.id}
                   size="sm"
