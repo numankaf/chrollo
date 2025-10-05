@@ -161,7 +161,12 @@ function Tree({ item }: { item: CollectionTreeItem }) {
         size="sm"
         asChild
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
-        onClick={() => openTab(item)}
+        onClick={() => {
+          if (item.type === 'request') openTab(item);
+        }}
+        onDoubleClick={() => {
+          if (item.type === 'folder') openTab(item);
+        }}
       >
         <div className="flex items-center justify-center gap-1">
           {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
@@ -176,22 +181,24 @@ function Tree({ item }: { item: CollectionTreeItem }) {
   return (
     <SidebarMenuItem className="p-0!">
       <Collapsible className="group/collapsible [&[data-state=open]>button>div>#chevron-icon:first-child]:rotate-90">
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton
-            size="sm"
-            className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
-            onClick={() => openTab(item)}
-          >
-            <div className="flex items-center justify-center gap-1">
-              <ChevronRight id="chevron-icon" className="transition-transform w-4! h-4!" />
-              {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
-              {item.type === 'collection' && <GalleryVerticalEnd className="w-4! h-4!" />}
+        <SidebarMenuButton
+          size="sm"
+          className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
+          onDoubleClick={(e) => {
+            openTab(item);
+          }}
+        >
+          <div className="flex items-center justify-center gap-1">
+            <CollapsibleTrigger asChild onDoubleClick={(e) => e.preventDefault()}>
+              <ChevronRight id="chevron-icon" className="mx-1 transition-transform w-4! h-4!" />
+            </CollapsibleTrigger>
+            {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
+            {item.type === 'collection' && <GalleryVerticalEnd className="w-4! h-4!" />}
+            <span>{item.name}</span>
+          </div>
+          <OperationsButton item={item} />
+        </SidebarMenuButton>
 
-              <span>{item.name}</span>
-            </div>
-            <OperationsButton item={item} />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub className="p-0! mr-0!">
             {item.children?.map((child) => (
