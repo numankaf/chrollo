@@ -19,7 +19,7 @@ const scrollToTab = (tabId: string | null) => {
   });
 };
 
-const useTabsStore = create<TabsStore>()((set, get) => ({
+const useTabsStore = create<TabsStore>()((set) => ({
   activeTabId: null,
   tabs: [],
 

@@ -56,7 +56,6 @@ const EnviromentSelector = () => {
               {!selectedEnviroment && <Check className="h-4 w-4" />}
               <p className="text-muted-foreground">No Enviroment</p>
             </Button>
-
             {filteredEnviroments.map((enviroment) => (
               <Button
                 variant="ghost"

@@ -26,6 +26,8 @@ const TabSelector = () => {
           <SearchBar placeholder="Search tabs" className="flex-1" onSearchChange={() => {}} />
         </div>
         <div className="mt-3 space-y-1 text-xs">
+          {tabs.length === 0 && <p className="px-1 text-muted-foreground">No open tabs</p>}
+
           {tabs?.map((tab) => (
             <Button
               variant="ghost"

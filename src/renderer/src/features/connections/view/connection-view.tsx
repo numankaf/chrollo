@@ -10,10 +10,22 @@ import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import { Waypoints } from 'lucide-react';
+import { useParams } from 'react-router';
+import { useShallow } from 'zustand/react/shallow';
+import useConnectionStore from '../../../store/connection-store';
 import { openStompSocket } from '../../../utils/socket-util';
 import ConnectionSettings from '../components/connection-settings';
 
 const ConnectionView = () => {
+  const { id } = useParams<{ id: string }>();
+  const { getConnection } = useConnectionStore(
+    useShallow((state) => ({
+      getConnection: state.getConnection,
+    }))
+  );
+
+  const connection = id ? getConnection(id) : undefined;
+
   return (
     <div className="m-3">
       <Breadcrumb className="py-3">
@@ -24,7 +36,7 @@ const ConnectionView = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>ws-connection-tukks</BreadcrumbPage>
+            <BreadcrumbPage>{connection?.name}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

@@ -11,34 +11,17 @@ import {
   SidebarRail,
 } from '@/components/common/sidebar';
 import { ChevronsLeftRightEllipsis, Plus } from 'lucide-react';
-import { nanoid } from 'nanoid';
+import { useShallow } from 'zustand/react/shallow';
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
-import type { SocketConnetionItem } from '../../../types/layout';
-
-const data: SocketConnetionItem[] = [
-  {
-    id: nanoid(8),
-    name: 'ws-connection-tukks',
-    state: 'connected',
-    type: 'connection',
-  },
-  {
-    id: nanoid(8),
-    name: 'ws-connection-tukks-hq200',
-    state: 'idle',
-    type: 'connection',
-  },
-  {
-    id: nanoid(8),
-    name: 'ws-connection-ehkks',
-    state: 'error',
-    type: 'connection',
-  },
-];
+import useConnectionStore from '../../../store/connection-store';
 
 const ConnectionSidebar = () => {
   const { openAndNavigateToTab } = useTabNavigation();
-
+  const { connections } = useConnectionStore(
+    useShallow((state) => ({
+      connections: state.connections,
+    }))
+  );
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>
@@ -53,7 +36,7 @@ const ConnectionSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.map((item) => (
+              {connections.map((item) => (
                 <SidebarMenuButton
                   size="sm"
                   className="data-[active=true]:bg-transparent"
