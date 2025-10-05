@@ -289,6 +289,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
     <main
       data-slot="sidebar-inset"
       style={{
+        width: `calc(100% - ${SIDEBAR_WIDTH})`,
         height: `calc(100vh - ${SIDEBAR_TOP_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
       }}
       className={cn(

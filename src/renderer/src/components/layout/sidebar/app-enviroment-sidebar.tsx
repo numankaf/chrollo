@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { Plus } from 'lucide-react';
+import { Container, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import type { EnviromentItem } from '../../../types/layout';
 
@@ -18,14 +18,17 @@ const data: EnviromentItem[] = [
   {
     id: nanoid(8),
     name: 'environment-tukks',
+    type: 'enviroment',
   },
   {
     id: nanoid(8),
     name: 'environment-tukks-hq200',
+    type: 'enviroment',
   },
   {
     id: nanoid(8),
     name: 'environment-ehkks',
+    type: 'enviroment',
   },
 ];
 
@@ -45,7 +48,8 @@ const EnviromentsSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {data.map((item) => (
-                <SidebarMenuButton className="data-[active=true]:bg-transparent" key={item.id}>
+                <SidebarMenuButton className="data-[active=true]:bg-transparent" key={item.id} size="sm">
+                  <Container className="w-4 h-4" />
                   <span className="text-xs">{item.name}</span>
                 </SidebarMenuButton>
               ))}

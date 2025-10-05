@@ -20,9 +20,10 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { ChevronRight, Ellipsis, FolderOpen, Plus } from 'lucide-react';
+import RequestIcon from '@/components/icon/request-icon';
+import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import type { CollectionTreeItem, CommandType } from '../../../types/layout';
+import type { CollectionTreeItem } from '../../../types/layout';
 
 const dataTree: CollectionTreeItem[] = [
   {
@@ -98,18 +99,6 @@ const dataTree: CollectionTreeItem[] = [
   },
 ];
 
-function RequestIcon({ commandType }: { commandType: CommandType }) {
-  return (
-    <div className="text-3xs w-[40px] text-end">
-      {commandType === 'command' ? (
-        <span className="text-yellow-600">COMMAND</span>
-      ) : (
-        <span className="text-green-600">QUERY</span>
-      )}
-    </div>
-  );
-}
-
 function OperationsButton({ item }: { item: CollectionTreeItem }) {
   return (
     <DropdownMenu>
@@ -158,7 +147,7 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
 }
 
 function Tree({ item }: { item: CollectionTreeItem }) {
-  const hasChildren = (item.type === 'folder' || item.type === 'collection') && item.children?.length > 0;
+  const hasChildren = (item.type === 'folder' || item.type === 'collection') && (item.children?.length ?? 0) > 0;
 
   if (!hasChildren) {
     return (
@@ -188,6 +177,8 @@ function Tree({ item }: { item: CollectionTreeItem }) {
             <div className="flex items-center justify-center gap-1">
               <ChevronRight id="chevron-icon" className="transition-transform w-4! h-4!" />
               {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
+              {item.type === 'collection' && <GalleryVerticalEnd className="w-4! h-4!" />}
+
               <span>{item.name}</span>
             </div>
             <OperationsButton item={item} />

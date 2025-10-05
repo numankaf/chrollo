@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import useTabsStore from '../../store/tabs-store';
 import { SearchBar } from '../common/search-input';
+import TabItemContent from '../tab/tab-item-content';
 
 const TabSelector = () => {
   const { tabs } = useTabsStore(
@@ -26,7 +27,7 @@ const TabSelector = () => {
         <div className="mt-3 space-y-1 text-xs">
           {tabs?.map((tab) => (
             <Button variant="ghost" key={tab.id} className=" w-full justify-start gap-2" size="sm">
-              <p className="flex gap-1">{tab.title}</p>
+              <TabItemContent {...tab} />
             </Button>
           ))}
         </div>

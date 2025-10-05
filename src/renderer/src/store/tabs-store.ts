@@ -1,11 +1,11 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
-import type { Tab, TabItemType } from '../types/layout';
+import type { Tab, TabItem } from '../types/layout';
 
 interface TabsStore {
   tabs: Tab[];
   activeTabId: string | null;
-  addTab: (title: string, itemType: TabItemType, itemId: string) => void;
+  addTab: (item: TabItem) => void;
   closeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
 }
@@ -13,12 +13,44 @@ interface TabsStore {
 const useTabsStore = create<TabsStore>()((set) => ({
   activeTabId: null,
   tabs: [
-    { id: nanoid(8), itemId: 'default', itemType: 'connection', title: 'Welcome1' },
-    { id: nanoid(8), itemId: 'default', itemType: 'connection', title: 'Welcome2' },
-    { id: nanoid(8), itemId: 'default', itemType: 'connection', title: 'Welcome3' },
+    {
+      id: nanoid(8),
+      item: {
+        id: nanoid(8),
+        name: 'createUnit',
+        commandType: 'command',
+        type: 'request',
+        path: '/bsi/unit/createUnit',
+      },
+    },
+    {
+      id: nanoid(8),
+      item: {
+        id: nanoid(8),
+        name: 'ws-connection-ehkks',
+        type: 'connection',
+        state: 'error',
+      },
+    },
+    {
+      id: nanoid(8),
+      item: {
+        id: nanoid(8),
+        type: 'enviroment',
+        name: 'environment-ehkks',
+      },
+    },
+    {
+      id: nanoid(8),
+      item: {
+        id: nanoid(8),
+        name: 'scope-corec2',
+        type: 'collection',
+      },
+    },
   ],
-  addTab: (title, itemType, itemId) => {
-    const newTab = { id: nanoid(8), itemId: itemId, itemType: itemType, title: title };
+  addTab: (item) => {
+    const newTab = { id: nanoid(8), item: item };
     set((state) => ({
       tabs: [...state.tabs, newTab],
     }));

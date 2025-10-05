@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { Plus } from 'lucide-react';
+import { ChevronsLeftRightEllipsis, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import type { SocketConnetionItem } from '../../../types/layout';
 
@@ -19,16 +19,19 @@ const data: SocketConnetionItem[] = [
     id: nanoid(8),
     name: 'ws-connection-tukks',
     state: 'connected',
+    type: 'connection',
   },
   {
     id: nanoid(8),
     name: 'ws-connection-tukks-hq200',
     state: 'idle',
+    type: 'connection',
   },
   {
     id: nanoid(8),
     name: 'ws-connection-ehkks',
     state: 'error',
+    type: 'connection',
   },
 ];
 
@@ -49,6 +52,7 @@ const ConnectionSidebar = () => {
             <SidebarMenu>
               {data.map((item) => (
                 <SidebarMenuButton size="sm" className="data-[active=true]:bg-transparent" key={item.id}>
+                  <ChevronsLeftRightEllipsis className="w-4 h-4 text-orange-500" />
                   <span>{item.name}</span>
                 </SidebarMenuButton>
               ))}

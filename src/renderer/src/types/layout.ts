@@ -1,4 +1,4 @@
-export type CollectionItemType = 'request' | 'folder' | 'collection';
+export type ItemType = 'request' | 'folder' | 'collection' | 'connection' | 'enviroment';
 
 export type CommandType = 'command' | 'query';
 
@@ -7,7 +7,7 @@ export type ConnectionType = 'idle' | 'connecting' | 'connected' | 'disconnected
 export interface BaseItem {
   id: string;
   name: string;
-  type: CollectionItemType;
+  type: ItemType;
 }
 
 export interface RequestItem extends BaseItem {
@@ -18,25 +18,23 @@ export interface RequestItem extends BaseItem {
 
 export interface FolderItem extends BaseItem {
   type: 'folder';
-  children: CollectionTreeItem[];
+  children?: CollectionTreeItem[];
 }
 
 export interface CollectionItem extends BaseItem {
   type: 'collection';
-  children: CollectionTreeItem[];
+  children?: CollectionTreeItem[];
 }
 
 export type CollectionTreeItem = RequestItem | FolderItem | CollectionItem;
 
-export interface SocketConnetionItem {
-  id: string;
-  name: string;
+export interface SocketConnetionItem extends BaseItem {
   state: ConnectionType;
+  type: 'connection';
 }
 
-export interface EnviromentItem {
-  id: string;
-  name: string;
+export interface EnviromentItem extends BaseItem {
+  type: 'enviroment';
 }
 
 export interface HistoryItem {
@@ -45,11 +43,9 @@ export interface HistoryItem {
   requests?: RequestItem[];
 }
 
-export type TabItemType = 'connection' | 'collection' | 'history' | 'enviroment';
+export type TabItem = RequestItem | FolderItem | CollectionItem | SocketConnetionItem | EnviromentItem;
 
 export interface Tab {
   id: string;
-  itemId: string;
-  itemType: TabItemType;
-  title: string;
+  item: TabItem;
 }

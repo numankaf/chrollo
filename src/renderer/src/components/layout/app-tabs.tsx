@@ -1,17 +1,18 @@
 import { Button } from '@/components/common/button';
 import { Separator } from '@/components/common/separator';
+import TabSelector from '@/components/selector/tab-selector';
+import TabItemContent from '@/components/tab/tab-item-content';
 import { Plus, X } from 'lucide-react';
+import { nanoid } from 'nanoid';
 import { useEffect, useRef } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
 import useTabsStore from '../../store/tabs-store';
 import EnviromentSelector from '../selector/enviroment-selector';
-import TabSelector from '../selector/tab-selector';
 
 const AppTabs = () => {
   const { tabs, activeTabId, setActiveTab, closeTab, addTab } = useTabsStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // enable horizontal scrolling via mouse wheel
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -31,22 +32,22 @@ const AppTabs = () => {
       style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }}
       className="w-full top-[var(--sidebar-top-offset)] border-b-1 px-1"
     >
-      <div
-        ref={scrollRef}
-        className="flex h-full overflow-x-auto no-scrollbar select-none items-center justify-between"
-      >
-        <div className="inline-flex h-full items-center justify-start gap-1.5 whitespace-nowrap">
+      <div className="flex h-full  items-center justify-between">
+        <div
+          ref={scrollRef}
+          className="overflow-x-auto no-scrollbar select-none w-full inline-flex h-full items-center justify-start gap-1.5 whitespace-nowrap"
+        >
           {tabs.map((tab, index) => {
             const isActive = tab.id === activeTabId;
 
             return (
               <div className="h-full flex" key={tab.id}>
                 <div
-                  className={`p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-center gap-1.5 rounded-md font-medium whitespace-nowrap border border-transparent hover:text-accent-foreground 
+                  className={`w-[160px] p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-center gap-1.5 rounded-md font-medium whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => setActiveTab(tab.id)}
                 >
-                  <p>{tab.title}</p>
+                  <TabItemContent {...tab} />
                   <Button
                     id="tabs-close"
                     variant="ghost"
@@ -70,7 +71,15 @@ const AppTabs = () => {
             variant="ghost"
             size="sm"
             className="text-muted-foreground flex-shrink-0"
-            onClick={() => addTab('Title New One', 'connection', 'newId')}
+            onClick={() =>
+              addTab({
+                id: nanoid(8),
+                name: 'createUnit',
+                commandType: 'command',
+                type: 'request',
+                path: '/bsi/unit/createUnit',
+              })
+            }
           >
             <Plus />
           </Button>

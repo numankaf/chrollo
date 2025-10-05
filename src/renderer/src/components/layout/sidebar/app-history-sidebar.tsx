@@ -13,7 +13,8 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { ChevronRight, ChevronsLeftRightEllipsis, Plus } from 'lucide-react';
+import RequestIcon from '@/components/icon/request-icon';
+import { ChevronRight, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import type { HistoryItem } from '../../../types/layout';
 
@@ -65,7 +66,7 @@ function Tree({ item }: { item: HistoryItem }) {
           <SidebarMenuSub>
             {item.requests!.map((child) => (
               <SidebarMenuButton key={child.id} size="sm">
-                <ChevronsLeftRightEllipsis className="text-green-500" />
+                <RequestIcon commandType={child.commandType} />
                 <span>{child.name}</span>
               </SidebarMenuButton>
             ))}

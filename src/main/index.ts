@@ -75,6 +75,11 @@ app.whenReady().then(() => {
     if (win) win.close();
   });
 
+  ipcMain.on('window:reload', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) win.reload();
+  });
+
   initStompIpc();
 
   app.on('activate', function () {
