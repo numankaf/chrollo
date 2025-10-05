@@ -5,6 +5,7 @@ import ConnectionView from './features/connections/view/connection-view';
 import EnviromentView from './features/enviroments/view/enviroment-view';
 import HistoryView from './features/history/view/history-view';
 import AppLayout from './layout/app-layout';
+import './styles/main.css';
 
 function App() {
   const router = createHashRouter([

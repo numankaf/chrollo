@@ -82,7 +82,7 @@ const ConnectionSettings = () => {
             </p>
           </div>
         </div>
-        <Input className="w-25 h-8" type="number" value={8192} onChange={() => {}} />
+        <Input className="w-25 h-8" type="number" value={10} onChange={() => {}} />
       </div>
     </div>
   );

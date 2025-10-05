@@ -185,6 +185,10 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-size: var(--text-base);
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
   }
 }
 
