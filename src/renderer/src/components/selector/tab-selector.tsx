@@ -2,7 +2,7 @@ import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ChevronDown } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
-import useTabsStore from '../../store/tabs-store';
+import useTabsStore from '../../store/tab-store';
 import { SearchBar } from '../common/search-input';
 import TabItemContent from '../tab/tab-item-content';
 

@@ -13,7 +13,7 @@ import {
 import { ChevronsLeftRightEllipsis, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
-import useTabsStore from '../../../store/tabs-store';
+import useTabsStore from '../../../store/tab-store';
 import type { SocketConnetionItem } from '../../../types/layout';
 
 const data: SocketConnetionItem[] = [

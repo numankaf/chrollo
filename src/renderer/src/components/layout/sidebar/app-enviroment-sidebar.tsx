@@ -11,33 +11,20 @@ import {
   SidebarRail,
 } from '@/components/common/sidebar';
 import { Container, Plus } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
-import useTabsStore from '../../../store/tabs-store';
-import type { EnviromentItem } from '../../../types/layout';
-
-const data: EnviromentItem[] = [
-  {
-    id: nanoid(8),
-    name: 'environment-tukks',
-    type: 'enviroment',
-  },
-  {
-    id: nanoid(8),
-    name: 'environment-tukks-hq200',
-    type: 'enviroment',
-  },
-  {
-    id: nanoid(8),
-    name: 'environment-ehkks',
-    type: 'enviroment',
-  },
-];
+import useEnviromentStore from '../../../store/enviroment-store';
+import useTabsStore from '../../../store/tab-store';
 
 const EnviromentsSidebar = () => {
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
+    }))
+  );
+
+  const { enviroments } = useEnviromentStore(
+    useShallow((state) => ({
+      enviroments: state.enviroments,
     }))
   );
   return (
@@ -54,7 +41,7 @@ const EnviromentsSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.map((item) => (
+              {enviroments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
                   className="data-[active=true]:bg-transparent"

@@ -6,7 +6,7 @@ import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
-import useTabsStore from '../../store/tabs-store';
+import useTabsStore from '../../store/tab-store';
 import EnviromentSelector from '../selector/enviroment-selector';
 
 const AppTabs = () => {

@@ -24,7 +24,7 @@ import RequestIcon from '@/components/icon/request-icon';
 import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
-import useTabsStore from '../../../store/tabs-store';
+import useTabsStore from '../../../store/tab-store';
 import type { CollectionTreeItem } from '../../../types/layout';
 
 const dataTree: CollectionTreeItem[] = [
@@ -161,10 +161,12 @@ function Tree({ item }: { item: CollectionTreeItem }) {
         size="sm"
         asChild
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault();
           if (item.type === 'request') openTab(item);
         }}
-        onDoubleClick={() => {
+        onDoubleClick={(e) => {
+          e.preventDefault();
           if (item.type === 'folder') openTab(item);
         }}
       >
@@ -185,6 +187,7 @@ function Tree({ item }: { item: CollectionTreeItem }) {
           size="sm"
           className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
           onDoubleClick={(e) => {
+            e.preventDefault();
             openTab(item);
           }}
         >
