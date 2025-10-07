@@ -4,7 +4,7 @@ import type { Tab, TabItem } from '../types/layout';
 
 interface TabsStore {
   tabs: Tab[];
-  activeTabId: string | null;
+  activeTab: Tab | null;
   addTab: (item: TabItem) => Tab;
   openTab: (item: TabItem) => Tab;
   closeTab: (id: string) => Tab | null;
@@ -20,58 +20,61 @@ const scrollToTab = (tabId: string | null) => {
 };
 
 const useTabsStore = create<TabsStore>()((set, get) => ({
-  activeTabId: null,
   tabs: [],
+  activeTab: null,
 
   addTab: (item) => {
     const newTab: Tab = { id: nanoid(8), item };
     set((state) => {
       const tabs = [...state.tabs, newTab];
-      return { tabs, activeTabId: newTab.id };
+      return { tabs, activeTab: newTab };
     });
     scrollToTab(newTab.id);
     return newTab;
   },
 
   openTab: (item) => {
-    let targetTab: Tab | null = null;
+    let targetTab: Tab;
+    const state = get();
 
-    set((state) => {
-      const existingTab = state.tabs.find((t) => t.item.id === item.id);
-      if (existingTab) {
-        targetTab = existingTab;
-        return { ...state, activeTabId: existingTab.id };
-      }
+    const existingTab = state.tabs.find((t) => t.item.id === item.id);
+    if (existingTab) {
+      targetTab = existingTab;
+      set({ activeTab: existingTab });
+    } else {
       const newTab: Tab = { id: nanoid(8), item };
       targetTab = newTab;
-      return { tabs: [...state.tabs, newTab], activeTabId: newTab.id };
-    });
+      set({ tabs: [...state.tabs, newTab], activeTab: newTab });
+    }
 
-    if (targetTab) scrollToTab((targetTab as Tab).id);
-    return targetTab!;
+    scrollToTab(targetTab.id);
+    return targetTab;
   },
 
   closeTab: (id) => {
-    let newActiveTab: Tab | null = null;
-    set((state) => {
-      const tabs = state.tabs;
-      const tabIndex = tabs.findIndex((t) => t.id === id);
-      const newTabs = tabs.filter((t) => t.id !== id);
+    const state = get();
+    const tabs = state.tabs;
+    const tabIndex = tabs.findIndex((t) => t.id === id);
+    const newTabs = tabs.filter((t) => t.id !== id);
 
-      let newActiveTabId = state.activeTabId;
-      if (state.activeTabId === id) {
-        newActiveTabId = tabIndex > 0 ? (newTabs[tabIndex - 1]?.id ?? null) : (newTabs[0]?.id ?? null);
+    let newActiveTab: Tab | null = state.activeTab;
+
+    if (state.activeTab?.id === id) {
+      if (tabIndex > 0) {
+        newActiveTab = newTabs[tabIndex - 1] ?? null;
+      } else {
+        newActiveTab = newTabs[0] ?? null;
       }
-      newActiveTab = newTabs.find((t) => t.id === newActiveTabId) ?? null;
-      return { tabs: newTabs, activeTabId: newActiveTabId };
-    });
+    }
+
+    set({ tabs: newTabs, activeTab: newActiveTab });
     return newActiveTab;
   },
 
   setActiveTab: (id) => {
-    set({ activeTabId: id });
-    scrollToTab(id);
     const tab = get().tabs.find((t) => t.id === id) ?? null;
+    set({ activeTab: tab });
+    scrollToTab(tab?.id ?? null);
     return tab;
   },
 }));

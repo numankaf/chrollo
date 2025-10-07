@@ -47,7 +47,7 @@ const TabSelector = () => {
                   size="sm"
                   onClick={() => setActiveTabAndNavigate(tab.id)}
                 >
-                  <TabItemContent {...tab} />
+                  <TabItemContent {...tab.item} />
                   <span
                     className="opacity-0 p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
                     onClick={(e) => {

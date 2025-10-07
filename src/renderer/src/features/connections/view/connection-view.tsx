@@ -1,15 +1,6 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/common/breadcrumb';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
-import { Waypoints } from 'lucide-react';
 import { useParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 import useConnectionStore from '../../../store/connection-store';
@@ -26,21 +17,11 @@ const ConnectionView = () => {
 
   const connection = id ? getConnection(id) : undefined;
 
+  if (!connection) return <div>Connection not found</div>;
+
   return (
-    <div className="m-3">
-      <Breadcrumb className="py-3">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <Waypoints className="w-4 h-4" />
-            <BreadcrumbLink>Connections</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{connection?.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="flex gap-2">
+    <div>
+      <div className="flex gap-2 ">
         <Input placeholder="Enter Url" />
         <Button onClick={() => openStompSocket('http://localhost:8080/ws')}>Connect</Button>
       </div>

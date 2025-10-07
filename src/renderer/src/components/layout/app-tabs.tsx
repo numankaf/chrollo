@@ -11,7 +11,7 @@ import useTabsStore from '../../store/tab-store';
 import EnvironmentSelector from '../selector/enviroment-selector';
 
 const AppTabs = () => {
-  const { tabs, activeTabId } = useTabsStore();
+  const { tabs, activeTab } = useTabsStore();
   const { addAndNavigateToTab, closeTabAndNavigate } = useTabNavigation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -72,18 +72,18 @@ const AppTabs = () => {
           className="overflow-x-auto no-scrollbar select-none w-full inline-flex h-full items-center justify-start gap-1.5 whitespace-nowrap"
         >
           {tabs.map((tab, index) => {
-            const isActive = tab.id === activeTabId;
+            const isActive = tab.id === activeTab?.id;
 
             return (
               <div className="h-full flex" key={tab.id} data-tab-id={tab.id}>
                 <div
-                  className={`w-[160px] p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md font-medium whitespace-nowrap border border-transparent hover:text-accent-foreground 
+                  className={`w-[160px] p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
                     openAndNavigateToTab(tab.item);
                   }}
                 >
-                  <TabItemContent {...tab} />
+                  <TabItemContent {...tab.item} />
                   <Button
                     id="tabs-close"
                     variant="ghost"

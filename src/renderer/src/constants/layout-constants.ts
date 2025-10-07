@@ -2,6 +2,7 @@ export const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 export const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 export const SIDEBAR_TOP_OFFSET = '45px';
 export const SIDEBAR_WORKSPACE_OFFSET = '40px';
+export const APP_BREADCRUMB_OFFSET = '45px';
 export const FOOTER_BOTTOM_OFFSET = '20px';
 export const SIDEBAR_WIDTH = '23rem';
 export const SIDEBAR_WIDTH_MOBILE = '18rem';
