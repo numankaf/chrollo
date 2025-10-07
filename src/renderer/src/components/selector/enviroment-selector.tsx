@@ -6,6 +6,7 @@ import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import useEnviromentStore from '../../store/enviroment-store';
+import { applyTextSearch } from '../../utils/search-util';
 
 const EnviromentSelector = () => {
   const { enviroments, selectEnviroment, selectedEnviroment } = useEnviromentStore(
@@ -17,7 +18,7 @@ const EnviromentSelector = () => {
   );
 
   const [search, setSearch] = useState('');
-  const filteredEnviroments = enviroments.filter((env) => env.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredEnviroments = applyTextSearch(enviroments, search, (env) => env.name);
   return (
     <Popover
       onOpenChange={(open) => {
@@ -46,28 +47,31 @@ const EnviromentSelector = () => {
         </div>
 
         <div className="mt-3 space-y-1 text-xs">
-          <ScrollArea className="h-[400px]!">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              size="sm"
-              onClick={() => selectEnviroment(null)}
-            >
-              {!selectedEnviroment && <Check className="h-4 w-4" />}
-              <p className="text-muted-foreground">No Enviroment</p>
-            </Button>
-            {filteredEnviroments.map((enviroment) => (
+          <ScrollArea>
+            <div className="max-h-[300px]!">
               <Button
                 variant="ghost"
-                key={enviroment.id}
                 className="w-full justify-start gap-2"
                 size="sm"
-                onClick={() => selectEnviroment(enviroment)}
+                onClick={() => selectEnviroment(null)}
               >
-                {enviroment.id === selectedEnviroment?.id && <Check className="h-4 w-4" />}
-                <p>{enviroment.name}</p>
+                {!selectedEnviroment && <Check className="h-4 w-4" />}
+                <p className="text-muted-foreground">No Enviroment</p>
               </Button>
-            ))}
+
+              {filteredEnviroments.map((enviroment) => (
+                <Button
+                  variant="ghost"
+                  key={enviroment.id}
+                  className="w-full justify-start gap-2"
+                  size="sm"
+                  onClick={() => selectEnviroment(enviroment)}
+                >
+                  {enviroment.id === selectedEnviroment?.id && <Check className="h-4 w-4" />}
+                  <p>{enviroment.name}</p>
+                </Button>
+              ))}
+            </div>
           </ScrollArea>
         </div>
       </PopoverContent>

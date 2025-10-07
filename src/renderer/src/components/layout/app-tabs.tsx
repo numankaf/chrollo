@@ -11,7 +11,8 @@ import useTabsStore from '../../store/tab-store';
 import EnviromentSelector from '../selector/enviroment-selector';
 
 const AppTabs = () => {
-  const { tabs, activeTabId, closeTab, addTab } = useTabsStore();
+  const { tabs, activeTabId } = useTabsStore();
+  const { addAndNavigateToTab, closeTabAndNavigate } = useTabNavigation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const { openAndNavigateToTab } = useTabNavigation();
@@ -51,7 +52,7 @@ const AppTabs = () => {
   }, []);
 
   const handleAddTab = () => {
-    addTab({
+    addAndNavigateToTab({
       id: nanoid(8),
       name: 'New Request',
       commandType: 'command',
@@ -90,7 +91,7 @@ const AppTabs = () => {
                     size="xs"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTab(tab.id);
+                      closeTabAndNavigate(tab.id);
                     }}
                   >
                     <X className="w-4 h-4" />
