@@ -14,7 +14,7 @@ import { SIDEBAR_WIDTH_ICON } from '../../constants/layout-constants';
 import SidebarWorkspaceMainHeader from './app-sidebar-main-header';
 import CollectionSidebar from './sidebar/app-collection-sidebar';
 import ConnectionSidebar from './sidebar/app-connection-sidebar';
-import EnviromentsSidebar from './sidebar/app-enviroment-sidebar';
+import EnvironmentsSidebar from './sidebar/app-enviroment-sidebar';
 import HistorySidebar from './sidebar/app-history-sidebar';
 
 const SIDEBAR_DATA = [
@@ -31,10 +31,10 @@ const SIDEBAR_DATA = [
     subSidebarComponent: CollectionSidebar,
   },
   {
-    title: 'Enviroments',
-    url: '/enviroments',
+    title: 'Environments',
+    url: '/environments',
     icon: Columns3Cog,
-    subSidebarComponent: EnviromentsSidebar,
+    subSidebarComponent: EnvironmentsSidebar,
   },
   {
     title: 'History',

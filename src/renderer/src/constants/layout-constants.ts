@@ -5,5 +5,5 @@ export const SIDEBAR_WORKSPACE_OFFSET = '40px';
 export const FOOTER_BOTTOM_OFFSET = '20px';
 export const SIDEBAR_WIDTH = '23rem';
 export const SIDEBAR_WIDTH_MOBILE = '18rem';
-export const SIDEBAR_WIDTH_ICON = '80px';
+export const SIDEBAR_WIDTH_ICON = '82px';
 export const SIDEBAR_KEYBOARD_SHORTCUT = 'b';

@@ -5,20 +5,25 @@ import { SearchBar } from '@/components/common/search-input';
 import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import useEnviromentStore from '../../store/enviroment-store';
+import useEnvironmentStore from '../../store/environment-store';
+import type { EnvironmentItem } from '../../types/layout';
 import { applyTextSearch } from '../../utils/search-util';
 
-const EnviromentSelector = () => {
-  const { enviroments, selectEnviroment, selectedEnviroment } = useEnviromentStore(
+const EnvironmentSelector = () => {
+  const { environments, selectEnvironment, selectedEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
-      enviroments: state.enviroments,
-      selectEnviroment: state.selectEnviroment,
-      selectedEnviroment: state.selectedEnviroment,
+      environments: state.environments,
+      selectEnvironment: state.selectEnvironment,
+      selectedEnvironment: state.selectedEnvironment,
     }))
   );
 
   const [search, setSearch] = useState('');
-  const filteredEnviroments = applyTextSearch(enviroments, search, (env) => env.name);
+
+  const allEnvironments = [{ id: 'none', name: 'No Environment' }, ...environments] as EnvironmentItem[];
+
+  const filteredEnvironments = applyTextSearch(allEnvironments, search, (env) => env.name);
+
   return (
     <Popover
       onOpenChange={(open) => {
@@ -27,48 +32,40 @@ const EnviromentSelector = () => {
     >
       <PopoverTrigger className="w-[160px]">
         <Button variant="ghost" className="text-xs justify-between" size="sm">
-          {!selectedEnviroment && <CircleOff className="w-4! h-4!" />}
+          {!selectedEnvironment && <CircleOff className="w-4 h-4" />}
           <span
             className="overflow-x-auto no-scrollbar"
-            title={selectedEnviroment ? selectedEnviroment.name : 'No Enviroment'}
+            title={selectedEnvironment ? selectedEnvironment.name : 'No Environment'}
           >
-            {selectedEnviroment ? selectedEnviroment.name : 'No Enviroment'}
+            {selectedEnvironment ? selectedEnvironment.name : 'No Environment'}
           </span>
           <ChevronDown />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-[320px] p-2!">
+      <PopoverContent align="end" className="w-[320px] p-2">
         <div className="flex items-center justify-between p-1 gap-1">
-          <SearchBar placeholder="Search enviroment" className="flex-1" onSearchChange={(value) => setSearch(value)} />
+          <SearchBar placeholder="Search environment" className="flex-1" onSearchChange={(value) => setSearch(value)} />
           <Button size="sm" variant="ghost">
-            <Plus className="w-4! h-4!" />
+            <Plus className="w-4 h-4" />
           </Button>
         </div>
 
         <div className="mt-3 space-y-1 text-xs">
           <ScrollArea>
-            <div className="max-h-[300px]!">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2"
-                size="sm"
-                onClick={() => selectEnviroment(null)}
-              >
-                {!selectedEnviroment && <Check className="h-4 w-4" />}
-                <p className="text-muted-foreground">No Enviroment</p>
-              </Button>
-
-              {filteredEnviroments.map((enviroment) => (
+            <div className="max-h-[300px]">
+              {filteredEnvironments.map((environment) => (
                 <Button
                   variant="ghost"
-                  key={enviroment.id}
+                  key={environment.id}
                   className="w-full justify-start gap-2"
                   size="sm"
-                  onClick={() => selectEnviroment(enviroment)}
+                  onClick={() => (environment.id === 'none' ? selectEnvironment(null) : selectEnvironment(environment))}
                 >
-                  {enviroment.id === selectedEnviroment?.id && <Check className="h-4 w-4" />}
-                  <p>{enviroment.name}</p>
+                  {environment.id === selectedEnvironment?.id || (!selectedEnvironment && environment.id === 'none') ? (
+                    <Check className="h-4 w-4" />
+                  ) : null}
+                  <p className={environment.id === 'none' ? 'text-muted-foreground' : undefined}>{environment.name}</p>
                 </Button>
               ))}
             </div>
@@ -79,4 +76,4 @@ const EnviromentSelector = () => {
   );
 };
 
-export default EnviromentSelector;
+export default EnvironmentSelector;

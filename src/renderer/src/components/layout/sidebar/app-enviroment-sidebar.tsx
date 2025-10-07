@@ -13,14 +13,14 @@ import {
 import { Container, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
-import useEnviromentStore from '../../../store/enviroment-store';
+import useEnvironmentStore from '../../../store/environment-store';
 
-const EnviromentsSidebar = () => {
+const EnvironmentsSidebar = () => {
   const { openAndNavigateToTab } = useTabNavigation();
 
-  const { enviroments } = useEnviromentStore(
+  const { environments } = useEnvironmentStore(
     useShallow((state) => ({
-      enviroments: state.enviroments,
+      environments: state.environments,
     }))
   );
   return (
@@ -31,13 +31,13 @@ const EnviromentsSidebar = () => {
             <Button size="sm" variant="ghost">
               <Plus className="w-4! h-4!" />
             </Button>
-            <SearchBar placeholder="Search enviroments" className="flex-1" onSearchChange={() => {}} />
+            <SearchBar placeholder="Search environments" className="flex-1" onSearchChange={() => {}} />
           </div>
         </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {enviroments.map((item) => (
+              {environments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openAndNavigateToTab(item)}
                   className="data-[active=true]:bg-transparent"
@@ -57,4 +57,4 @@ const EnviromentsSidebar = () => {
   );
 };
 
-export default EnviromentsSidebar;
+export default EnvironmentsSidebar;

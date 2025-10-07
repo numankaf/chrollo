@@ -1,4 +1,4 @@
-export type ItemType = 'request' | 'folder' | 'collection' | 'connection' | 'enviroment';
+export type ItemType = 'request' | 'folder' | 'collection' | 'connection' | 'environment';
 
 export type CommandType = 'command' | 'query';
 
@@ -33,8 +33,8 @@ export interface SocketConnetionItem extends BaseItem {
   type: 'connection';
 }
 
-export interface EnviromentItem extends BaseItem {
-  type: 'enviroment';
+export interface EnvironmentItem extends BaseItem {
+  type: 'environment';
 }
 
 export interface HistoryItem {
@@ -43,7 +43,7 @@ export interface HistoryItem {
   requests?: RequestItem[];
 }
 
-export type TabItem = RequestItem | FolderItem | CollectionItem | SocketConnetionItem | EnviromentItem;
+export type TabItem = RequestItem | FolderItem | CollectionItem | SocketConnetionItem | EnvironmentItem;
 
 export interface Tab {
   id: string;

@@ -13,8 +13,8 @@ function getTabRoute(item: TabItem): string {
       return `/collection/folder/${item.id}`;
     case 'request':
       return `/collection/folder/request/${item.id}`;
-    case 'enviroment':
-      return `/enviroment/${item.id}`;
+    case 'environment':
+      return `/environment/${item.id}`;
     default:
       return '/';
   }

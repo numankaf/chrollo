@@ -5,7 +5,7 @@ import CollectionView from './features/collections/view/collection-view';
 import FolderView from './features/collections/view/folder-view';
 import RequestView from './features/collections/view/request-view';
 import ConnectionView from './features/connections/view/connection-view';
-import EnviromentView from './features/enviroments/view/enviroment-view';
+import EnvironmentView from './features/environments/view/environment-view';
 import HistoryView from './features/history/view/history-view';
 import HomeView from './features/home/view/home-view';
 import AppLayout from './layout/app-layout';
@@ -49,8 +49,8 @@ function App() {
           element: <RequestView />,
         },
         {
-          path: '/enviroment/:id',
-          element: <EnviromentView />,
+          path: '/environment/:id',
+          element: <EnvironmentView />,
         },
         {
           path: '/history',

@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
 import { useTabNavigation } from '../../hooks/use-tab-navigation';
 import useTabsStore from '../../store/tab-store';
-import EnviromentSelector from '../selector/enviroment-selector';
+import EnvironmentSelector from '../selector/enviroment-selector';
 
 const AppTabs = () => {
   const { tabs, activeTabId } = useTabsStore();
@@ -122,7 +122,7 @@ const AppTabs = () => {
 
           <TabSelector />
           <Separator orientation="vertical" />
-          <EnviromentSelector />
+          <EnvironmentSelector />
         </div>
       </div>
     </div>

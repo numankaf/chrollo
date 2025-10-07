@@ -38,7 +38,6 @@ const TabSelector = () => {
         <div className="mt-3 space-y-1 text-xs">
           <ScrollArea>
             <div className="max-h-[300px]!">
-              {tabs.length === 0 && <p className="px-1 text-muted-foreground">No open tabs</p>}
               {filteredTabs.length === 0 && <p className="px-1 text-muted-foreground">No tabs found</p>}
               {filteredTabs?.map((tab) => (
                 <Button
