@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/pop
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import TabItemContent from '@/components/tab/tab-item-content';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useTabNavigation } from '../../hooks/use-tab-navigation';
@@ -19,7 +19,7 @@ const TabSelector = () => {
   const [search, setSearch] = useState('');
   const filteredTabs = applyTextSearch(tabs, search, (tab) => tab.item.name);
 
-  const { setActiveTabAndNavigate } = useTabNavigation();
+  const { setActiveTabAndNavigate, closeTabAndNavigate } = useTabNavigation();
   return (
     <Popover
       onOpenChange={(open) => {
@@ -43,11 +43,20 @@ const TabSelector = () => {
                 <Button
                   variant="ghost"
                   key={tab.id}
-                  className=" w-full justify-start gap-2"
+                  className=" w-full justify-between gap-2 pr-0.5 [&:hover>span]:opacity-100"
                   size="sm"
                   onClick={() => setActiveTabAndNavigate(tab.id)}
                 >
                   <TabItemContent {...tab} />
+                  <span
+                    className="opacity-0 p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeTabAndNavigate(tab.id);
+                    }}
+                  >
+                    <X />
+                  </span>
                 </Button>
               ))}
             </div>
