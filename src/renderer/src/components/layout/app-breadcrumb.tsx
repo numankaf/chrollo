@@ -12,7 +12,7 @@ const AppBreadcrumb = () => {
   );
 
   return (
-    <Breadcrumb className="flex items-center p-2" style={{ height: `${APP_BREADCRUMB_OFFSET}` }}>
+    <Breadcrumb className="flex items-center p-3" style={{ height: `${APP_BREADCRUMB_OFFSET}` }}>
       <BreadcrumbList>
         <BreadcrumbItem>
           <Breadcrumb>{activeTab && <TabItemContent {...activeTab.item} />}</Breadcrumb>

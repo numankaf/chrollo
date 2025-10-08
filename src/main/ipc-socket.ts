@@ -20,7 +20,6 @@ export function initStompIpc() {
         console.log(msg);
         mainWindow.webContents.send('console-log', msg);
       },
-      
     });
 
     stompClient.onStompError = (frame) => {

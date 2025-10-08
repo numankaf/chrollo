@@ -17,7 +17,7 @@ const Topbar = () => {
       <div className="flex items-center gap-2 px-2 flex-1 draggable">
         <div className="flex items-center gap-2 cursor-pointer hover:text-primary flex-shrink-0">
           <img className="w-8 h-8 flex-shrink-0" src={AppLogo} alt="App Logo" />
-          <span className="whitespace-nowrap flex-shrink-0">Scope WS Inspector</span>
+          <span className="whitespace-nowrap flex-shrink-0 text-primary">Scope WS Inspector</span>
         </div>
         <Button variant="ghost">Home</Button>
         <WorkspaceSelector />

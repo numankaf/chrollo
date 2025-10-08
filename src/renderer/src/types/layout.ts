@@ -35,6 +35,7 @@ export interface SocketConnetionItem extends BaseItem {
 
 export interface EnvironmentItem extends BaseItem {
   type: 'environment';
+  values: Record<string, string>;
 }
 
 export interface HistoryItem {

@@ -8,6 +8,7 @@ import ConnectionView from './features/connections/view/connection-view';
 import EnvironmentView from './features/environments/view/environment-view';
 import HistoryView from './features/history/view/history-view';
 import HomeView from './features/home/view/home-view';
+import WorkspaceView from './features/workspaces/view/workspace-view';
 import AppLayout from './layout/app-layout';
 import './styles/main.css';
 
@@ -31,6 +32,10 @@ function App() {
         {
           path: '/',
           element: <HomeView />,
+        },
+        {
+          path: '/workspace/:id',
+          element: <WorkspaceView />,
         },
         {
           path: '/connection/:id',
