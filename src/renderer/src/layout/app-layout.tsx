@@ -4,15 +4,8 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 import AppTabs from '@/components/layout/app-tabs';
 import Topbar from '@/components/layout/app-topbar';
 import { Outlet } from 'react-router';
-import { ScrollArea } from '../components/common/scroll-area';
 import AppBreadCrumb from '../components/layout/app-breadcrumb';
-import {
-  APP_BREADCRUMB_OFFSET,
-  FOOTER_BOTTOM_OFFSET,
-  SIDEBAR_TOP_OFFSET,
-  SIDEBAR_WIDTH,
-  SIDEBAR_WORKSPACE_OFFSET,
-} from '../constants/layout-constants';
+import { SIDEBAR_WIDTH } from '../constants/layout-constants';
 
 const AppLayout = () => {
   return (
@@ -29,14 +22,14 @@ const AppLayout = () => {
         <SidebarInset>
           <AppTabs />
           <AppBreadCrumb />
-          <ScrollArea
-            className="mx-2"
+          {/* <ScrollArea
             style={{
               height: `calc(100vh - ${SIDEBAR_TOP_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET} - ${APP_BREADCRUMB_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
             }}
           >
             <Outlet></Outlet>
-          </ScrollArea>
+          </ScrollArea> */}
+          <Outlet></Outlet>
         </SidebarInset>
         <Footer />
       </SidebarProvider>
