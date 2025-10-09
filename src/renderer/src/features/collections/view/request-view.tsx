@@ -1,31 +1,50 @@
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { json } from '@codemirror/lang-json';
-import { materialDark, materialLight } from '@uiw/codemirror-theme-material';
 import CodeMirror from '@uiw/react-codemirror';
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
+import { ScrollArea } from '../../../components/common/scroll-area';
 import { ThemeProviderContext } from '../../../provider/theme-provider';
+import { getEditorTheme } from '../../../utils/editor-theme-util';
 
 const RequestView = () => {
   const { theme } = use(ThemeProviderContext);
+  const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(theme));
+
+  useEffect(() => {
+    const html = document.documentElement;
+
+    const updateTheme = () => {
+      setEditorTheme(getEditorTheme(theme));
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && m.attributeName === 'class') {
+          updateTheme();
+        }
+      }
+    });
+
+    observer.observe(html, { attributes: true });
+
+    return () => observer.disconnect();
+  }, [theme]);
 
   return (
-    <ResizablePanelGroup direction="vertical" className="h-[990px]">
-      <ResizablePanel minSize={10}>
-        <CodeMirror
-          value="{
-                id: nanoid(8),
-                name: 'ws-connection-tukks',
-                state: 'connected',
-                type: 'connection',
-              }"
-          height="400px"
-          extensions={[json()]}
-          theme={theme === 'dark' ? materialDark : materialLight}
-          onChange={(value) => console.log(value)}
-        />
+    <ResizablePanelGroup direction="vertical">
+      <ResizablePanel minSize={25} className="border rounded-lg m-2">
+        <ScrollArea className="h-full">
+          <CodeMirror
+            value="{}"
+            height="auto"
+            theme={editorTheme}
+            extensions={[json()]}
+            onChange={(value) => console.log('value:', value)}
+          />
+        </ScrollArea>
       </ResizablePanel>
       <ResizableHandle className="hover:bg-primary" />
-      <ResizablePanel minSize={10}>Two</ResizablePanel>
+      <ResizablePanel minSize={25}>Two</ResizablePanel>
     </ResizablePanelGroup>
   );
 };
