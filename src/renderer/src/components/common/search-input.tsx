@@ -23,7 +23,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         <Input
           type="text"
           placeholder={placeholder}
-          className="pl-8 pr-3 text-xs! bg-background shadow-none h-7!"
+          className="pl-8 pr-3 text-sm! bg-background shadow-none h-7!"
           onChange={(e) => onSearchChange?.(e.target.value)}
         />
       </div>

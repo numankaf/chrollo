@@ -8,17 +8,17 @@ const ConnectionSettings = () => {
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Connection Timeout</p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             Will retry if Stomp connection is not established in specified milliseconds.
           </p>
-          <p className="text-muted-foreground text-xs"> Default 0, which switches off automatic reconnection.</p>
+          <p className="text-muted-foreground text-sm"> Default 0, which switches off automatic reconnection.</p>
         </div>
         <Input className="w-25 h-8" type="number" value={0} onChange={() => {}} />
       </div>
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Reconnection Delay</p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             Automatically reconnect with delay in milliseconds, set to 0 to disable.
           </p>
         </div>
@@ -27,7 +27,7 @@ const ConnectionSettings = () => {
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Max Reconnect Delay</p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             Maximum time to wait between reconnects, in milliseconds. Set to 0 for no limit on wait time.
           </p>
         </div>
@@ -36,7 +36,7 @@ const ConnectionSettings = () => {
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Heartbeat Incoming</p>
-          <div className="text-muted-foreground text-xs">
+          <div className="text-muted-foreground text-sm">
             <p className="">Incoming heartbeat interval in milliseconds. Set to 0 to disable.</p>
           </div>
         </div>
@@ -45,7 +45,7 @@ const ConnectionSettings = () => {
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Heartbeat Outgoing</p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
           </p>
         </div>
@@ -54,13 +54,13 @@ const ConnectionSettings = () => {
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Split Large Frames</p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             This switches on a non-standard behavior while sending WebSocket packets.
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             It splits larger (text) packets into chunks of `Max WebSocket Chunk Size`.
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             Only Java Spring brokers seem to support this mode. WebSockets, by itself, split large (text) packets.
           </p>
         </div>
@@ -76,7 +76,7 @@ const ConnectionSettings = () => {
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Max WebSocket Chunk Size</p>
-          <div className="text-muted-foreground text-xs">
+          <div className="text-muted-foreground text-sm">
             <p className="">
               Maximum allowed message size in MB. This has no effect if `Split Large Frames` is not enabled.
             </p>

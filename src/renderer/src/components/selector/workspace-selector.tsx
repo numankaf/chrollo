@@ -29,7 +29,7 @@ const WorkspaceSelector = () => {
           <SearchBar placeholder="Search workspaces" className="flex-1" onSearchChange={() => {}} />
         </div>
         <div className="mt-3 space-y-1">
-          <Label className="text-secondary text-xs m-1"> Recently Visited</Label>
+          <Label className="text-secondary text-sm m-1"> Recently Visited</Label>
           {WORKSPACES_DATA.map((workspace) => (
             <Button variant="ghost" key={workspace.id} className=" w-full justify-between gap-2" size="sm">
               <div className="flex gap-1">

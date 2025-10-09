@@ -31,7 +31,7 @@ const EnvironmentSelector = () => {
       }}
     >
       <PopoverTrigger className="w-[160px]">
-        <Button variant="ghost" className="text-xs justify-between" size="sm">
+        <Button variant="ghost" className="text-sm justify-between" size="sm">
           {!selectedEnvironment && <CircleOff className="w-4 h-4" />}
           <span
             className="overflow-x-auto no-scrollbar"
@@ -51,7 +51,7 @@ const EnvironmentSelector = () => {
           </Button>
         </div>
 
-        <div className="mt-3 space-y-1 text-xs">
+        <div className="mt-3 space-y-1 text-sm">
           <ScrollArea>
             <div className="max-h-[300px]">
               {filteredEnvironments.map((environment) => (

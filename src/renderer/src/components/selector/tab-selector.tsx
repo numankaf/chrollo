@@ -35,7 +35,7 @@ const TabSelector = () => {
         <div className="flex items-center justify-between p-1 gap-1">
           <SearchBar placeholder="Search tabs" className="flex-1" onSearchChange={(value) => setSearch(value)} />
         </div>
-        <div className="mt-3 space-y-1 text-xs">
+        <div className="mt-3 space-y-1 text-sm">
           <ScrollArea>
             <div className="max-h-[300px]!">
               {filteredTabs.length === 0 && <p className="px-1 text-muted-foreground">No tabs found</p>}

@@ -27,8 +27,8 @@ const Topbar = () => {
         <Button variant="outline" className="bg-background! hover:border-primary!">
           <Search />
           <span>Search Inspector</span>
-          <span className="text-2xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>
-          <span className="text-2xs bg-card! py-0.5 px-1.5 rounded-md">K</span>
+          <span className="text-xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>
+          <span className="text-xs bg-card! py-0.5 px-1.5 rounded-md">K</span>
         </Button>
       </div>
 

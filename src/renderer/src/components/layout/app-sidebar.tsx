@@ -66,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         }}
                       >
                         <item.icon className="w-4! h-4!" />
-                        <span className="text-2xs">{item.title}</span>
+                        <span className="text-xs">{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}

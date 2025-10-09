@@ -45,7 +45,7 @@ const EnvironmentsSidebar = () => {
                   size="sm"
                 >
                   <Container className="w-4 h-4" />
-                  <span className="text-xs">{item.name}</span>
+                  <span className="text-sm">{item.name}</span>
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

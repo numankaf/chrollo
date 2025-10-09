@@ -85,7 +85,7 @@ const AppTabs = () => {
                   onMouseDown={(e) => {
                     if (e.button === 1) {
                       e.preventDefault();
-                      openAndNavigateToTab(tab.item);
+                      closeTabAndNavigate(tab.id);
                     }
                   }}
                 >

@@ -111,27 +111,27 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
       <DropdownMenuContent side="right" align="start" className="bg-background w-[160px]">
         {(item.type === 'collection' || item.type === 'folder') && (
           <>
-            <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+            <DropdownMenuItem className="text-sm" onClick={(e) => e.preventDefault()}>
               Add Request
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+            <DropdownMenuItem className="text-sm" onClick={(e) => e.preventDefault()}>
               Add Folder
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+        <DropdownMenuItem className="text-sm" onClick={(e) => e.preventDefault()}>
           Copy Link
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+        <DropdownMenuItem className="text-sm" onClick={(e) => e.preventDefault()}>
           Rename
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-xs" onClick={(e) => e.preventDefault()}>
+        <DropdownMenuItem className="text-sm" onClick={(e) => e.preventDefault()}>
           Duplicate
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="text-red-500 text-xs hover:bg-red-500! hover:text-white!"
+          className="text-red-500 text-sm hover:bg-red-500! hover:text-white!"
           onClick={(e) => e.preventDefault()}
         >
           Delete
@@ -139,7 +139,7 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
         {item.type === 'collection' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-xs">Export</DropdownMenuItem>
+            <DropdownMenuItem className="text-sm">Export</DropdownMenuItem>
           </>
         )}
       </DropdownMenuContent>

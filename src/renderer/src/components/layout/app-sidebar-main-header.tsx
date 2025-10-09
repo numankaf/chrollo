@@ -10,7 +10,7 @@ const SidebarWorkspaceMainHeader = () => {
       style={{ width: 'var(--sidebar-width)' }}
       className="fixed top-[var(--sidebar-top-offset)] h-[40px] border-b-1 border-x-1 bg-sidebar flex items-center  duration-300 justify-between p-1"
     >
-      <div className="hover:text-primary cursor-pointer flex items-center justify-center gap-2 text-xs flex-1 min-w-0 [data-side=right][data-state=collapsed]&:hidden">
+      <div className="hover:text-primary cursor-pointer flex items-center justify-center gap-2 text-sm flex-1 min-w-0 [data-side=right][data-state=collapsed]&:hidden">
         <Container className="w-4 h-4" />
         <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">My Workspace</span>
       </div>

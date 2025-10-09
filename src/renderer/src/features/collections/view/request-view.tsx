@@ -1,8 +1,8 @@
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { json } from '@codemirror/lang-json';
 import CodeMirror from '@uiw/react-codemirror';
 import { use, useEffect, useState } from 'react';
-import { ScrollArea } from '../../../components/common/scroll-area';
 import { ThemeProviderContext } from '../../../provider/theme-provider';
 import { getEditorTheme } from '../../../utils/editor-theme-util';
 
