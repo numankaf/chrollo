@@ -66,7 +66,7 @@ const AppTabs = () => {
       style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }}
       className="w-full top-[var(--sidebar-top-offset)] border-b-1 px-1"
     >
-      <div className="flex h-full items-center justify-between">
+      <div style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }} className="flex items-center justify-between">
         <div
           ref={scrollRef}
           className="overflow-x-auto no-scrollbar select-none w-full inline-flex h-full items-center justify-start gap-1.5 whitespace-nowrap"

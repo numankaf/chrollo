@@ -3,8 +3,9 @@ import { ScrollArea } from '@/components/common/scroll-area';
 import { json } from '@codemirror/lang-json';
 import CodeMirror from '@uiw/react-codemirror';
 import { use, useEffect, useState } from 'react';
-import { ThemeProviderContext } from '../../../provider/theme-provider';
-import { getEditorTheme } from '../../../utils/editor-theme-util';
+import { ThemeProviderContext } from '../../../../provider/theme-provider';
+import { getEditorTheme } from '../../../../utils/editor-theme-util';
+import SearchRequestInput from '../../components/request/search-request-input';
 
 const RequestView = () => {
   const { theme } = use(ThemeProviderContext);
@@ -31,21 +32,24 @@ const RequestView = () => {
   }, [theme]);
 
   return (
-    <ResizablePanelGroup direction="vertical">
-      <ResizablePanel minSize={25} className="border rounded-lg m-2">
-        <ScrollArea className="h-full">
-          <CodeMirror
-            value="{}"
-            height="auto"
-            theme={editorTheme}
-            extensions={[json()]}
-            onChange={(value) => console.log('value:', value)}
-          />
-        </ScrollArea>
-      </ResizablePanel>
-      <ResizableHandle className="hover:bg-primary" />
-      <ResizablePanel minSize={25}>Two</ResizablePanel>
-    </ResizablePanelGroup>
+    <>
+      <SearchRequestInput />
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel minSize={25} className="border rounded-lg m-2">
+          <ScrollArea className="h-full">
+            <CodeMirror
+              value="{}"
+              height="auto"
+              theme={editorTheme}
+              extensions={[json()]}
+              onChange={(value) => console.log('value:', value)}
+            />
+          </ScrollArea>
+        </ResizablePanel>
+        <ResizableHandle className="hover:bg-primary" />
+        <ResizablePanel minSize={25}>Two</ResizablePanel>
+      </ResizablePanelGroup>
+    </>
   );
 };
 

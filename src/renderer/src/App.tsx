@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 import './App.css';
-import CollectionView from './features/collections/view/collection-view';
-import FolderView from './features/collections/view/folder-view';
-import RequestView from './features/collections/view/request-view';
+import CollectionView from './features/collections/view/collection/collection-view';
+import FolderView from './features/collections/view/folder/folder-view';
+import RequestView from './features/collections/view/request/request-view';
 import ConnectionView from './features/connections/view/connection-view';
 import EnvironmentView from './features/environments/view/environment-view';
 import HistoryView from './features/history/view/history-view';
