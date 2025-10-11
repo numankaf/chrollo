@@ -1,8 +1,19 @@
 import { useEffect, useState } from 'react';
-import type { Theme, ThemeProviderProps } from '../types/common';
 
 import { createContext } from 'react';
-import type { ThemeProviderState } from '../types/common';
+
+export type Theme = 'dark' | 'light' | 'system';
+
+export type ThemeProviderProps = {
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
+};
+
+export type ThemeProviderState = {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+};
 
 const initialState: ThemeProviderState = {
   theme: 'system',

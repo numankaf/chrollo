@@ -1,12 +1,10 @@
-export type Theme = 'dark' | 'light' | 'system';
+export interface Header {
+  value: string;
+  description: string;
+  enabled: boolean;
+}
 
-export type ThemeProviderProps = {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  storageKey?: string;
-};
-
-export type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-};
+export interface Scripts {
+  preScript: string;
+  postScript: string;
+}
