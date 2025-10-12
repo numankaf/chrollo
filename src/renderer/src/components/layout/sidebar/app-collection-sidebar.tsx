@@ -20,8 +20,7 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import RequestIcon from '@/components/icon/request-icon';
-import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus } from 'lucide-react';
+import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import type { CollectionTreeItem } from '../../../types/layout';
@@ -167,8 +166,8 @@ function Tree({ item }: { item: CollectionTreeItem }) {
         }}
       >
         <div className="flex items-center justify-center gap-1">
-          {item.type === 'request' && <RequestIcon commandType={item.commandType} />}
-          {item.type === 'folder' && <FolderOpen />}
+          {item.type === 'folder' && <FolderOpen className="w-4! h-4" />}
+          {item.type === 'request' && <Zap className="w-4! h-4! text-green-500!" />}
           <span>{item.name}</span>
         </div>
         <OperationsButton item={item} />

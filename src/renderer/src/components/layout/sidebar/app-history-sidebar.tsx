@@ -13,8 +13,7 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import RequestIcon from '@/components/icon/request-icon';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, Zap } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import type { HistoryItem } from '../../../types/layout';
 
@@ -66,7 +65,7 @@ function Tree({ item }: { item: HistoryItem }) {
           <SidebarMenuSub>
             {item.requests!.map((child) => (
               <SidebarMenuButton key={child.id} size="sm">
-                <RequestIcon commandType={child.commandType} />
+                <Zap className="w-4! h-4! text-green-500!" />
                 <span>{child.name}</span>
               </SidebarMenuButton>
             ))}
