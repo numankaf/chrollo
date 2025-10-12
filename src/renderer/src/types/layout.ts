@@ -1,50 +1,10 @@
-export type ItemType = 'request' | 'folder' | 'collection' | 'connection' | 'environment';
+import type { CollectionItem } from './collection';
+import type { Connection } from './connection';
+import type { Environment } from './environment';
+import type { RequestHistory } from './history';
+import type { Workspace } from './workspace';
 
-export type CommandType = 'command' | 'query';
-
-export type ConnectionType = 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error';
-
-export interface BaseItem {
-  id: string;
-  name: string;
-  type: ItemType;
-}
-
-export interface RequestItem extends BaseItem {
-  type: 'request';
-  commandType: CommandType;
-  path: string;
-}
-
-export interface FolderItem extends BaseItem {
-  type: 'folder';
-  children?: CollectionTreeItem[];
-}
-
-export interface CollectionItem extends BaseItem {
-  type: 'collection';
-  children?: CollectionTreeItem[];
-}
-
-export type CollectionTreeItem = RequestItem | FolderItem | CollectionItem;
-
-export interface SocketConnetionItem extends BaseItem {
-  state: ConnectionType;
-  type: 'connection';
-}
-
-export interface EnvironmentItem extends BaseItem {
-  type: 'environment';
-  values: Record<string, string>;
-}
-
-export interface HistoryItem {
-  id: string;
-  date: string;
-  requests?: RequestItem[];
-}
-
-export type TabItem = RequestItem | FolderItem | CollectionItem | SocketConnetionItem | EnvironmentItem;
+export type TabItem = Workspace | Connection | CollectionItem | Environment | RequestHistory;
 
 export interface Tab {
   id: string;

@@ -1,21 +1,51 @@
-import { Container, GalleryVerticalEnd, LibraryBig, Zap } from 'lucide-react';
+import { Container, GalleryVerticalEnd, History, LibraryBig, Zap } from 'lucide-react';
+import type { JSX } from 'react';
+import { BASE_MODEL_TYPE } from '../../types/base';
+import { COLLECTION_TYPE } from '../../types/collection';
 import type { TabItem } from '../../types/layout';
 import WebSocketIcon from '../icon/websocket-icon';
 
 const TabItemContent = (item: TabItem) => {
+  let Icon: JSX.Element | null = null;
+  let name = '';
+
+  switch (item.modelType) {
+    case BASE_MODEL_TYPE.CONNECTION:
+      Icon = <WebSocketIcon className="w-4 h-4 shrink-0" />;
+      name = item.name;
+      break;
+
+    case BASE_MODEL_TYPE.ENVIRONMENT:
+      Icon = <Container className="w-4 h-4 shrink-0" />;
+      name = item.name;
+      break;
+
+    case BASE_MODEL_TYPE.COLLECTION:
+      name = item.name;
+      switch (item.collectionItemType) {
+        case COLLECTION_TYPE.COLLECTION:
+          Icon = <GalleryVerticalEnd className="w-4 h-4 shrink-0" />;
+          break;
+        case COLLECTION_TYPE.FOLDER:
+          Icon = <LibraryBig className="w-4 h-4 shrink-0" />;
+          break;
+        case COLLECTION_TYPE.REQUEST:
+          Icon = <Zap className="w-4 h-4 text-green-500 shrink-0" />;
+          break;
+      }
+      break;
+
+    case BASE_MODEL_TYPE.REQUEST_HISTORY:
+      Icon = <History className="w-4 h-4 shrink-0 text-amber-500" />;
+      name = item.request?.name ?? 'Unnamed Request'; // ✅ handle nested request name safely
+      break;
+  }
+
   return (
     <span className="flex items-center gap-2 text-sm overflow-hidden no-scrollbar">
-      {item.type === 'connection' && <WebSocketIcon className="w-4 h-4 shrink-0" />}
-      {item.type === 'environment' && <Container className="w-4 h-4 shrink-0" />}
-      {item.type === 'collection' && <GalleryVerticalEnd className="w-4 h-4 shrink-0" />}
-      {item.type === 'folder' && <LibraryBig className="w-4 h-4 shrink-0" />}
-      {item.type === 'request' && <Zap className="w-4 h-4 text-green-500 shrink-0" />}
-
-      <span
-        title={item.name}
-        className="truncate max-w-[160px]" // prevent overflow while allowing hover title
-      >
-        {item.name}
+      {Icon}
+      <span title={name} className="truncate max-w-[160px]">
+        {name}
       </span>
     </span>
   );

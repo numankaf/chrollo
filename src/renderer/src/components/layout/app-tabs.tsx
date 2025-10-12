@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
 import { useTabNavigation } from '../../hooks/use-tab-navigation';
 import useTabsStore from '../../store/tab-store';
+import { BASE_MODEL_TYPE } from '../../types/base';
+import { COLLECTION_TYPE } from '../../types/collection';
 import EnvironmentSelector from '../selector/enviroment-selector';
 
 const AppTabs = () => {
@@ -54,10 +56,10 @@ const AppTabs = () => {
   const handleAddTab = () => {
     addAndNavigateToTab({
       id: nanoid(8),
+      workspaceId: nanoid(8),
       name: 'New Request',
-      commandType: 'command',
-      type: 'request',
-      path: '',
+      modelType: BASE_MODEL_TYPE.COLLECTION,
+      collectionItemType: COLLECTION_TYPE.REQUEST,
     });
   };
 

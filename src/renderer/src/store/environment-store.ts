@@ -1,32 +1,25 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
-import type { EnvironmentItem } from '../types/layout';
+import { BASE_MODEL_TYPE } from '../types/base';
+import type { Environment, EnvironmentVariable } from '../types/environment';
 
 interface EnvironmentStore {
-  environments: EnvironmentItem[];
-  selectedEnvironment: EnvironmentItem | null;
-  createEnvironment: (environment: EnvironmentItem) => void;
-  updateEnvironment: (environment: EnvironmentItem) => void;
+  environments: Environment[];
+  selectedEnvironment: Environment | null;
+  createEnvironment: (environment: Environment) => void;
+  updateEnvironment: (environment: Environment) => void;
   deleteEnvironment: (id: string) => void;
-  selectEnvironment: (environment: EnvironmentItem | null) => void;
+  selectEnvironment: (environment: Environment | null) => void;
 }
 
 const useEnvironmentStore = create<EnvironmentStore>((set) => ({
   environments: [
     {
       id: nanoid(8),
+      workspaceId: nanoid(8),
       name: 'environment-tukks',
-      type: 'environment',
-    },
-    {
-      id: nanoid(8),
-      name: 'environment-tukks-hq200',
-      type: 'environment',
-    },
-    {
-      id: nanoid(8),
-      name: 'environment-ehkks',
-      type: 'environment',
+      modelType: BASE_MODEL_TYPE.ENVIRONMENT,
+      variables: new Map<string, EnvironmentVariable>(),
     },
   ],
   selectedEnvironment: null,

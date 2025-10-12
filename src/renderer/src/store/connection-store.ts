@@ -1,36 +1,26 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
-import type { SocketConnetionItem } from '../types/layout';
+import { BASE_MODEL_TYPE } from '../types/base';
+import { CONNECTION_TYPE, type Connection } from '../types/connection';
 
 interface ConnectionStore {
-  connections: SocketConnetionItem[];
-  selectedConnection: SocketConnetionItem | null;
-  getConnection: (id: string) => SocketConnetionItem | undefined;
-  createConnection: (connection: SocketConnetionItem) => void;
-  updateConnection: (connection: SocketConnetionItem) => void;
+  connections: Connection[];
+  selectedConnection: Connection | null;
+  getConnection: (id: string) => Connection | undefined;
+  createConnection: (connection: Connection) => void;
+  updateConnection: (connection: Connection) => void;
   deleteConnection: (id: string) => void;
-  selectConnection: (connection: SocketConnetionItem | null) => void;
+  selectConnection: (connection: Connection | null) => void;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
   connections: [
     {
       id: nanoid(8),
+      workspaceId: nanoid(8),
       name: 'ws-connection-tukks',
-      state: 'connected',
-      type: 'connection',
-    },
-    {
-      id: nanoid(8),
-      name: 'ws-connection-tukks-hq200',
-      state: 'idle',
-      type: 'connection',
-    },
-    {
-      id: nanoid(8),
-      name: 'ws-connection-ehkks',
-      state: 'error',
-      type: 'connection',
+      modelType: BASE_MODEL_TYPE.CONNECTION,
+      connectionType: CONNECTION_TYPE.STOMP,
     },
   ],
   selectedConnection: null,

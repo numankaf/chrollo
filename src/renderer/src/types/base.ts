@@ -14,8 +14,8 @@ export interface BaseModel {
 }
 
 export interface BaseAuditModel extends BaseModel {
-  createdBy: string;
-  createdDate: string;
-  updatedBy: string;
-  updatedDate: string;
+  createdBy?: string;
+  createdDate?: string;
+  updatedBy?: string;
+  updatedDate?: string;
 }
