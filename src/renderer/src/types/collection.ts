@@ -35,10 +35,10 @@ export interface Collection extends CollectionItem {
 
 export interface Folder extends CollectionItem {
   collectionItemType: 'FOLDER';
-  overview: string;
-  scripts: Scripts;
-  parentId: string;
-  children: string[];
+  overview?: string;
+  scripts?: Scripts;
+  parentId?: string;
+  children?: string[];
 }
 
 export interface RequestHeader extends Header {

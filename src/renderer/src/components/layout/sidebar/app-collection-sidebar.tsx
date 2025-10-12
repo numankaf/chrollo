@@ -21,85 +21,13 @@ import {
   SidebarRail,
 } from '@/components/common/sidebar';
 import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
-import { nanoid } from 'nanoid';
+import { useShallow } from 'zustand/react/shallow';
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
-import type { CollectionTreeItem } from '../../../types/layout';
+import useCollectionItemStore from '../../../store/collection-item-store';
+import { COLLECTION_TYPE, type CollectionItem } from '../../../types/collection';
+import { hasChildren } from '../../../utils/collection-util';
 
-const dataTree: CollectionTreeItem[] = [
-  {
-    id: nanoid(8),
-    name: 'scope-corec2',
-    type: 'collection',
-    children: [
-      {
-        id: nanoid(8),
-        name: 'bsi',
-        type: 'folder',
-        children: [
-          {
-            id: nanoid(8),
-            name: 'unit',
-            type: 'folder',
-            children: [
-              { id: nanoid(8), name: 'getUnit', commandType: 'query', type: 'request', path: '/bsi/unit/getUnit' },
-              {
-                id: nanoid(8),
-                name: 'createUnit',
-                commandType: 'command',
-                type: 'request',
-                path: '/bsi/unit/createUnit',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: nanoid(8),
-        name: 'oppplan',
-        type: 'folder',
-        children: [
-          {
-            id: nanoid(8),
-            name: 'queryCandidateTarget',
-            commandType: 'query',
-            type: 'request',
-            path: '/oppplan/queryCandidateTarget',
-          },
-          {
-            id: nanoid(8),
-            name: 'createCandidateTarget',
-            commandType: 'command',
-            type: 'request',
-            path: '/oppplan/createCandidateTarget',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: nanoid(8),
-    name: 'scope-land-rgp',
-    type: 'collection',
-    children: [
-      {
-        id: nanoid(8),
-        name: 'overlay',
-        type: 'folder',
-        children: [
-          {
-            id: nanoid(8),
-            name: 'addToContext',
-            commandType: 'command',
-            type: 'request',
-            path: '/overlay/addToContext',
-          },
-        ],
-      },
-    ],
-  },
-];
-
-function OperationsButton({ item }: { item: CollectionTreeItem }) {
+function OperationsButton({ item }: { item: CollectionItem }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="opacity-0 transition-opacity">
@@ -108,7 +36,8 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" align="start" className="bg-background w-[160px]">
-        {(item.type === 'collection' || item.type === 'folder') && (
+        {(item.collectionItemType === COLLECTION_TYPE.COLLECTION ||
+          item.collectionItemType === COLLECTION_TYPE.FOLDER) && (
           <>
             <DropdownMenuItem className="text-sm" onClick={(e) => e.preventDefault()}>
               Add Request
@@ -135,7 +64,7 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
         >
           Delete
         </DropdownMenuItem>
-        {item.type === 'collection' && (
+        {item.collectionItemType === COLLECTION_TYPE.COLLECTION && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-sm">Export</DropdownMenuItem>
@@ -146,11 +75,21 @@ function OperationsButton({ item }: { item: CollectionTreeItem }) {
   );
 }
 
-function Tree({ item }: { item: CollectionTreeItem }) {
-  const hasChildren = (item.type === 'folder' || item.type === 'collection') && (item.children?.length ?? 0) > 0;
+function Tree({ item }: { item: CollectionItem }) {
   const { openAndNavigateToTab } = useTabNavigation();
+  const { collectionItemMap } = useCollectionItemStore(
+    useShallow((state) => ({
+      collectionItemMap: state.collectionItemMap,
+    }))
+  );
 
-  if (!hasChildren) {
+  const children = hasChildren(item)
+    ? ((item.children || []).map((childId) => collectionItemMap.get(childId)).filter(Boolean) as CollectionItem[])
+    : [];
+
+  const itemHasChildren = children.length > 0;
+
+  if (!itemHasChildren) {
     return (
       <SidebarMenuButton
         size="sm"
@@ -158,16 +97,12 @@ function Tree({ item }: { item: CollectionTreeItem }) {
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
         onClick={(e) => {
           e.preventDefault();
-          if (item.type === 'request') openAndNavigateToTab(item);
-        }}
-        onDoubleClick={(e) => {
-          e.preventDefault();
-          if (item.type === 'folder') openAndNavigateToTab(item);
+          if (item.collectionItemType === COLLECTION_TYPE.REQUEST) openAndNavigateToTab(item);
         }}
       >
         <div className="flex items-center justify-center gap-1">
-          {item.type === 'folder' && <FolderOpen className="w-4! h-4" />}
-          {item.type === 'request' && <Zap className="w-4! h-4! text-green-500!" />}
+          {item.collectionItemType === COLLECTION_TYPE.FOLDER && <FolderOpen className="w-4 h-4" />}
+          {item.collectionItemType === COLLECTION_TYPE.REQUEST && <Zap className="w-4 h-4 text-green-500" />}
           <span>{item.name}</span>
         </div>
         <OperationsButton item={item} />
@@ -188,10 +123,10 @@ function Tree({ item }: { item: CollectionTreeItem }) {
         >
           <div className="flex items-center justify-center gap-1">
             <CollapsibleTrigger asChild onDoubleClick={(e) => e.preventDefault()}>
-              <ChevronRight id="chevron-icon" className="mx-1 transition-transform w-4! h-4!" />
+              <ChevronRight id="chevron-icon" className="mx-1 transition-transform w-4 h-4" />
             </CollapsibleTrigger>
-            {item.type === 'folder' && <FolderOpen className="w-4! h-4!" />}
-            {item.type === 'collection' && <GalleryVerticalEnd className="w-4! h-4!" />}
+            {item.collectionItemType === COLLECTION_TYPE.FOLDER && <FolderOpen className="w-4 h-4" />}
+            {item.collectionItemType === COLLECTION_TYPE.COLLECTION && <GalleryVerticalEnd className="w-4 h-4" />}
             <span>{item.name}</span>
           </div>
           <OperationsButton item={item} />
@@ -199,7 +134,7 @@ function Tree({ item }: { item: CollectionTreeItem }) {
 
         <CollapsibleContent>
           <SidebarMenuSub className="p-0! mr-0!">
-            {item.children?.map((child) => (
+            {children.map((child) => (
               <Tree key={child.id} item={child} />
             ))}
           </SidebarMenuSub>
@@ -210,22 +145,32 @@ function Tree({ item }: { item: CollectionTreeItem }) {
 }
 
 const CollectionSidebar = () => {
+  const { collectionItemMap } = useCollectionItemStore(
+    useShallow((state) => ({
+      collectionItemMap: state.collectionItemMap,
+    }))
+  );
+  const roots = Array.from(collectionItemMap.values()).filter(
+    (item) => item.collectionItemType === COLLECTION_TYPE.COLLECTION
+  );
+
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
             <Button size="sm" variant="ghost">
-              <Plus className="w-4! h-4!" />
+              <Plus className="w-4 h-4" />
             </Button>
             <SearchBar placeholder="Search collections" className="flex-1" onSearchChange={() => {}} />
           </div>
         </SidebarHeader>
+
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {dataTree.map((item, index) => (
-                <Tree key={index} item={item} />
+              {roots.map((item) => (
+                <Tree key={item.id} item={item} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
