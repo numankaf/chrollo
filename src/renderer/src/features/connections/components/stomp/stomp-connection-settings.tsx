@@ -1,7 +1,7 @@
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { useState } from 'react';
-const ConnectionSettings = () => {
+const StompConnectionSettings = () => {
   const [on, setOn] = useState(false);
   return (
     <div className="mt-3 mx-5 space-y-4">
@@ -88,4 +88,4 @@ const ConnectionSettings = () => {
   );
 };
 
-export default ConnectionSettings;
+export default StompConnectionSettings;

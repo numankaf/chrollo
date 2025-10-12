@@ -3,11 +3,11 @@ import { Input } from '@/components/common/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import { useParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
-import useConnectionStore from '../../../store/connection-store';
-import { openStompSocket } from '../../../utils/socket-util';
-import ConnectionSettings from '../components/connection-settings';
+import useConnectionStore from '../../../../store/connection-store';
+import { openStompSocket } from '../../../../utils/socket-util';
+import StompConnectionSettings from '../../components/stomp/stomp-connection-settings';
 
-const ConnectionView = () => {
+const StompConnectionView = () => {
   const { id } = useParams<{ id: string }>();
   const { getConnection } = useConnectionStore(
     useShallow((state) => ({
@@ -32,7 +32,7 @@ const ConnectionView = () => {
           <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
         </TabsList>
         <TabsContent value="settings">
-          <ConnectionSettings />
+          <StompConnectionSettings />
         </TabsContent>
         <TabsContent value="headers">Headers</TabsContent>
         <TabsContent value="subscriptions">Subscriptions</TabsContent>
@@ -41,4 +41,4 @@ const ConnectionView = () => {
   );
 };
 
-export default ConnectionView;
+export default StompConnectionView;

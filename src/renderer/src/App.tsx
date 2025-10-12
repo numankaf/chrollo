@@ -4,7 +4,7 @@ import './App.css';
 import CollectionView from './features/collections/view/collection/collection-view';
 import FolderView from './features/collections/view/folder/folder-view';
 import RequestView from './features/collections/view/request/request-view';
-import ConnectionView from './features/connections/view/connection-view';
+import StompConnectionView from './features/connections/view/stomp/stomp-connection-view';
 import EnvironmentView from './features/environments/view/environment-view';
 import HistoryView from './features/history/view/history-view';
 import HomeView from './features/home/view/home-view';
@@ -38,8 +38,8 @@ function App() {
           element: <WorkspaceView />,
         },
         {
-          path: '/connection/:id',
-          element: <ConnectionView />,
+          path: '/connection/stomp/:id',
+          element: <StompConnectionView />,
         },
         {
           path: '/collection/:id',

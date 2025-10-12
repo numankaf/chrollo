@@ -1,20 +1,47 @@
 import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 import useTabsStore from '../store/tab-store';
+import { BASE_MODEL_TYPE } from '../types/base';
+import { COLLECTION_TYPE } from '../types/collection';
+import { CONNECTION_TYPE } from '../types/connection';
 import type { TabItem } from '../types/layout';
 
 function getTabRoute(item: TabItem): string {
-  switch (item.type) {
-    case 'collection':
-      return `/collection/${item.id}`;
-    case 'connection':
-      return `/connection/${item.id}`;
-    case 'folder':
+  switch (item.modelType) {
+    case BASE_MODEL_TYPE.COLLECTION: {
+      switch (item.collectionItemType) {
+        case COLLECTION_TYPE.COLLECTION:
+          return `/collection/${item.id}`;
+
+        case COLLECTION_TYPE.FOLDER:
+          return `/collection/folder/${item.id}`;
+
+        case COLLECTION_TYPE.REQUEST:
+          return `/collection/folder/request/${item.id}`;
+
+        case COLLECTION_TYPE.REQUEST_RESPONSE:
+          return `/collection/folder/request/request-response/${item.id}`;
+      }
+    }
+
+    case BASE_MODEL_TYPE.WORKSPACE:
+      return `/workspace/${item.id}`;
+
+    case BASE_MODEL_TYPE.CONNECTION:
+      switch (item.connectionType) {
+        case CONNECTION_TYPE.STOMP:
+          return `/connection/stomp/${item.id}`;
+
+        case CONNECTION_TYPE.SOCKETIO:
+          return `/connection/socketio/${item.id}`;
+      }
+
+    case BASE_MODEL_TYPE.CONNECTION:
       return `/collection/folder/${item.id}`;
-    case 'request':
-      return `/collection/folder/request/${item.id}`;
-    case 'environment':
+
+    case BASE_MODEL_TYPE.ENVIRONMENT:
       return `/environment/${item.id}`;
+
     default:
       return '/';
   }
