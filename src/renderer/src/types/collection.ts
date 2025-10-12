@@ -37,7 +37,7 @@ export interface Folder extends CollectionItem {
   collectionItemType: 'FOLDER';
   overview?: string;
   scripts?: Scripts;
-  parentId?: string;
+  parentId: string;
   children?: string[];
 }
 

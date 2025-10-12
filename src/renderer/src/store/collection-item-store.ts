@@ -47,7 +47,7 @@ const initialCollectionItemMap = new Map<string, CollectionItem>([
       workspaceId: nanoid(8),
       modelType: BASE_MODEL_TYPE.COLLECTION,
       collectionItemType: COLLECTION_TYPE.REQUEST,
-      parentId: 'corec2-bsi-unit',
+      parentId: 'corec2-bsi',
       documentation: '',
       destination: '',
       body: { body: '', type: 'TEXT' },
