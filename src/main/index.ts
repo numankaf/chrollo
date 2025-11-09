@@ -1,6 +1,7 @@
+import { join } from 'path';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
-import { join } from 'path';
+
 import icon from '../../resources/app-logo.png?asset';
 import { initStompIpc } from './ipc-socket';
 

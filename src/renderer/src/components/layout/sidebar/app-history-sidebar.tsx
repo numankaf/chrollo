@@ -1,3 +1,6 @@
+import { ChevronRight, Plus, Zap } from 'lucide-react';
+import { nanoid } from 'nanoid';
+
 import { Button } from '@/components/common/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
 import { SearchBar } from '@/components/common/search-input';
@@ -13,8 +16,7 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { ChevronRight, Plus, Zap } from 'lucide-react';
-import { nanoid } from 'nanoid';
+
 import type { HistoryItem } from '../../../types/layout';
 
 const data: HistoryItem[] = [

@@ -1,3 +1,6 @@
+import { Container, Plus } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -10,8 +13,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { Container, Plus } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
+
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import useEnvironmentStore from '../../../store/environment-store';
 

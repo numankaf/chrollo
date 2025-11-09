@@ -1,8 +1,10 @@
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
-import { ScrollArea } from '@/components/common/scroll-area';
+import { use, useEffect, useState } from 'react';
 import { json } from '@codemirror/lang-json';
 import CodeMirror from '@uiw/react-codemirror';
-import { use, useEffect, useState } from 'react';
+
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
+import { ScrollArea } from '@/components/common/scroll-area';
+
 import { ThemeProviderContext } from '../../../../provider/theme-provider';
 import { getEditorTheme } from '../../../../utils/editor-theme-util';
 import SearchRequestInput from '../../components/request/search-request-input';

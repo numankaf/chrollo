@@ -1,6 +1,8 @@
+import { Plus } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
-
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +13,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { Plus } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
+
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import useConnectionStore from '../../../store/connection-store';
 import { WebSocketIcon } from '../../icon/websocket-icon';

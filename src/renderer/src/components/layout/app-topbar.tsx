@@ -1,9 +1,12 @@
-import { Button } from '@/components/common/button';
 import { Maximize, Minus, Search, X } from 'lucide-react';
+
+import { Button } from '@/components/common/button';
+
 import AppLogo from '../../../../../resources/app-logo.svg';
 import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
 import WorkspaceSelector from '../selector/workspace-selector';
 import ThemeSwitcher from './theme-switch';
+
 function Topbar() {
   return (
     <nav

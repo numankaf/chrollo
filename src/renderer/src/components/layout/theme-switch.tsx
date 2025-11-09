@@ -1,6 +1,8 @@
-import { Button } from '@/components/common/button';
-import { Moon, Sun } from 'lucide-react';
 import { use } from 'react';
+import { Moon, Sun } from 'lucide-react';
+
+import { Button } from '@/components/common/button';
+
 import { ThemeProviderContext } from '../../provider/theme-provider';
 
 function ThemeSwitcher() {

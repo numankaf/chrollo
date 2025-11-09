@@ -1,7 +1,9 @@
-import { Button } from '@/components/common/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { Check, ChevronDown, Lock, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
+
+import { Button } from '@/components/common/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
+
 import { Label } from '../common/label';
 import { SearchBar } from '../common/search-input';
 

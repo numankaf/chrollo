@@ -1,4 +1,5 @@
 import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
+
 import type { Theme } from '../provider/theme-provider';
 import { cssVar } from './css-util';
 

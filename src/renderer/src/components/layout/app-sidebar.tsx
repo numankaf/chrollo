@@ -1,5 +1,5 @@
-import { Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
 import * as React from 'react';
+import { Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
 
 import {
   Sidebar,
@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/common/sidebar';
+
 import { SIDEBAR_WIDTH_ICON } from '../../constants/layout-constants';
 import SidebarWorkspaceMainHeader from './app-sidebar-main-header';
 import CollectionSidebar from './sidebar/app-collection-sidebar';

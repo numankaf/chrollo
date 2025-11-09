@@ -1,10 +1,12 @@
+import { useState } from 'react';
+import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
-import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
-import { useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+
 import useEnvironmentStore from '../../store/environment-store';
 import type { EnvironmentItem } from '../../types/layout';
 import { applyTextSearch } from '../../utils/search-util';

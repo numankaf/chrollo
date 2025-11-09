@@ -1,7 +1,8 @@
-import { Input } from '@/components/common/input';
-import { cn } from '@/lib/utils';
-import { Search } from 'lucide-react';
 import * as React from 'react';
+import { Search } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/common/input';
 
 interface SearchBarProps {
   placeholder: string;

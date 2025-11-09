@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
+
 import './App.css';
+
 import CollectionView from './features/collections/view/collection/collection-view';
 import FolderView from './features/collections/view/folder/folder-view';
 import RequestView from './features/collections/view/request/request-view';
@@ -10,6 +12,7 @@ import HistoryView from './features/history/view/history-view';
 import HomeView from './features/home/view/home-view';
 import WorkspaceView from './features/workspaces/view/workspace-view';
 import AppLayout from './layout/app-layout';
+
 import './styles/main.css';
 
 function App() {

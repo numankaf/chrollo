@@ -1,3 +1,6 @@
+import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+
 import { Button } from '@/components/common/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
 import {
@@ -20,8 +23,7 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
+
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import useCollectionItemStore from '../../../store/collection-item-store';
 import { COLLECTION_TYPE, type CollectionItem } from '../../../types/collection';

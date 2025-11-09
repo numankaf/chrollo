@@ -9,5 +9,23 @@
   "useTabs": false,
   "jsxSingleQuote": false,
   "bracketSpacing": true,
-  "bracketSameLine": false
+  "bracketSameLine": false,
+  "importOrder": [
+    "^(react/(.*)$)|^(react$)",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@workspace/(.*)$",
+    "",
+    "^types$",
+    "^@/types/(.*)$",
+    "^@/config/(.*)$",
+    "^@/lib/(.*)$",
+    "^@/hooks/(.*)$",
+    "^@/components/common/(.*)$",
+    "^@/components/(.*)$",
+    "^@/styles/(.*)$",
+    "",
+    "^[./]"
+  ],
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"]
 }

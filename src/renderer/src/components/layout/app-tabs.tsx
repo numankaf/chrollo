@@ -1,10 +1,12 @@
+import { useEffect, useRef, useState } from 'react';
+import { Plus, X } from 'lucide-react';
+import { nanoid } from 'nanoid';
+
 import { Button } from '@/components/common/button';
 import { Separator } from '@/components/common/separator';
 import TabSelector from '@/components/selector/tab-selector';
 import TabItemContent from '@/components/tab/tab-item-content';
-import { Plus, X } from 'lucide-react';
-import { nanoid } from 'nanoid';
-import { useEffect, useRef, useState } from 'react';
+
 import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
 import { useTabNavigation } from '../../hooks/use-tab-navigation';
 import useTabsStore from '../../store/tab-store';

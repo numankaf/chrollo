@@ -1,12 +1,13 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/common/breadcrumb';
-import { type CollectionItem } from '@/types/collection';
 import { Fragment } from 'react';
+import { APP_BREADCRUMB_OFFSET } from '@/constants/layout-constants';
+import useCollectionItemStore from '@/store/collection-item-store';
+import useTabsStore from '@/store/tab-store';
+import { hasParent } from '@/utils/collection-util';
 import { useShallow } from 'zustand/react/shallow';
-import { APP_BREADCRUMB_OFFSET } from '../../constants/layout-constants';
-import useCollectionItemStore from '../../store/collection-item-store';
-import useTabsStore from '../../store/tab-store';
-import { hasParent } from '../../utils/collection-util';
-import TabItemContent from '../tab/tab-item-content';
+
+import { type CollectionItem } from '@/types/collection';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/common/breadcrumb';
+import TabItemContent from '@/components/tab/tab-item-content';
 
 function AppBreadcrumb() {
   const { activeTab } = useTabsStore(
