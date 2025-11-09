@@ -3,7 +3,7 @@ import { Container, Download, Plus } from 'lucide-react';
 import { SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
 import { useSidebar } from '../common/sidebar';
 
-const SidebarWorkspaceMainHeader = () => {
+function SidebarWorkspaceMainHeader() {
   const { state } = useSidebar();
   return state === 'expanded' ? (
     <div
@@ -33,6 +33,6 @@ const SidebarWorkspaceMainHeader = () => {
       <Container className="w-4 h-4" />
     </div>
   );
-};
+}
 
 export default SidebarWorkspaceMainHeader;

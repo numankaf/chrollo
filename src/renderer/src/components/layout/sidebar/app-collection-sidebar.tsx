@@ -144,7 +144,7 @@ function Tree({ item }: { item: CollectionItem }) {
   );
 }
 
-const CollectionSidebar = () => {
+function CollectionSidebar() {
   const { collectionItemMap } = useCollectionItemStore(
     useShallow((state) => ({
       collectionItemMap: state.collectionItemMap,
@@ -179,6 +179,6 @@ const CollectionSidebar = () => {
       <SidebarRail />
     </Sidebar>
   );
-};
+}
 
 export default CollectionSidebar;

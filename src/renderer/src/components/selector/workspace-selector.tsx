@@ -13,7 +13,7 @@ const WORKSPACES_DATA = [
   { id: nanoid(8), name: 'Workspace 5' },
 ];
 
-const WorkspaceSelector = () => {
+function WorkspaceSelector() {
   return (
     <Popover>
       <PopoverTrigger>
@@ -43,6 +43,6 @@ const WorkspaceSelector = () => {
       </PopoverContent>
     </Popover>
   );
-};
+}
 
 export default WorkspaceSelector;

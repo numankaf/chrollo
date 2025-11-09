@@ -3,7 +3,7 @@ import { FOOTER_BOTTOM_OFFSET } from '../../constants/layout-constants';
 import { Button } from '../common/button';
 import { SidebarTrigger } from '../common/sidebar';
 
-const Footer = () => {
+function Footer() {
   return (
     <footer
       style={
@@ -11,31 +11,31 @@ const Footer = () => {
           '--footer-bottom-offset': FOOTER_BOTTOM_OFFSET,
         } as React.CSSProperties
       }
-      className="h-[var(--footer-bottom-offset)] fixed w-full bg-sidebar border-t-1 bottom-0 flex items-center justify-between p-1"
+      className="h-(--footer-bottom-offset) fixed w-full bg-sidebar border-t bottom-0 flex items-center justify-between"
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 h-full">
         <SidebarTrigger />
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="xs" className="h-full">
           <CircleCheck />
           Online
         </Button>
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="xs" className="h-full">
           <SquareChevronRight />
           Console
         </Button>
       </div>
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="xs">
+      <div className="flex items-center gap-1 h-full">
+        <Button variant="ghost" size="xs" className="h-full">
           <CircleQuestionMark />
           Help
         </Button>
-        <Button variant="ghost" size="xs">
+        <Button variant="ghost" size="xs" className="h-full">
           <GalleryHorizontalEnd />
           {APP_VERSION}
         </Button>
       </div>
     </footer>
   );
-};
+}
 
 export default Footer;

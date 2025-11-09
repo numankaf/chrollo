@@ -7,7 +7,7 @@ import { Outlet } from 'react-router';
 import AppBreadCrumb from '../components/layout/app-breadcrumb';
 import { SIDEBAR_WIDTH } from '../constants/layout-constants';
 
-const AppLayout = () => {
+function AppLayout() {
   return (
     <>
       <SidebarProvider
@@ -29,12 +29,12 @@ const AppLayout = () => {
           >
             <Outlet></Outlet>
           </ScrollArea> */}
-          <Outlet></Outlet>
+          <Outlet />
         </SidebarInset>
         <Footer />
       </SidebarProvider>
     </>
   );
-};
+}
 
 export default AppLayout;

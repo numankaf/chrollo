@@ -1,4 +1,4 @@
-import { Client, type Message } from '@stomp/stompjs';
+import { Client, StompHeaders, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 import { getMainWindow } from './index';
@@ -43,13 +43,13 @@ export function initStompIpc() {
     }
   });
 
-  ipcMain.on('stomp:disconnect', (_) => {
+  ipcMain.on('stomp:disconnect', () => {
     if (stompClient) {
       stompClient?.deactivate();
     }
   });
 
-  ipcMain.on('stomp:send', (_, data: { destination: string; body: string; headers?: any }) => {
+  ipcMain.on('stomp:send', (_, data: { destination: string; body: string; headers?: StompHeaders }) => {
     if (stompClient && stompClient.connected) {
       stompClient.publish({
         destination: data.destination,

@@ -3,9 +3,9 @@ import type { JSX } from 'react';
 import { BASE_MODEL_TYPE } from '../../types/base';
 import { COLLECTION_TYPE } from '../../types/collection';
 import type { TabItem } from '../../types/layout';
-import WebSocketIcon from '../icon/websocket-icon';
+import { WebSocketIcon } from '../icon/websocket-icon';
 
-const TabItemContent = (item: TabItem) => {
+function TabItemContent(item: TabItem) {
   let Icon: JSX.Element | null = null;
   let name = '';
 
@@ -49,6 +49,6 @@ const TabItemContent = (item: TabItem) => {
       </span>
     </span>
   );
-};
+}
 
 export default TabItemContent;

@@ -9,7 +9,7 @@ import useEnvironmentStore from '../../store/environment-store';
 import type { EnvironmentItem } from '../../types/layout';
 import { applyTextSearch } from '../../utils/search-util';
 
-const EnvironmentSelector = () => {
+function EnvironmentSelector() {
   const { environments, selectEnvironment, selectedEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       environments: state.environments,
@@ -74,6 +74,6 @@ const EnvironmentSelector = () => {
       </PopoverContent>
     </Popover>
   );
-};
+}
 
 export default EnvironmentSelector;

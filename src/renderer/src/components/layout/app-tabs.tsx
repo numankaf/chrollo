@@ -12,7 +12,7 @@ import { BASE_MODEL_TYPE } from '../../types/base';
 import { COLLECTION_TYPE } from '../../types/collection';
 import EnvironmentSelector from '../selector/enviroment-selector';
 
-const AppTabs = () => {
+function AppTabs() {
   const { tabs, activeTab } = useTabsStore();
   const { addAndNavigateToTab, closeTabAndNavigate } = useTabNavigation();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -135,6 +135,6 @@ const AppTabs = () => {
       </div>
     </div>
   );
-};
+}
 
 export default AppTabs;

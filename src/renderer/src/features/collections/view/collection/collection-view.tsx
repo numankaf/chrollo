@@ -1,5 +1,5 @@
-const CollectionView = () => {
+function CollectionView() {
   return <div>Collection Vierw</div>;
-};
+}
 
 export default CollectionView;

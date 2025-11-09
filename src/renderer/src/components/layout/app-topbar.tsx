@@ -4,7 +4,7 @@ import AppLogo from '../../../../../resources/app-logo.svg';
 import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
 import WorkspaceSelector from '../selector/workspace-selector';
 import ThemeSwitcher from './theme-switch';
-const Topbar = () => {
+function Topbar() {
   return (
     <nav
       style={
@@ -62,6 +62,6 @@ const Topbar = () => {
       </div>
     </nav>
   );
-};
+}
 
 export default Topbar;

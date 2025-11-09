@@ -15,7 +15,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useTabNavigation } from '../../../hooks/use-tab-navigation';
 import useEnvironmentStore from '../../../store/environment-store';
 
-const EnvironmentsSidebar = () => {
+function EnvironmentsSidebar() {
   const { openAndNavigateToTab } = useTabNavigation();
 
   const { environments } = useEnvironmentStore(
@@ -55,6 +55,6 @@ const EnvironmentsSidebar = () => {
       <SidebarRail />
     </Sidebar>
   );
-};
+}
 
 export default EnvironmentsSidebar;

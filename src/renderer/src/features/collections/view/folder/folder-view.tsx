@@ -1,5 +1,5 @@
-const FolderView = () => {
-  return <div></div>;
-};
+function FolderView() {
+  return <div />;
+}
 
 export default FolderView;

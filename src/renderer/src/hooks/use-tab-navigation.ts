@@ -21,6 +21,8 @@ function getTabRoute(item: TabItem): string {
 
         case COLLECTION_TYPE.REQUEST_RESPONSE:
           return `/collection/folder/request/request-response/${item.id}`;
+        default:
+          return '/';
       }
     }
 
@@ -34,10 +36,9 @@ function getTabRoute(item: TabItem): string {
 
         case CONNECTION_TYPE.SOCKETIO:
           return `/connection/socketio/${item.id}`;
+        default:
+          return '/';
       }
-
-    case BASE_MODEL_TYPE.CONNECTION:
-      return `/collection/folder/${item.id}`;
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
       return `/environment/${item.id}`;

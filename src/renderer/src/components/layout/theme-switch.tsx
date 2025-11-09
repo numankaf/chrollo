@@ -3,7 +3,7 @@ import { Moon, Sun } from 'lucide-react';
 import { use } from 'react';
 import { ThemeProviderContext } from '../../provider/theme-provider';
 
-const ThemeSwitcher = () => {
+function ThemeSwitcher() {
   const { theme, setTheme } = use(ThemeProviderContext);
 
   const handleChangeTheme = () => {
@@ -15,6 +15,6 @@ const ThemeSwitcher = () => {
       {theme === 'dark' ? <Moon /> : <Sun />}
     </Button>
   );
-};
+}
 
 export default ThemeSwitcher;

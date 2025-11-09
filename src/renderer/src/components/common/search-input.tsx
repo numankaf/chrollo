@@ -10,12 +10,12 @@ interface SearchBarProps {
   className?: string;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({
+function SearchBar({
   placeholder,
   onSearchChange,
   searchIcon = <Search className="w-3 h-3" />,
   className,
-}) => {
+}: SearchBarProps) {
   return (
     <div className={cn('flex items-center justify-between', className)}>
       <div className="relative w-full">
@@ -29,4 +29,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       </div>
     </div>
   );
-};
+}
+
+export { SearchBar };

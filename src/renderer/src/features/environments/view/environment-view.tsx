@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 import { useEffect, useState } from 'react';
 
 import type {
@@ -19,7 +20,6 @@ import {
 import { Input } from '@/components/common/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/table';
 
-// Extend TanStack Table's meta interface
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
@@ -48,7 +48,7 @@ export type Variable = {
 };
 
 // Editable cell component for text inputs
-const EditableTextCell = ({ getValue, row: { index }, column: { id }, table }: CellContext<Variable, unknown>) => {
+function EditableTextCell({ getValue, row: { index }, column: { id }, table }: CellContext<Variable, unknown>) {
   const initialValue = getValue() as string;
   const [value, setValue] = useState(initialValue);
 
@@ -69,7 +69,7 @@ const EditableTextCell = ({ getValue, row: { index }, column: { id }, table }: C
       aria-label="editable-text-input"
     />
   );
-};
+}
 
 // Column definitions with editable cells
 export const columns: ColumnDef<Variable>[] = [
@@ -85,7 +85,7 @@ export const columns: ColumnDef<Variable>[] = [
   },
 ];
 
-const EnvironmentView = () => {
+function EnvironmentView() {
   const [data, setData] = useState(() => [...initialData]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -170,6 +170,6 @@ const EnvironmentView = () => {
       </Table>
     </div>
   );
-};
+}
 
 export default EnvironmentView;

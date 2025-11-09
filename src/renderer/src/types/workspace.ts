@@ -15,12 +15,9 @@ export const WORKSPACE_ROLE = {
 
 export type WorkspaceRole = (typeof WORKSPACE_ROLE)[keyof typeof WORKSPACE_ROLE];
 
-export interface WorkspaceSettings {}
-
 export interface Workspace extends BaseAuditModel {
   modelType: 'WORKSPACE';
   name: string;
   type: WorkspaceType;
   overview: string;
-  settings: WorkspaceSettings;
 }

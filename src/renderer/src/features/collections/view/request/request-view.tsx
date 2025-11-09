@@ -7,7 +7,7 @@ import { ThemeProviderContext } from '../../../../provider/theme-provider';
 import { getEditorTheme } from '../../../../utils/editor-theme-util';
 import SearchRequestInput from '../../components/request/search-request-input';
 
-const RequestView = () => {
+function RequestView() {
   const { theme } = use(ThemeProviderContext);
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(theme));
 
@@ -51,6 +51,6 @@ const RequestView = () => {
       </ResizablePanelGroup>
     </>
   );
-};
+}
 
 export default RequestView;

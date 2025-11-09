@@ -10,7 +10,7 @@ import { useTabNavigation } from '../../hooks/use-tab-navigation';
 import useTabsStore from '../../store/tab-store';
 import { applyTextSearch } from '../../utils/search-util';
 
-const TabSelector = () => {
+function TabSelector() {
   const { tabs } = useTabsStore(
     useShallow((state) => ({
       tabs: state.tabs,
@@ -65,6 +65,6 @@ const TabSelector = () => {
       </PopoverContent>
     </Popover>
   );
-};
+}
 
 export default TabSelector;

@@ -8,7 +8,7 @@ import useTabsStore from '../../store/tab-store';
 import { hasParent } from '../../utils/collection-util';
 import TabItemContent from '../tab/tab-item-content';
 
-const AppBreadcrumb = () => {
+function AppBreadcrumb() {
   const { activeTab } = useTabsStore(
     useShallow((state) => ({
       activeTab: state.activeTab,
@@ -51,6 +51,6 @@ const AppBreadcrumb = () => {
       </BreadcrumbList>
     </Breadcrumb>
   );
-};
+}
 
 export default AppBreadcrumb;

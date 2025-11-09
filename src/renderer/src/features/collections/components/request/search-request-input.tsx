@@ -4,7 +4,7 @@ import { Input } from '@/components/common/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
 import { Button } from '../../../../components/common/button';
 
-const SearchRequestInput = () => {
+function SearchRequestInput() {
   const id = useId();
 
   return (
@@ -33,6 +33,6 @@ const SearchRequestInput = () => {
       <Button>SEND </Button>
     </div>
   );
-};
+}
 
 export default SearchRequestInput;

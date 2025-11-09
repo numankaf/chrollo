@@ -27,7 +27,7 @@ export interface CollectionItem extends BaseAuditModel {
 
 export interface Collection extends CollectionItem {
   collectionItemType: 'COLLECTION';
-  variables: Map<String, EnvironmentVariable>;
+  variables: Map<string, EnvironmentVariable>;
   overview: string;
   scripts: Scripts;
   children: string[];

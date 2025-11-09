@@ -7,7 +7,7 @@ import useConnectionStore from '../../../../store/connection-store';
 import { openStompSocket } from '../../../../utils/socket-util';
 import StompConnectionSettings from '../../components/stomp/stomp-connection-settings';
 
-const StompConnectionView = () => {
+function StompConnectionView() {
   const { id } = useParams<{ id: string }>();
   const { getConnection } = useConnectionStore(
     useShallow((state) => ({
@@ -39,6 +39,6 @@ const StompConnectionView = () => {
       </Tabs>
     </div>
   );
-};
+}
 
 export default StompConnectionView;

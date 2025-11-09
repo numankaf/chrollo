@@ -76,7 +76,7 @@ function Tree({ item }: { item: HistoryItem }) {
   );
 }
 
-const HistorySidebar = () => {
+function HistorySidebar() {
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>
@@ -101,6 +101,6 @@ const HistorySidebar = () => {
       <SidebarRail />
     </Sidebar>
   );
-};
+}
 
 export default HistorySidebar;
