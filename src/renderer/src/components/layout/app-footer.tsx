@@ -1,8 +1,8 @@
+import { FOOTER_BOTTOM_OFFSET } from '@/constants/layout-constants';
 import { CircleCheck, CircleQuestionMark, GalleryHorizontalEnd, SquareChevronRight } from 'lucide-react';
 
-import { FOOTER_BOTTOM_OFFSET } from '../../constants/layout-constants';
-import { Button } from '../common/button';
-import { SidebarTrigger } from '../common/sidebar';
+import { Button } from '@/components/common/button';
+import { SidebarTrigger } from '@/components/common/sidebar';
 
 function Footer() {
   return (

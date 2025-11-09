@@ -1,13 +1,12 @@
+import { SIDEBAR_WIDTH } from '@/constants/layout-constants';
 import { Outlet } from 'react-router';
 
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
+import AppBreadCrumb from '@/components/layout/app-breadcrumb';
 import Footer from '@/components/layout/app-footer';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import AppTabs from '@/components/layout/app-tabs';
 import Topbar from '@/components/layout/app-topbar';
-
-import AppBreadCrumb from '../components/layout/app-breadcrumb';
-import { SIDEBAR_WIDTH } from '../constants/layout-constants';
 
 function AppLayout() {
   return (

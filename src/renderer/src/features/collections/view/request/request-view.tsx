@@ -1,13 +1,12 @@
 import { use, useEffect, useState } from 'react';
+import SearchRequestInput from '@/features/collections/components/request/search-request-input';
+import { ThemeProviderContext } from '@/provider/theme-provider';
+import { getEditorTheme } from '@/utils/editor-theme-util';
 import { json } from '@codemirror/lang-json';
 import CodeMirror from '@uiw/react-codemirror';
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { ScrollArea } from '@/components/common/scroll-area';
-
-import { ThemeProviderContext } from '../../../../provider/theme-provider';
-import { getEditorTheme } from '../../../../utils/editor-theme-util';
-import SearchRequestInput from '../../components/request/search-request-input';
 
 function RequestView() {
   const { theme } = use(ThemeProviderContext);

@@ -1,9 +1,8 @@
+import { SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { Container, Download, Plus } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
-
-import { SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
-import { useSidebar } from '../common/sidebar';
+import { useSidebar } from '@/components/common/sidebar';
 
 function SidebarWorkspaceMainHeader() {
   const { state } = useSidebar();

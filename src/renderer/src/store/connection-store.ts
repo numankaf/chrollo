@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { BASE_MODEL_TYPE } from '../types/base';
-import { CONNECTION_TYPE, type Connection } from '../types/connection';
+import { BASE_MODEL_TYPE } from '@/types/base';
+import { CONNECTION_TYPE, type Connection } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];

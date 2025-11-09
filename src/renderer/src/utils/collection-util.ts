@@ -5,7 +5,7 @@ import {
   type Folder,
   type Request,
   type RequestResponse,
-} from '../types/collection';
+} from '@/types/collection';
 
 export function hasChildren(item: CollectionItem): item is Collection | Folder | Request {
   return (

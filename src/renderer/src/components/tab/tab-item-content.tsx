@@ -1,10 +1,10 @@
 import type { JSX } from 'react';
 import { Container, GalleryVerticalEnd, History, LibraryBig, Zap } from 'lucide-react';
 
-import { BASE_MODEL_TYPE } from '../../types/base';
-import { COLLECTION_TYPE } from '../../types/collection';
-import type { TabItem } from '../../types/layout';
-import { WebSocketIcon } from '../icon/websocket-icon';
+import { BASE_MODEL_TYPE } from '@/types/base';
+import { COLLECTION_TYPE } from '@/types/collection';
+import type { TabItem } from '@/types/layout';
+import { WebSocketIcon } from '@/components/icon/websocket-icon';
 
 function TabItemContent(item: TabItem) {
   let Icon: JSX.Element | null = null;

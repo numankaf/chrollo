@@ -1,16 +1,15 @@
 import { useState } from 'react';
+import useTabsStore from '@/store/tab-store';
+import { applyTextSearch } from '@/utils/search-util';
 import { ChevronDown, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import TabItemContent from '@/components/tab/tab-item-content';
-
-import { useTabNavigation } from '../../hooks/use-tab-navigation';
-import useTabsStore from '../../store/tab-store';
-import { applyTextSearch } from '../../utils/search-util';
 
 function TabSelector() {
   const { tabs } = useTabsStore(

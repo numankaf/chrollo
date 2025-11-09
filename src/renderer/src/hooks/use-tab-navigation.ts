@@ -1,11 +1,11 @@
+import useTabsStore from '@/store/tab-store';
 import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import useTabsStore from '../store/tab-store';
-import { BASE_MODEL_TYPE } from '../types/base';
-import { COLLECTION_TYPE } from '../types/collection';
-import { CONNECTION_TYPE } from '../types/connection';
-import type { TabItem } from '../types/layout';
+import { BASE_MODEL_TYPE } from '@/types/base';
+import { COLLECTION_TYPE } from '@/types/collection';
+import { CONNECTION_TYPE } from '@/types/connection';
+import type { TabItem } from '@/types/layout';
 
 function getTabRoute(item: TabItem): string {
   switch (item.modelType) {

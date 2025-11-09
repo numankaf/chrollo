@@ -1,8 +1,6 @@
-import { ChevronRight, Plus, Zap } from 'lucide-react';
-import { nanoid } from 'nanoid';
+import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
 import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
@@ -11,72 +9,8 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-
-import type { HistoryItem } from '../../../types/layout';
-
-const data: HistoryItem[] = [
-  {
-    id: nanoid(8),
-    date: 'Today',
-    requests: [
-      {
-        id: nanoid(8),
-        name: 'queryCandidateTarget',
-        type: 'request',
-        path: '/oppplan/queryCandidateTarget',
-        commandType: 'query',
-      },
-    ],
-  },
-  {
-    id: nanoid(8),
-    date: 'August 10',
-    requests: [
-      { id: nanoid(8), name: 'getUnit', type: 'request', path: '/bsi/unit/getUnit', commandType: 'query' },
-      { id: nanoid(8), name: 'getUnit', type: 'request', path: '/bsi/unit/getUnit', commandType: 'query' },
-      {
-        id: nanoid(8),
-        name: 'queryCandidateTarget',
-        type: 'request',
-        path: '/oppplan/queryCandidateTarget',
-        commandType: 'query',
-      },
-    ],
-  },
-];
-
-function Tree({ item }: { item: HistoryItem }) {
-  return (
-    <SidebarMenuItem>
-      <Collapsible
-        className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        defaultOpen={true}
-      >
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton size="sm">
-            <ChevronRight className="transition-transform" />
-            <span>{item.date}</span>
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            {item.requests!.map((child) => (
-              <SidebarMenuButton key={child.id} size="sm">
-                <Zap className="w-4! h-4! text-green-500!" />
-                <span>{child.name}</span>
-              </SidebarMenuButton>
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </Collapsible>
-    </SidebarMenuItem>
-  );
-}
 
 function HistorySidebar() {
   return (
@@ -93,9 +27,7 @@ function HistorySidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.map((item) => (
-                <Tree key={item.id} item={item} />
-              ))}
+              <div>History Tab</div>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

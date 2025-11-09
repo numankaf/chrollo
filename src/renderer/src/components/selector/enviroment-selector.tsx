@@ -1,15 +1,14 @@
 import { useState } from 'react';
+import useEnvironmentStore from '@/store/environment-store';
+import { applyTextSearch } from '@/utils/search-util';
 import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
+import type { Environment } from '@/types/environment';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
-
-import useEnvironmentStore from '../../store/environment-store';
-import type { EnvironmentItem } from '../../types/layout';
-import { applyTextSearch } from '../../utils/search-util';
 
 function EnvironmentSelector() {
   const { environments, selectEnvironment, selectedEnvironment } = useEnvironmentStore(
@@ -22,7 +21,7 @@ function EnvironmentSelector() {
 
   const [search, setSearch] = useState('');
 
-  const allEnvironments = [{ id: 'none', name: 'No Environment' }, ...environments] as EnvironmentItem[];
+  const allEnvironments = [{ id: 'none', name: 'No Environment' }, ...environments] as Environment[];
 
   const filteredEnvironments = applyTextSearch(allEnvironments, search, (env) => env.name);
 

@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { BASE_MODEL_TYPE } from '../types/base';
-import { COLLECTION_TYPE, type CollectionItem } from '../types/collection';
+import { BASE_MODEL_TYPE } from '@/types/base';
+import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
 
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;

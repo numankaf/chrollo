@@ -2,10 +2,9 @@ import { Check, ChevronDown, Lock, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 
 import { Button } from '@/components/common/button';
+import { Label } from '@/components/common/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
-
-import { Label } from '../common/label';
-import { SearchBar } from '../common/search-input';
+import { SearchBar } from '@/components/common/search-input';
 
 const WORKSPACES_DATA = [
   { id: nanoid(8), name: 'Workspace 1', selected: true },

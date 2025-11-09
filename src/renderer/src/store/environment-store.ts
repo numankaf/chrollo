@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { BASE_MODEL_TYPE } from '../types/base';
-import type { Environment, EnvironmentVariable } from '../types/environment';
+import { BASE_MODEL_TYPE } from '@/types/base';
+import type { Environment, EnvironmentVariable } from '@/types/environment';
 
 interface EnvironmentStore {
   environments: Environment[];

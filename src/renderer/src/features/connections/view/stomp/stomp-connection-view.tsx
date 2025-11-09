@@ -1,13 +1,12 @@
+import StompConnectionSettings from '@/features/connections/components/stomp/stomp-connection-settings';
+import useConnectionStore from '@/store/connection-store';
+import { openStompSocket } from '@/utils/socket-util';
 import { useParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
-
-import useConnectionStore from '../../../../store/connection-store';
-import { openStompSocket } from '../../../../utils/socket-util';
-import StompConnectionSettings from '../../components/stomp/stomp-connection-settings';
 
 function StompConnectionView() {
   const { id } = useParams<{ id: string }>();

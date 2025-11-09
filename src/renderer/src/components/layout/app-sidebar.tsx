@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { SIDEBAR_WIDTH_ICON } from '@/constants/layout-constants';
 import { Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
 
 import {
@@ -10,13 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/common/sidebar';
-
-import { SIDEBAR_WIDTH_ICON } from '../../constants/layout-constants';
-import SidebarWorkspaceMainHeader from './app-sidebar-main-header';
-import CollectionSidebar from './sidebar/app-collection-sidebar';
-import ConnectionSidebar from './sidebar/app-connection-sidebar';
-import EnvironmentsSidebar from './sidebar/app-enviroment-sidebar';
-import HistorySidebar from './sidebar/app-history-sidebar';
+import SidebarWorkspaceMainHeader from '@/components/layout/app-sidebar-main-header';
+import CollectionSidebar from '@/components/layout/sidebar/app-collection-sidebar';
+import ConnectionSidebar from '@/components/layout/sidebar/app-connection-sidebar';
+import EnvironmentsSidebar from '@/components/layout/sidebar/app-enviroment-sidebar';
+import HistorySidebar from '@/components/layout/sidebar/app-history-sidebar';
 
 const SIDEBAR_DATA = [
   {

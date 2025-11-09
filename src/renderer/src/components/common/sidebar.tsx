@@ -1,4 +1,15 @@
 import * as React from 'react';
+import {
+  FOOTER_BOTTOM_OFFSET,
+  SIDEBAR_COOKIE_MAX_AGE,
+  SIDEBAR_COOKIE_NAME,
+  SIDEBAR_KEYBOARD_SHORTCUT,
+  SIDEBAR_TOP_OFFSET,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_ICON,
+  SIDEBAR_WIDTH_MOBILE,
+  SIDEBAR_WORKSPACE_OFFSET,
+} from '@/constants/layout-constants';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
@@ -11,18 +22,6 @@ import { Separator } from '@/components/common/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/common/sheet';
 import { Skeleton } from '@/components/common/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
-
-import {
-  FOOTER_BOTTOM_OFFSET,
-  SIDEBAR_COOKIE_MAX_AGE,
-  SIDEBAR_COOKIE_NAME,
-  SIDEBAR_KEYBOARD_SHORTCUT,
-  SIDEBAR_TOP_OFFSET,
-  SIDEBAR_WIDTH,
-  SIDEBAR_WIDTH_ICON,
-  SIDEBAR_WIDTH_MOBILE,
-  SIDEBAR_WORKSPACE_OFFSET,
-} from '../../constants/layout-constants';
 
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';

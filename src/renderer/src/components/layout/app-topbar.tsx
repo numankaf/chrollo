@@ -1,11 +1,11 @@
+import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { Maximize, Minus, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
+import ThemeSwitcher from '@/components/layout/theme-switch';
+import WorkspaceSelector from '@/components/selector/workspace-selector';
 
 import AppLogo from '../../../../../resources/app-logo.svg';
-import { SIDEBAR_TOP_OFFSET } from '../../constants/layout-constants';
-import WorkspaceSelector from '../selector/workspace-selector';
-import ThemeSwitcher from './theme-switch';
 
 function Topbar() {
   return (

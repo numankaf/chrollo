@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import type { Tab, TabItem } from '../types/layout';
+import type { Tab, TabItem } from '@/types/layout';
 
 interface TabsStore {
   tabs: Tab[];

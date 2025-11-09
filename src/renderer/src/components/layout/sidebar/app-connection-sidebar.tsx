@@ -1,6 +1,8 @@
+import useConnectionStore from '@/store/connection-store';
 import { Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -13,10 +15,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-
-import { useTabNavigation } from '../../../hooks/use-tab-navigation';
-import useConnectionStore from '../../../store/connection-store';
-import { WebSocketIcon } from '../../icon/websocket-icon';
+import { WebSocketIcon } from '@/components/icon/websocket-icon';
 
 function ConnectionSidebar() {
   const { openAndNavigateToTab } = useTabNavigation();

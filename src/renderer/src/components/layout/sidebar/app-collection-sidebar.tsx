@@ -1,6 +1,10 @@
+import useCollectionItemStore from '@/store/collection-item-store';
+import { hasChildren } from '@/utils/collection-util';
 import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
+import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
 import {
@@ -23,11 +27,6 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/common/sidebar';
-
-import { useTabNavigation } from '../../../hooks/use-tab-navigation';
-import useCollectionItemStore from '../../../store/collection-item-store';
-import { COLLECTION_TYPE, type CollectionItem } from '../../../types/collection';
-import { hasChildren } from '../../../utils/collection-util';
 
 function OperationsButton({ item }: { item: CollectionItem }) {
   return (
