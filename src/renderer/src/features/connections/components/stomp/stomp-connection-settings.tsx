@@ -6,7 +6,7 @@ import { Input } from '@/components/common/input';
 function StompConnectionSettings() {
   const [on, setOn] = useState(false);
   return (
-    <div className="mt-3 mx-5 space-y-4">
+    <div className="m-1 space-y-4">
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-1">
           <p className="">Connection Timeout</p>

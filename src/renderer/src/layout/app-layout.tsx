@@ -1,4 +1,10 @@
-import { SIDEBAR_WIDTH } from '@/constants/layout-constants';
+import {
+  APP_BREADCRUMB_OFFSET,
+  FOOTER_BOTTOM_OFFSET,
+  SIDEBAR_TOP_OFFSET,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WORKSPACE_OFFSET,
+} from '@/constants/layout-constants';
 import { Outlet } from 'react-router';
 
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
@@ -30,7 +36,13 @@ function AppLayout() {
           >
             <Outlet></Outlet>
           </ScrollArea> */}
-          <Outlet />
+          <div
+            style={{
+              height: `calc(100% - ${SIDEBAR_TOP_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET} - ${APP_BREADCRUMB_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
+            }}
+          >
+            <Outlet />
+          </div>
         </SidebarInset>
         <Footer />
       </SidebarProvider>

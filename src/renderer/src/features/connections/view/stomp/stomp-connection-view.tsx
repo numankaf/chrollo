@@ -21,7 +21,7 @@ function StompConnectionView() {
   if (!connection) return <div>Connection not found</div>;
 
   return (
-    <div>
+    <div className="m-2">
       <div className="flex gap-2 ">
         <Input placeholder="Enter Url" />
         <Button onClick={() => openStompSocket('http://localhost:8080/ws')}>Connect</Button>

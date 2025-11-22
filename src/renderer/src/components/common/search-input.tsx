@@ -20,7 +20,7 @@ function SearchBar({
   return (
     <div className={cn('flex items-center justify-between', className)}>
       <div className="relative w-full">
-        <span className="absolute left-3 top-1.5 z-10 text-muted-foreground">{searchIcon}</span>
+        <span className="absolute left-3 top-2 z-10 text-muted-foreground">{searchIcon}</span>
         <Input
           type="text"
           placeholder={placeholder}

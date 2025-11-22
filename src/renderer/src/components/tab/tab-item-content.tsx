@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { Container, GalleryVerticalEnd, History, LibraryBig, Zap } from 'lucide-react';
+import { Container, FolderOpen, GalleryVerticalEnd, History, Zap } from 'lucide-react';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
@@ -28,7 +28,7 @@ function TabItemContent(item: TabItem) {
           Icon = <GalleryVerticalEnd className="w-4 h-4 shrink-0" />;
           break;
         case COLLECTION_TYPE.FOLDER:
-          Icon = <LibraryBig className="w-4 h-4 shrink-0" />;
+          Icon = <FolderOpen className="w-4 h-4 shrink-0" />;
           break;
         case COLLECTION_TYPE.REQUEST:
           Icon = <Zap className="w-4 h-4 text-green-500 shrink-0" />;
@@ -45,7 +45,7 @@ function TabItemContent(item: TabItem) {
   return (
     <span className="flex items-center gap-2 text-sm overflow-hidden no-scrollbar">
       {Icon}
-      <span title={name} className="truncate max-w-[160px]">
+      <span title={name} className="truncate max-w-40">
         {name}
       </span>
     </span>

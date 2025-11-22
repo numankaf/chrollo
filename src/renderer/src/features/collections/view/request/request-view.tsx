@@ -1,5 +1,5 @@
 import { use, useEffect, useState } from 'react';
-import SearchRequestInput from '@/features/collections/components/request/search-request-input';
+import RequestPathInput from '@/features/collections/components/request/request-path-input';
 import { ThemeProviderContext } from '@/provider/theme-provider';
 import { getEditorTheme } from '@/utils/editor-theme-util';
 import { json } from '@codemirror/lang-json';
@@ -34,7 +34,7 @@ function RequestView() {
 
   return (
     <>
-      <SearchRequestInput />
+      <RequestPathInput />
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel minSize={25} className="border rounded-lg m-2">
           <ScrollArea className="h-full">
