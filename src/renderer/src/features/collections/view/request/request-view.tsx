@@ -39,7 +39,7 @@ function RequestView() {
         <ResizablePanel minSize={25} className="border rounded-lg m-2">
           <ScrollArea className="h-full">
             <CodeMirror
-              value="{}"
+              value=""
               height="auto"
               theme={editorTheme}
               extensions={[json()]}

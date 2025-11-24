@@ -2,6 +2,7 @@ import type { BaseAuditModel } from './base';
 import type { Header } from './common';
 
 export const CONNECTION_TYPE = {
+  RAW_WEBSOCKET: 'RAW_WEBSOCKET',
   STOMP: 'STOMP',
   SOCKETIO: 'SOCKETIO',
 } as const;

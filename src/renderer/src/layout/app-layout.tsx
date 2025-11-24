@@ -1,10 +1,4 @@
-import {
-  APP_BREADCRUMB_OFFSET,
-  FOOTER_BOTTOM_OFFSET,
-  SIDEBAR_TOP_OFFSET,
-  SIDEBAR_WIDTH,
-  SIDEBAR_WORKSPACE_OFFSET,
-} from '@/constants/layout-constants';
+import { SIDEBAR_TOP_OFFSET, SIDEBAR_WIDTH, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { Outlet } from 'react-router';
 
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
@@ -29,17 +23,11 @@ function AppLayout() {
         <SidebarInset>
           <AppTabs />
           <AppBreadCrumb />
-          {/* <ScrollArea
-            style={{
-              height: `calc(100vh - ${SIDEBAR_TOP_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET} - ${APP_BREADCRUMB_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
-            }}
-          >
-            <Outlet></Outlet>
-          </ScrollArea> */}
           <div
             style={{
-              height: `calc(100% - ${SIDEBAR_TOP_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET} - ${APP_BREADCRUMB_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
+              height: `calc(100% - ${SIDEBAR_TOP_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET})`,
             }}
+            className="flex flex-col overflow-hidden"
           >
             <Outlet />
           </div>
