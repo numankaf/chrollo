@@ -1,3 +1,4 @@
+import { URL_SCHEME_COLORS } from '@/constants/color-constants';
 import StompHeaders from '@/features/connections/components/stomp/stomp-headers';
 import StompSettings from '@/features/connections/components/stomp/stomp-settings';
 import StompSubsciptions from '@/features/connections/components/stomp/stomp-subscriptions';
@@ -5,11 +6,12 @@ import { STOMP_DEFAULT_VALUES, STOMP_VALIDATION_SCHEMA } from '@/features/connec
 import useConnectionStore from '@/store/connection-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDownIcon } from 'lucide-react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
+import { WS_URL_SCHEME } from '@/types/connection';
 import { Button } from '@/components/common/button';
 import {
   DropdownMenu,
@@ -47,25 +49,55 @@ function StompConnectionView() {
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <div className="flex gap-2 mx-2">
-            <InputGroup>
-              <InputGroupAddon>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <InputGroupButton variant="ghost" className="pr-1.5! text-foreground">
-                      https:// <ChevronDownIcon className="size-3" />
-                    </InputGroupButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem>http://</DropdownMenuItem>
-                    <DropdownMenuItem>https://</DropdownMenuItem>
-                    <DropdownMenuItem>ws://</DropdownMenuItem>
-                    <DropdownMenuItem>wss://</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </InputGroupAddon>
-              <InputGroupInput placeholder="Enter URL" className="pl-0.5!" />
-            </InputGroup>
-            <Button onClick={() => form.handleSubmit(onSubmit)}>Connect</Button>
+            <Controller
+              name="prefix"
+              control={form.control}
+              render={({ field }) => (
+                <InputGroup>
+                  <InputGroupAddon>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <InputGroupButton
+                          variant="ghost"
+                          className="-ml-1.5 pr-1.5! w-20 flex items-center justify-between text-foreground h-full border-r"
+                        >
+                          <span className={URL_SCHEME_COLORS[field.value]}>{field.value}</span>
+                          <ChevronDownIcon className="size-3" />
+                        </InputGroupButton>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {Object.values(WS_URL_SCHEME).map((scheme) => (
+                          <DropdownMenuItem
+                            key={scheme}
+                            onClick={() => field.onChange(scheme)}
+                            className={URL_SCHEME_COLORS[scheme]}
+                          >
+                            {scheme}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </InputGroupAddon>
+
+                  <Controller
+                    name="url"
+                    control={form.control}
+                    render={({ field: urlField, fieldState }) => (
+                      <InputGroupInput
+                        placeholder="Enter URL"
+                        className="pl-1.5!"
+                        value={urlField.value}
+                        onChange={urlField.onChange}
+                        aria-invalid={!!fieldState.error}
+                      />
+                    )}
+                  />
+                </InputGroup>
+              )}
+            />
+            <Button onClick={() => form.handleSubmit(onSubmit)} disabled={!form.formState.isValid}>
+              Connect
+            </Button>
           </div>
           <Tabs
             defaultValue="settings"

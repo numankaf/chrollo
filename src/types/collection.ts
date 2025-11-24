@@ -1,6 +1,6 @@
-import type { BaseAuditModel } from './base';
-import type { Header, Scripts } from './common';
-import type { EnvironmentVariable } from './environment';
+import type { BaseAuditModel } from '@/types/base';
+import type { Header, Scripts } from '@/types/common';
+import type { EnvironmentVariable } from '@/types/environment';
 
 export const COLLECTION_TYPE = {
   COLLECTION: 'COLLECTION',

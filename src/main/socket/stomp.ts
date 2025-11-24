@@ -1,8 +1,9 @@
+import { getMainWindow } from '@/main/index';
 import { Client, StompHeaders, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
-import { getMainWindow } from './index';
+import type { StompSettings } from '@/types/connection';
 
 let stompClient: Client | null = null;
 
@@ -11,7 +12,7 @@ export function initStompIpc() {
 
   if (!mainWindow) return;
 
-  ipcMain.on('stomp:connect', (_, url: string) => {
+  ipcMain.on('stomp:connect', (_, url: string, settings: StompSettings) => {
     if (stompClient) stompClient.deactivate();
 
     stompClient = new Client({

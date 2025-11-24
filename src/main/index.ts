@@ -1,9 +1,9 @@
 import { join } from 'path';
+import { initStompIpc } from '@/main/socket/stomp';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 
 import icon from '../../resources/app-logo.png?asset';
-import { initStompIpc } from './ipc-socket';
 
 let mainWindow: BrowserWindow;
 

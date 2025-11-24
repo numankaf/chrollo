@@ -1,5 +1,5 @@
-import type { BaseAuditModel } from './base';
-import type { Header } from './common';
+import type { BaseAuditModel } from '@/types/base';
+import type { Header } from '@/types/common';
 
 export const CONNECTION_TYPE = {
   RAW_WEBSOCKET: 'RAW_WEBSOCKET',

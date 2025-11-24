@@ -1,5 +1,5 @@
-import type { BaseModel } from './base';
-import type { Request } from './collection';
+import type { BaseModel } from '@/types/base';
+import type { Request } from '@/types/collection';
 
 export interface RequestHistory extends BaseModel {
   modelType: 'REQUEST_HISTORY';

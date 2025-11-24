@@ -4,8 +4,8 @@ import type { Header } from '@/types/common';
 import { CONNECTION_TYPE } from '@/types/connection';
 
 const STOMP_VALIDATION_SCHEMA = z.object({
-  // prefix: z.string(),
-  // url: z.string().min(1, 'URL is required.'),
+  prefix: z.string(),
+  url: z.string().min(1, 'URL is required.'),
   settings: z.object({
     connectionTimeout: z
       .number('Connection timeout is required.')

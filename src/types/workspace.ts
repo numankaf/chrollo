@@ -1,4 +1,4 @@
-import type { BaseAuditModel } from './base';
+import type { BaseAuditModel } from '@/types/base';
 
 export const WORKSPACE_TYPE = {
   PUBLIC: 'PUBLIC',
