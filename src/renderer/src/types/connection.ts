@@ -9,12 +9,22 @@ export const CONNECTION_TYPE = {
 
 export type ConnectionType = (typeof CONNECTION_TYPE)[keyof typeof CONNECTION_TYPE];
 
+export const WS_URL_SCHEME = {
+  WS: 'ws://',
+  WSS: 'wss://',
+  HTTP: 'http://',
+  HTTPS: 'https://',
+} as const;
+
+export type WsUrlScheme = (typeof WS_URL_SCHEME)[keyof typeof WS_URL_SCHEME];
+
 export interface Connection extends BaseAuditModel {
   modelType: 'CONNECTION';
   workspaceId: string;
   connectionType: ConnectionType;
   name: string;
-  url?: string;
+  prefix: WsUrlScheme;
+  url: string;
 }
 
 export interface StompSettings {
