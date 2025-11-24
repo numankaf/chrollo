@@ -18,7 +18,7 @@ function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'F5') {
         e.preventDefault();
-        window.electron?.ipcRenderer?.send('window:reload');
+        window.api?.view?.reload();
       }
     };
 

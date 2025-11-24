@@ -3,64 +3,108 @@ import { Client, StompHeaders, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
-import type { StompSettings } from '@/types/connection';
+import type { StompConnection } from '@/types/connection';
 
-let stompClient: Client | null = null;
+const stompClients: Record<string, Client> = {};
 
 export function initStompIpc() {
   const mainWindow = getMainWindow();
-
   if (!mainWindow) return;
 
-  ipcMain.on('stomp:connect', (_, url: string, settings: StompSettings) => {
-    if (stompClient) stompClient.deactivate();
+  // ------------------------------
+  // CONNECT
+  // ------------------------------
+  ipcMain.on('stomp:connect', (_, connection: StompConnection) => {
+    const { id } = connection;
 
-    stompClient = new Client({
-      webSocketFactory: () => new SockJS(url),
-      reconnectDelay: 5000,
+    // Close existing one with the same id
+    if (stompClients[id]) {
+      stompClients[id].deactivate();
+    }
+
+    const client = new Client({
+      webSocketFactory: () => new SockJS(connection.prefix + connection.url),
+      ...connection.settings,
       debug: (msg) => {
-        console.log(msg);
-        mainWindow.webContents.send('console-log', msg);
+        console.log(`[${id}] ${msg}`);
+        mainWindow.webContents.send('console-log', `[${id}] ${msg}`);
       },
     });
 
-    stompClient.onStompError = (frame) => {
-      console.error('❌ STOMP Error', frame.headers['message']);
-      mainWindow.webContents.send('console-log', `❌ STOMP Error ${frame.headers['message']}`);
+    client.onStompError = (frame) => {
+      const errorMsg = `❌ STOMP Error (${id}): ${frame.headers['message']}`;
+      console.error(errorMsg);
+      mainWindow.webContents.send('console-log', errorMsg);
     };
 
-    stompClient.activate();
+    client.activate();
+    stompClients[id] = client;
   });
 
-  ipcMain.on('stomp:subscribe', (_, topic: string) => {
-    if (stompClient && stompClient.connected && stompClient.active)
-      stompClient.subscribe(topic, (msg: Message) => {
-        console.log('📩 Received:', msg.body);
+  // ------------------------------
+  // SUBSCRIBE
+  // ------------------------------
+  ipcMain.on('stomp:subscribe', (_, data: { id: string; topic: string }) => {
+    const client = stompClients[data.id];
+    if (client && client.connected && client.active) {
+      client.subscribe(data.topic, (msg: Message) => {
+        console.log(`📩 [${data.id}] Received:`, msg.body);
+        mainWindow.webContents.send('stomp:message', {
+          connectionId: data.id,
+          topic: data.topic,
+          body: msg.body,
+        });
       });
-  });
-
-  ipcMain.on('stomp:unsubscribe', (_, topic: string) => {
-    if (stompClient) {
-      stompClient?.unsubscribe(topic);
     }
   });
 
-  ipcMain.on('stomp:disconnect', () => {
-    if (stompClient) {
-      stompClient?.deactivate();
+  // ------------------------------
+  // UNSUBSCRIBE
+  // ------------------------------
+  ipcMain.on('stomp:unsubscribe', (_, data: { id: string; topic: string }) => {
+    const client = stompClients[data.id];
+    if (client) {
+      client.unsubscribe(data.topic);
     }
   });
 
-  ipcMain.on('stomp:send', (_, data: { destination: string; body: string; headers?: StompHeaders }) => {
-    if (stompClient && stompClient.connected) {
-      stompClient.publish({
+  // ------------------------------
+  // SEND
+  // ------------------------------
+  ipcMain.on('stomp:send', (_, data: { id: string; destination: string; body: string; headers?: StompHeaders }) => {
+    const client = stompClients[data.id];
+    if (client && client.connected) {
+      client.publish({
         destination: data.destination,
         body: data.body,
         headers: data.headers,
       });
-      mainWindow.webContents.send('console-log', `📤 Message sent: ${data.body}`);
+      mainWindow.webContents.send('console-log', `📤 [${data.id}] Message sent: ${data.body}`);
     } else {
-      mainWindow.webContents.send('console-log', '❌ STOMP not connected');
+      mainWindow.webContents.send('console-log', `❌ STOMP (${data.id}) not connected`);
     }
+  });
+
+  // ------------------------------
+  // DISCONNECT
+  // ------------------------------
+  ipcMain.on('stomp:disconnect', (_, id: string) => {
+    const client = stompClients[id];
+    if (client) {
+      client.deactivate();
+      delete stompClients[id];
+      mainWindow.webContents.send('console-log', `🔌 Disconnected STOMP (${id})`);
+    }
+  });
+
+  // ------------------------------
+  // DISCONNECT ALL
+  // ------------------------------
+  ipcMain.on('stomp:disconnectAll', () => {
+    Object.entries(stompClients).forEach(([id, client]) => {
+      client.deactivate();
+      delete stompClients[id];
+    });
+    mainWindow.webContents.send('console-log', `🔌 All STOMP connections closed`);
   });
 }

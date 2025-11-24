@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import ReactCompiler from 'babel-plugin-react-compiler';
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
+import svgr from 'vite-plugin-svgr';
 
 import packageJson from './package.json';
 
@@ -29,7 +30,8 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@/types': resolve('src/types'),
+        '@/resources': path.resolve(__dirname, 'resources'),
+        '@/types': path.resolve(__dirname, 'src/types'),
         '@': path.resolve(__dirname, 'src/renderer/src'),
       },
     },
@@ -51,6 +53,7 @@ export default defineConfig({
         },
       }),
       tailwindcss(),
+      svgr(),
     ],
   },
 });

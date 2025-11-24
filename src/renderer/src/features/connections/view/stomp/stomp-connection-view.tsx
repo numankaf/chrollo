@@ -1,8 +1,8 @@
 import { URL_SCHEME_COLORS } from '@/constants/color-constants';
+import { STOMP_DEFAULT_VALUES, STOMP_VALIDATION_SCHEMA } from '@/constants/connection/stomp/stomp-schema';
 import StompHeaders from '@/features/connections/components/stomp/stomp-headers';
 import StompSettings from '@/features/connections/components/stomp/stomp-settings';
 import StompSubsciptions from '@/features/connections/components/stomp/stomp-subscriptions';
-import { STOMP_DEFAULT_VALUES, STOMP_VALIDATION_SCHEMA } from '@/features/connections/constants/stomp/stomp-schema';
 import useConnectionStore from '@/store/connection-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDownIcon } from 'lucide-react';
@@ -39,7 +39,7 @@ function StompConnectionView() {
   });
 
   function onSubmit(data: z.infer<typeof STOMP_VALIDATION_SCHEMA>) {
-    console.log(data);
+    window.api.stomp.connect(data);
   }
 
   if (!connection) return <div>Connection not found</div>;

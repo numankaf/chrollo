@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Search } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/common/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/common/input-group';
 
 interface SearchBarProps {
   placeholder: string;
-  onSearchChange: (value: string) => void;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   searchIcon?: React.ReactNode;
   className?: string;
 }
@@ -18,17 +18,15 @@ function SearchBar({
   className,
 }: SearchBarProps) {
   return (
-    <div className={cn('flex items-center justify-between', className)}>
-      <div className="relative w-full">
-        <span className="absolute left-3 top-2 z-10 text-muted-foreground">{searchIcon}</span>
-        <Input
-          type="text"
-          placeholder={placeholder}
-          className="pl-8 pr-3 text-sm! bg-background shadow-none h-7!"
-          onChange={(e) => onSearchChange?.(e.target.value)}
-        />
-      </div>
-    </div>
+    <InputGroup className={cn('h-7!', className)}>
+      <InputGroupInput
+        className="text-sm! bg-background shadow-none"
+        type="text"
+        placeholder={placeholder}
+        onChange={(e) => onSearchChange?.(e)}
+      />
+      <InputGroupAddon>{searchIcon}</InputGroupAddon>
+    </InputGroup>
   );
 }
 

@@ -59,12 +59,12 @@ app.whenReady().then(() => {
 
   createWindow();
 
-  ipcMain.on('window:minimize', (event) => {
+  ipcMain.on('view:minimize', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.minimize();
   });
 
-  ipcMain.on('window:maximize', (event) => {
+  ipcMain.on('view:maximize', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return;
 
@@ -75,12 +75,12 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.on('window:close', (event) => {
+  ipcMain.on('view:close', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.close();
   });
 
-  ipcMain.on('window:reload', () => {
+  ipcMain.on('view:reload', () => {
     const win = BrowserWindow.getFocusedWindow();
     if (win) win.reload();
   });

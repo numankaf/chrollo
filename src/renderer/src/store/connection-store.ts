@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { CONNECTION_TYPE, type Connection } from '@/types/connection';
+import { DEFAULT_WORKSPACE_ID } from '@/types/workspace';
 
 interface ConnectionStore {
   connections: Connection[];
@@ -18,8 +19,9 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
   connections: [
     {
       id: nanoid(8),
-      workspaceId: nanoid(8),
+      workspaceId: DEFAULT_WORKSPACE_ID,
       name: 'ws-connection-tukks',
+      prefix: 'ws://',
       modelType: BASE_MODEL_TYPE.CONNECTION,
       connectionType: CONNECTION_TYPE.STOMP,
     },
