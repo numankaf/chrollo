@@ -1,4 +1,4 @@
-import type { BaseAuditModel } from '@/types/base';
+import { type BaseAuditModel } from '@/types/base';
 
 export const DEFAULT_WORKSPACE_ID = 'default-workspace-id';
 
@@ -21,5 +21,10 @@ export interface Workspace extends BaseAuditModel {
   modelType: 'WORKSPACE';
   name: string;
   type: WorkspaceType;
-  overview: string;
+  description: string | null;
 }
+
+export type WorkspaceFile = {
+  workspaces: Workspace[];
+  selectedWorkspaceId: string | null;
+};

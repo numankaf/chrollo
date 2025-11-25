@@ -3,6 +3,7 @@ import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
 import type { StompConnection } from '@/types/connection';
+import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 const api = {
   view: {
@@ -25,6 +26,11 @@ const api = {
 
     send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) =>
       ipcRenderer.send('stomp:send', data),
+  },
+  workspace: {
+    load: () => ipcRenderer.invoke('workspaces:load') as Promise<WorkspaceFile>,
+    save: (selectedWorkspaceId: string, workspaces: Workspace[]) =>
+      ipcRenderer.invoke('workspaces:save', { selectedWorkspaceId, workspaces }),
   },
 };
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -17,6 +17,10 @@ declare global {
         unsubscribe: (id: string, topic: string) => void;
         send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) => void;
       };
+      workspace: {
+        load: () => Promise<WorkspaceFile>;
+        save: (selectedWorkspaceId: string, workspaces: Workspace[]) => Promise<void>;
+      };
     };
     electron: ElectronAPI;
   }

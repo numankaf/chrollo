@@ -1,8 +1,8 @@
 import type { WsUrlScheme } from '@/types/connection';
 
 export const URL_SCHEME_COLORS: Record<WsUrlScheme, string> = {
-  'ws://': 'text-cyan-500',
-  'wss://': 'text-blue-500',
-  'http://': 'text-yellow-500',
-  'https://': 'text-green-500',
+  'ws://': 'text-cyan-600',
+  'wss://': 'text-blue-600',
+  'http://': 'text-yellow-600',
+  'https://': 'text-green-600',
 };

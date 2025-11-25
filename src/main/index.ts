@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { initStompIpc } from '@/main/socket/stomp';
+import { initWorkspaceIpc } from '@/main/workspace/workspace';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 
@@ -86,6 +87,7 @@ app.whenReady().then(() => {
   });
 
   initStompIpc();
+  initWorkspaceIpc();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

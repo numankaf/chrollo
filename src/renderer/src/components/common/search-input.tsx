@@ -20,7 +20,7 @@ function SearchBar({
   return (
     <InputGroup className={cn('h-7!', className)}>
       <InputGroupInput
-        className="text-sm! bg-background shadow-none"
+        className="text-sm! shadow-none"
         type="text"
         placeholder={placeholder}
         onChange={(e) => onSearchChange?.(e)}
