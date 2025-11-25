@@ -16,7 +16,7 @@ import {
   SidebarRail,
 } from '@/components/common/sidebar';
 import AddConnectionPanel from '@/components/connection/add-connection-panel';
-import { WebSocketIcon } from '@/components/icon/websocket-icon';
+import { StompIcon } from '@/components/icon/stomp-icon';
 
 function ConnectionSidebar() {
   const { openAndNavigateToTab } = useTabNavigation();
@@ -53,7 +53,7 @@ function ConnectionSidebar() {
                   key={item.id}
                   onClick={() => openAndNavigateToTab(item)}
                 >
-                  <WebSocketIcon />
+                  <StompIcon />
                   <span>{item.name}</span>
                 </SidebarMenuButton>
               ))}

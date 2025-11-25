@@ -1,31 +1,20 @@
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { BASE_MODEL_TYPE } from '@/types/base';
-import { CONNECTION_TYPE, type Connection } from '@/types/connection';
-import { DEFAULT_WORKSPACE_ID } from '@/types/workspace';
+import { type Connection } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];
   selectedConnection: Connection | null;
   getConnection: (id: string) => Connection | undefined;
-  createConnection: (connection: Connection) => void;
-  updateConnection: (connection: Connection) => void;
+  createConnection: (connection: Connection) => Connection;
+  updateConnection: (connection: Connection) => Connection;
   deleteConnection: (id: string) => void;
   selectConnection: (connection: Connection | null) => void;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
-  connections: [
-    {
-      id: nanoid(8),
-      workspaceId: DEFAULT_WORKSPACE_ID,
-      name: 'ws-connection-tukks',
-      prefix: 'ws://',
-      modelType: BASE_MODEL_TYPE.CONNECTION,
-      connectionType: CONNECTION_TYPE.STOMP,
-    },
-  ],
+  connections: [],
   selectedConnection: null,
   getConnection: (id: string) => {
     return get().connections.find((c) => c.id === id)!;
@@ -36,16 +25,28 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       connections: [...state.connections, newConnection],
       selectedConnection: newConnection,
     }));
+
+    return newConnection;
   },
 
   updateConnection: (connection) => {
-    set((state) => ({
-      connections: state.connections.map((c) => (c.id === connection.id ? { ...c, ...connection } : c)),
-      selectedConnection:
-        state.selectedConnection?.id === connection.id
-          ? { ...state.selectedConnection, ...connection }
-          : state.selectedConnection,
-    }));
+    let updatedConnection = connection;
+
+    set((state) => {
+      const existing = state.connections.find((c) => c.id === connection.id);
+
+      if (existing) {
+        updatedConnection = { ...existing, ...connection };
+      }
+
+      return {
+        connections: state.connections.map((c) => (c.id === connection.id ? updatedConnection : c)),
+        selectedConnection:
+          state.selectedConnection?.id === connection.id ? updatedConnection : state.selectedConnection,
+      };
+    });
+
+    return updatedConnection;
   },
 
   deleteConnection: (id) => {

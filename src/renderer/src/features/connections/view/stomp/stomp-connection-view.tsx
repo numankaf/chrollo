@@ -47,8 +47,8 @@ function StompConnectionView() {
   return (
     <div className="h-full">
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
-          <div className="flex gap-2 mx-2">
+        <form className="h-full" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <div className="flex gap-2 m-2">
             <Controller
               name="prefix"
               control={form.control}
@@ -103,7 +103,7 @@ function StompConnectionView() {
             defaultValue="settings"
             className="w-full mt-3"
             variant="link"
-            style={{ height: 'calc(100% - 6.25rem)' }}
+            style={{ height: 'calc(100% - 6.5rem)' }}
           >
             <TabsList className="mx-2">
               <TabsTrigger value="settings">Settings</TabsTrigger>

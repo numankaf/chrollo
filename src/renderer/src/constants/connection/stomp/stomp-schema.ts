@@ -1,7 +1,8 @@
 import * as z from 'zod';
 
+import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Header } from '@/types/common';
-import { CONNECTION_TYPE } from '@/types/connection';
+import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection } from '@/types/connection';
 
 const STOMP_VALIDATION_SCHEMA = z.object({
   prefix: z.string(),
@@ -35,11 +36,11 @@ const STOMP_VALIDATION_SCHEMA = z.object({
   }),
 });
 
-const STOMP_DEFAULT_VALUES = {
-  name: 'New STOMP Connection',
+const STOMP_DEFAULT_VALUES: Omit<StompConnection, 'id' | 'name' | 'workspaceId'> = {
   connectionType: CONNECTION_TYPE.STOMP,
-  prefix: 'ws://',
+  prefix: WS_URL_SCHEME.WS,
   url: '',
+  modelType: BASE_MODEL_TYPE.CONNECTION,
   settings: {
     connectionTimeout: 0,
     reconnectDelay: 5000,

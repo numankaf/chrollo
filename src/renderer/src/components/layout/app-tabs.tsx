@@ -65,10 +65,7 @@ function AppTabs() {
   };
 
   return (
-    <div
-      style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }}
-      className="w-full top-[var(--sidebar-top-offset)] border-b-1 px-1"
-    >
+    <div style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }} className="w-full top-(--sidebar-top-offset) border-b px-1">
       <div style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }} className="flex items-center justify-between">
         <div
           ref={scrollRef}
@@ -80,7 +77,7 @@ function AppTabs() {
             return (
               <div className="h-full flex" key={tab.id} data-tab-id={tab.id}>
                 <div
-                  className={`w-[160px] p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
+                  className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
                     openAndNavigateToTab(tab.item);
@@ -114,13 +111,13 @@ function AppTabs() {
           })}
 
           {!isOverflowing && (
-            <Button variant="ghost" size="sm" className="text-muted-foreground flex-shrink-0" onClick={handleAddTab}>
+            <Button variant="ghost" size="sm" className="text-muted-foreground shrink-0" onClick={handleAddTab}>
               <Plus />
             </Button>
           )}
         </div>
 
-        <div className="flex items-center gap-1 h-full flex-shrink-0">
+        <div className="flex items-center gap-1 h-full shrink-0">
           {isOverflowing && (
             <>
               <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={handleAddTab}>
