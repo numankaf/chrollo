@@ -46,7 +46,11 @@ function EnvironmentSelector() {
 
       <PopoverContent align="end" className="w-[320px] p-2">
         <div className="flex items-center justify-between p-1 gap-1">
-          <SearchBar placeholder="Search environment" className="flex-1" onSearchChange={(value) => setSearch(value)} />
+          <SearchBar
+            placeholder="Search environment"
+            className="flex-1"
+            onSearchChange={(e) => setSearch(e.target.value)}
+          />
           <Button size="sm" variant="ghost">
             <Plus size={16} />
           </Button>

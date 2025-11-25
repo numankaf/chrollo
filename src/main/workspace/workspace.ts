@@ -6,7 +6,13 @@ import { app, ipcMain } from 'electron';
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { DEFAULT_WORKSPACE_ID, WORKSPACE_TYPE, type Workspace, type WorkspaceFile } from '@/types/workspace';
 
-const workspaceFilePath = path.join(app.getPath('userData'), 'workspaces.json');
+const storageDir = path.join(app.getPath('userData'), 'appdata');
+
+if (!fs.existsSync(storageDir)) {
+  fs.mkdirSync(storageDir, { recursive: true });
+}
+
+const workspaceFilePath = path.join(storageDir, 'workspaces.json');
 
 export function loadWorkspaces(): WorkspaceFile {
   if (fs.existsSync(workspaceFilePath)) {

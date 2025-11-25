@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { Container, FolderOpen, GalleryVerticalEnd, History, Zap } from 'lucide-react';
+import { Container, FolderOpen, GalleryVerticalEnd, LayoutDashboard, Zap } from 'lucide-react';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
@@ -21,6 +21,11 @@ function TabItemContent(item: TabItem) {
       name = item.name;
       break;
 
+    case BASE_MODEL_TYPE.WORKSPACE:
+      Icon = <LayoutDashboard size={16} className="shrink-0" />;
+      name = item.name;
+      break;
+
     case BASE_MODEL_TYPE.COLLECTION:
       name = item.name;
       switch (item.collectionItemType) {
@@ -36,10 +41,10 @@ function TabItemContent(item: TabItem) {
       }
       break;
 
-    case BASE_MODEL_TYPE.REQUEST_HISTORY:
-      Icon = <History size={16} color="var(--color-amber-500)" className="shrink-0" />;
-      name = item.request?.name ?? 'Unnamed Request';
-      break;
+    // case BASE_MODEL_TYPE.REQUEST_HISTORY:
+    //   Icon = <History size={16} color="var(--color-amber-500)" className="shrink-0" />;
+    //   name = item.request?.name ?? 'Unnamed Request';
+    //   break;
   }
 
   return (

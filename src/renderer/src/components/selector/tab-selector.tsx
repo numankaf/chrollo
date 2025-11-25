@@ -32,9 +32,9 @@ function TabSelector() {
           <ChevronDown />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[240px] p-2!">
+      <PopoverContent align="end" className="w-60 p-2!">
         <div className="flex items-center justify-between p-1 gap-1">
-          <SearchBar placeholder="Search tabs" className="flex-1" onSearchChange={(value) => setSearch(value)} />
+          <SearchBar placeholder="Search tabs" className="flex-1" onSearchChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="mt-3 space-y-1 text-sm">
           <ScrollArea>

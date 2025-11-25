@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { STOMP_DEFAULT_VALUES } from '@/constants/connection/stomp/stomp-schema';
 import useConnectionStore from '@/store/connection-store';
+import useWorkspaceStore from '@/store/workspace-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
@@ -9,7 +10,6 @@ import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
-import { DEFAULT_WORKSPACE_ID } from '@/types/workspace';
 import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import {
@@ -43,6 +43,11 @@ function AddConnectionFormContent({
       createConnection: state.createConnection,
     }))
   );
+  const { selectedWorkspace } = useWorkspaceStore(
+    useShallow((state) => ({
+      selectedWorkspace: state.selectedWorkspace,
+    }))
+  );
 
   const formSchema = z.object({
     name: z.string().min(1, 'Connection name is required'),
@@ -56,6 +61,9 @@ function AddConnectionFormContent({
   });
 
   function onSubmit(values: { name: string }) {
+    if (!selectedWorkspace) {
+      return;
+    }
     try {
       switch (connectionType) {
         case CONNECTION_TYPE.RAW_WEBSOCKET:
@@ -65,7 +73,7 @@ function AddConnectionFormContent({
           const connectionPayload: StompConnection = {
             id: nanoid(8),
             name: values.name,
-            workspaceId: DEFAULT_WORKSPACE_ID,
+            workspaceId: selectedWorkspace?.id,
             ...STOMP_DEFAULT_VALUES,
           };
 
