@@ -25,7 +25,6 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
     const newConnection = { ...connection, id: nanoid(8) };
     set((state) => ({
       connections: [...state.connections, newConnection],
-      selectedConnection: newConnection,
     }));
 
     return newConnection;
@@ -43,8 +42,6 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
       return {
         connections: state.connections.map((c) => (c.id === connection.id ? updatedConnection : c)),
-        selectedConnection:
-          state.selectedConnection?.id === connection.id ? updatedConnection : state.selectedConnection,
       };
     });
 
