@@ -7,6 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { type CollectionItem } from '@/types/collection';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/common/breadcrumb';
+import SaveItemButton from '@/components/app/save-item-button';
 import TabItemContent from '@/components/tab/tab-item-content';
 
 function AppBreadcrumb() {
@@ -39,18 +40,21 @@ function AppBreadcrumb() {
   const breadcrumbItems = getParentChain(item);
 
   return (
-    <Breadcrumb className="flex items-center p-3" style={{ height: `${APP_BREADCRUMB_OFFSET}` }}>
-      <BreadcrumbList>
-        {breadcrumbItems.map((crumb, index) => (
-          <Fragment key={crumb.id}>
-            <BreadcrumbItem>
-              <TabItemContent {...crumb} />
-            </BreadcrumbItem>
-            {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
-          </Fragment>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div className="flex items-center justify-between pr-2">
+      <Breadcrumb className="flex items-center p-3" style={{ height: `${APP_BREADCRUMB_OFFSET}` }}>
+        <BreadcrumbList>
+          {breadcrumbItems.map((crumb, index) => (
+            <Fragment key={crumb.id}>
+              <BreadcrumbItem>
+                <TabItemContent {...crumb} />
+              </BreadcrumbItem>
+              {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
+            </Fragment>
+          ))}
+        </BreadcrumbList>
+      </Breadcrumb>
+      <SaveItemButton />
+    </div>
   );
 }
 

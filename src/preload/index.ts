@@ -2,7 +2,7 @@ import { electronAPI } from '@electron-toolkit/preload';
 import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
-import type { StompConnection } from '@/types/connection';
+import type { Connection, ConnectionFile, StompConnection } from '@/types/connection';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 const api = {
@@ -30,7 +30,12 @@ const api = {
   workspace: {
     load: () => ipcRenderer.invoke('workspaces:load') as Promise<WorkspaceFile>,
     save: (selectedWorkspaceId: string, workspaces: Workspace[]) =>
-      ipcRenderer.invoke('workspaces:save', { selectedWorkspaceId, workspaces }),
+      ipcRenderer.invoke('workspaces:save', selectedWorkspaceId, workspaces),
+  },
+  connection: {
+    load: () => ipcRenderer.invoke('connections:load') as Promise<ConnectionFile>,
+    save: (selectedConnectionId: string, connections: Connection[]) =>
+      ipcRenderer.invoke('connections:save', selectedConnectionId, connections),
   },
 };
 // Use `contextBridge` APIs to expose Electron APIs to

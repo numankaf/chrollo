@@ -1,5 +1,7 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
+import type { Connection, ConnectionFile } from '@/types/connection';
+
 declare global {
   interface Window {
     api: {
@@ -20,6 +22,10 @@ declare global {
       workspace: {
         load: () => Promise<WorkspaceFile>;
         save: (selectedWorkspaceId: string, workspaces: Workspace[]) => Promise<void>;
+      };
+      connection: {
+        load: () => Promise<ConnectionFile>;
+        save: (selectedConnectionId: string | undefined, connections: Connection[]) => Promise<void>;
       };
     };
     electron: ElectronAPI;

@@ -1,10 +1,10 @@
+import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET, SIDEBAR_WIDTH, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
-import { use } from 'react';
 import { Outlet } from 'react-router';
 
-import AppLoader from '@/components/common/app-loader';
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
+import AppLoader from '@/components/app/app-loader';
 import AppBreadCrumb from '@/components/layout/app-breadcrumb';
 import Footer from '@/components/layout/app-footer';
 import { AppSidebar } from '@/components/layout/app-sidebar';

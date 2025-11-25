@@ -5,17 +5,19 @@ import { type Connection } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];
-  selectedConnection: Connection | null;
+  setConnections: (connections: Connection[]) => void;
   getConnection: (id: string) => Connection | undefined;
   createConnection: (connection: Connection) => Connection;
   updateConnection: (connection: Connection) => Connection;
   deleteConnection: (id: string) => void;
+  selectedConnection: Connection | null;
   selectConnection: (connection: Connection | null) => void;
+  saveConnection: (connection: Connection) => Promise<Connection>;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
   connections: [],
-  selectedConnection: null,
+  setConnections: (connections) => set({ connections }),
   getConnection: (id: string) => {
     return get().connections.find((c) => c.id === id)!;
   },
@@ -59,9 +61,19 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       return { connections: newConnections, selectedConnection: newSelected };
     });
   },
+  selectedConnection: null,
 
   selectConnection: (connection) => {
     set({ selectedConnection: connection });
+  },
+
+  saveConnection: async (connection) => {
+    const exists = get().connections.some((c) => c.id === connection.id);
+    const updatedConnection = exists ? get().updateConnection(connection) : get().createConnection(connection);
+
+    await window.api.connection.save(get().selectedConnection?.id, get().connections);
+
+    return updatedConnection;
   },
 }));
 

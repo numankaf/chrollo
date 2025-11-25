@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { URL_SCHEME_COLORS } from '@/constants/color-constants';
-import { STOMP_DEFAULT_VALUES, STOMP_VALIDATION_SCHEMA } from '@/constants/connection/stomp/stomp-schema';
+import { STOMP_VALIDATION_SCHEMA } from '@/constants/connection/stomp/stomp-schema';
 import StompHeaders from '@/features/connections/components/stomp/stomp-headers';
 import StompSettings from '@/features/connections/components/stomp/stomp-settings';
 import StompSubsciptions from '@/features/connections/components/stomp/stomp-subscriptions';
@@ -11,7 +12,7 @@ import { useParams } from 'react-router';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
-import { WS_URL_SCHEME } from '@/types/connection';
+import { WS_URL_SCHEME, type Connection } from '@/types/connection';
 import { Button } from '@/components/common/button';
 import {
   DropdownMenu,
@@ -25,18 +26,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ta
 
 function StompConnectionView() {
   const { id } = useParams<{ id: string }>();
-  const { getConnection } = useConnectionStore(
+  const { connection, updateConnection } = useConnectionStore(
     useShallow((state) => ({
-      getConnection: state.getConnection,
+      updateConnection: state.updateConnection,
+      connection: state.connections.find((c) => c.id === id),
     }))
   );
-
-  const connection = id ? getConnection(id) : undefined;
-
   const form = useForm<z.infer<typeof STOMP_VALIDATION_SCHEMA>>({
     resolver: zodResolver(STOMP_VALIDATION_SCHEMA),
-    defaultValues: STOMP_DEFAULT_VALUES,
+    defaultValues: { ...connection },
   });
+
+  //sync react hook form and zustand
+  useEffect(() => {
+    if (connection) {
+      form.reset(connection);
+    }
+    const subscription = form.watch((values) => {
+      updateConnection(values as Connection);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, updateConnection, connection]);
 
   function onSubmit(data: z.infer<typeof STOMP_VALIDATION_SCHEMA>) {
     window.api.stomp.connect(data);
@@ -95,9 +106,7 @@ function StompConnectionView() {
                 </InputGroup>
               )}
             />
-            <Button onClick={() => form.handleSubmit(onSubmit)} disabled={!form.formState.isValid}>
-              Connect
-            </Button>
+            <Button onClick={() => form.handleSubmit(onSubmit)}>Connect</Button>
           </div>
           <Tabs
             defaultValue="settings"

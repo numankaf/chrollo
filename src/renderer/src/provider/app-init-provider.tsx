@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
+import useConnectionStore from '@/store/connection-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -24,18 +25,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
       selectWorkspace: state.selectWorkspace,
     }))
   );
+
+  const { setConnections, selectConnection } = useConnectionStore(
+    useShallow((state) => ({
+      setConnections: state.setConnections,
+      selectConnection: state.selectConnection,
+    }))
+  );
   useEffect(() => {
     async function init() {
       try {
         setLoadingText('Loading workspaces...');
-        const data = await window.api.workspace.load();
-
-        const { workspaces, selectedWorkspaceId } = data;
-
+        const workspaceData = await window.api.workspace.load();
+        const { workspaces, selectedWorkspaceId } = workspaceData;
         setWorkspaces(workspaces);
-
         const selectedWorkspace = workspaces.find((w) => w.id === selectedWorkspaceId) ?? null;
         selectWorkspace(selectedWorkspace);
+
+        setLoadingText('Loading connections...');
+        const connectionData = await window.api.connection.load();
+        const { connections, selectedConnectionId } = connectionData;
+        setConnections(connections);
+        const selectedConnection = connections.find((c) => c.id === selectedConnectionId) ?? null;
+        selectConnection(selectedConnection);
+
         setAppLoaded(true);
       } catch (err) {
         console.error('Failed to load workspaces:', err);
@@ -43,7 +56,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     init();
-  }, [selectWorkspace, setWorkspaces]);
+  }, [selectConnection, selectWorkspace, setConnections, setWorkspaces]);
 
   return <AppContext.Provider value={{ appLoaded, loadingText }}>{children}</AppContext.Provider>;
 }

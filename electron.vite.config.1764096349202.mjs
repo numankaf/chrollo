@@ -1,0 +1,169 @@
+// electron.vite.config.ts
+import path, { resolve } from "path";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import ReactCompiler from "babel-plugin-react-compiler";
+import { defineConfig, externalizeDepsPlugin } from "electron-vite";
+import svgr from "vite-plugin-svgr";
+
+// package.json
+var package_default = {
+  name: "scope-ws-inspector",
+  description: "A Postman-like tool for inspecting, testing, and debugging WebSocket APIs, built specifically for the SCOPE Platform.",
+  private: true,
+  version: "0.0.0",
+  type: "module",
+  main: "./out/main/index.js",
+  scripts: {
+    lint: "eslint .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    typecheck: "pnpm typecheck:node && npm run typecheck:web",
+    format: "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'",
+    start: "electron-vite preview",
+    dev: "electron-vite dev",
+    build: "pnpm typecheck && electron-vite build",
+    postinstall: "electron-builder install-app-deps",
+    "build:unpack": "pnpm build && electron-builder --dir",
+    "build:win": "pnpm build && electron-builder --win",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:linux": "electron-vite build && electron-builder --linux"
+  },
+  dependencies: {
+    "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/lang-json": "^6.0.2",
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-avatar": "^1.1.11",
+    "@radix-ui/react-collapsible": "^1.1.12",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-switch": "^1.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-toggle": "^1.1.10",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "@stomp/stompjs": "^7.2.1",
+    "@tailwindcss/vite": "^4.1.17",
+    "@tanstack/react-table": "^8.21.3",
+    "@uiw/codemirror-theme-vscode": "^4.25.3",
+    "@uiw/codemirror-themes": "^4.25.3",
+    "@uiw/react-codemirror": "^4.25.3",
+    "class-variance-authority": "^0.7.1",
+    clsx: "^2.1.1",
+    dotenv: "^17.2.3",
+    "electron-updater": "^6.6.2",
+    "lucide-react": "^0.553.0",
+    nanoid: "^5.1.6",
+    "next-themes": "^0.4.6",
+    react: "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.66.1",
+    "react-resizable-panels": "^3.0.6",
+    "react-router": "^7.9.6",
+    "sockjs-client": "^1.6.1",
+    sonner: "^2.0.7",
+    "tailwind-merge": "^3.4.0",
+    tailwindcss: "^4.1.17",
+    zod: "^4.1.12",
+    zustand: "^5.0.8"
+  },
+  devDependencies: {
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
+    "@eslint/js": "^9.39.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "@types/sockjs-client": "^1.5.4",
+    "@vitejs/plugin-react": "^5.1.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    electron: "^39.2.3",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^4.0.1",
+    eslint: "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-check-file": "^3.3.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    globals: "^16.5.0",
+    prettier: "^3.6.2",
+    "tw-animate-css": "^1.4.0",
+    typescript: "~5.9.3",
+    "typescript-eslint": "^8.47.0",
+    vite: "^7.2.4",
+    "vite-plugin-svgr": "^4.5.0"
+  },
+  pnpm: {
+    onlyBuiltDependencies: [
+      "electron",
+      "esbuild"
+    ]
+  }
+};
+
+// electron.vite.config.ts
+var __electron_vite_injected_dirname = "C:\\Users\\smurf\\Desktop\\gitclones\\scope-ws-inspector";
+var DEFAULT_PORT = "3000";
+var electron_vite_config_default = defineConfig({
+  main: {
+    plugins: [externalizeDepsPlugin()],
+    resolve: {
+      alias: {
+        "@/types": resolve("src/types"),
+        "@/main": resolve("src/main")
+      }
+    }
+  },
+  preload: {
+    plugins: [externalizeDepsPlugin()],
+    resolve: {
+      alias: {
+        "@/types": resolve("src/types")
+      }
+    }
+  },
+  renderer: {
+    resolve: {
+      alias: {
+        "@/resources": path.resolve(__electron_vite_injected_dirname, "resources"),
+        "@/types": path.resolve(__electron_vite_injected_dirname, "src/types"),
+        "@": path.resolve(__electron_vite_injected_dirname, "src/renderer/src")
+      }
+    },
+    server: {
+      host: true,
+      port: parseInt(process.env.VITE_PORT ?? DEFAULT_PORT),
+      watch: {
+        usePolling: true
+      }
+    },
+    define: {
+      global: "globalThis",
+      APP_VERSION: JSON.stringify(package_default.version)
+    },
+    plugins: [
+      react({
+        babel: {
+          plugins: [ReactCompiler]
+        }
+      }),
+      tailwindcss(),
+      svgr()
+    ]
+  }
+});
+export {
+  electron_vite_config_default as default
+};

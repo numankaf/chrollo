@@ -48,3 +48,8 @@ export interface StompConnection extends Connection {
   headers: Map<string, Header>;
   subscriptions: StompSubscription[];
 }
+
+export type ConnectionFile = {
+  connections: Connection[];
+  selectedConnectionId: string | undefined;
+};

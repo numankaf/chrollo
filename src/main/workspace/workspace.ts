@@ -14,7 +14,7 @@ if (!fs.existsSync(storageDir)) {
 
 const workspaceFilePath = path.join(storageDir, 'workspaces.json');
 
-export function loadWorkspaces(): WorkspaceFile {
+function loadWorkspaces(): WorkspaceFile {
   if (fs.existsSync(workspaceFilePath)) {
     const data = fs.readFileSync(workspaceFilePath, 'utf-8');
     return JSON.parse(data) as WorkspaceFile;
@@ -37,7 +37,7 @@ export function loadWorkspaces(): WorkspaceFile {
   }
 }
 
-export function saveWorkspaces(workspaces: Workspace[], selectedWorkspaceId: string | null) {
+function saveWorkspaces(selectedWorkspaceId: string | null, workspaces: Workspace[]) {
   try {
     const fileData: WorkspaceFile = {
       workspaces,
