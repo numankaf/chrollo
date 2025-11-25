@@ -3,6 +3,7 @@ import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
 import type { Connection, ConnectionFile, StompConnection } from '@/types/connection';
+import type { Tab, TabsFile } from '@/types/layout';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 const api = {
@@ -36,6 +37,10 @@ const api = {
     load: () => ipcRenderer.invoke('connections:load') as Promise<ConnectionFile>,
     save: (selectedConnectionId: string, connections: Connection[]) =>
       ipcRenderer.invoke('connections:save', selectedConnectionId, connections),
+  },
+  tab: {
+    load: () => ipcRenderer.invoke('tabs:load') as Promise<TabsFile>,
+    save: (activateTabId: string, tabs: Tab[]) => ipcRenderer.invoke('tabs:save', activateTabId, tabs),
   },
 };
 // Use `contextBridge` APIs to expose Electron APIs to

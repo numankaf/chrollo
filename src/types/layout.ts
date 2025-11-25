@@ -9,3 +9,8 @@ export interface Tab {
   id: string;
   item: TabItem;
 }
+
+export type TabsFile = {
+  tabs: Tab[];
+  activeTabId: string | undefined;
+};

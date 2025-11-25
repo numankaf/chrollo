@@ -1,7 +1,8 @@
 import { join } from 'path';
-import { initConnectionIpc } from '@/main/connection/connection';
-import { initStompIpc } from '@/main/socket/stomp';
-import { initWorkspaceIpc } from '@/main/workspace/workspace';
+import { initConnectionIpc } from '@/main/connection/connection-ipc';
+import { initStompIpc } from '@/main/socket/stomp-ipc';
+import { initTabsIpc } from '@/main/tabs/tabs-ipc';
+import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 
@@ -88,6 +89,7 @@ app.whenReady().then(() => {
   });
 
   initStompIpc();
+  initTabsIpc();
   initWorkspaceIpc();
   initConnectionIpc();
 
@@ -96,6 +98,13 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+app.on('before-quit', () => {
+  // We can't directly access renderer state here, need to ask renderer
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('app:shutdown');
+  }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

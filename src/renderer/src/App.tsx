@@ -8,6 +8,7 @@ import HistoryView from '@/features/history/view/history-view';
 import HomeView from '@/features/home/view/home-view';
 import WorkspaceView from '@/features/workspaces/view/workspace-view';
 import AppLayout from '@/layout/app-layout';
+import useTabsStore from '@/store/tab-store';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 
 import './App.css';
@@ -21,8 +22,23 @@ function App() {
       }
     };
 
+    const handleTabsSave = () => {
+      const tabs = useTabsStore.getState().tabs;
+      const activeTab = useTabsStore.getState().activeTab;
+      window.api.tab.save(activeTab?.id, tabs);
+    };
+
+    window.electron.ipcRenderer.on('app:shutdown', handleTabsSave);
+
+    window.addEventListener('beforeunload', handleTabsSave);
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.electron.ipcRenderer.removeListener('app:shutdown', handleTabsSave);
+      window.removeEventListener('beforeunload', handleTabsSave);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const router = createHashRouter([

@@ -1,6 +1,8 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
 import type { Connection, ConnectionFile } from '@/types/connection';
+import type { TabsFile } from '@/types/layout';
+import type { WorkspaceFile } from '@/types/workspace';
 
 declare global {
   interface Window {
@@ -26,6 +28,10 @@ declare global {
       connection: {
         load: () => Promise<ConnectionFile>;
         save: (selectedConnectionId: string | undefined, connections: Connection[]) => Promise<void>;
+      };
+      tab: {
+        load: () => Promise<TabsFile>;
+        save: (activeTabId: string | undefined, tabs: Tab[]) => Promise<void>;
       };
     };
     electron: ElectronAPI;

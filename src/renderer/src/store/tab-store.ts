@@ -5,6 +5,7 @@ import type { Tab, TabItem } from '@/types/layout';
 
 interface TabsStore {
   tabs: Tab[];
+  setTabs: (tabs: Tab[]) => void;
   activeTab: Tab | null;
   addTab: (item: TabItem) => Tab;
   openTab: (item: TabItem) => Tab;
@@ -22,10 +23,10 @@ const scrollToTab = (tabId: string | null) => {
 
 const useTabsStore = create<TabsStore>()((set, get) => ({
   tabs: [],
+  setTabs: (tabs) => set({ tabs }),
   activeTab: null,
-
   addTab: (item) => {
-    const newTab: Tab = { id: nanoid(8), item };
+    const newTab: Tab = { id: item.id, item };
     set((state) => {
       const tabs = [...state.tabs, newTab];
       return { tabs, activeTab: newTab };

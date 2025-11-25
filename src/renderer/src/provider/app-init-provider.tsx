@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
 import useConnectionStore from '@/store/connection-store';
+import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -18,7 +19,12 @@ export const AppContext = createContext<AppContextValue>(initialState);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [appLoaded, setAppLoaded] = useState<boolean>(initialState.appLoaded);
   const [loadingText, setLoadingText] = useState<string>(initialState.loadingText);
-
+  const { setTabs, setActiveTab } = useTabsStore(
+    useShallow((state) => ({
+      setActiveTab: state.setActiveTab,
+      setTabs: state.setTabs,
+    }))
+  );
   const { setWorkspaces, selectWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
       setWorkspaces: state.setWorkspaces,
@@ -35,6 +41,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function init() {
       try {
+        setLoadingText('Loading tabs...');
+        const tabsData = await window.api.tab.load();
+        const { tabs, activeTabId } = tabsData;
+        setTabs(tabs);
+        if (activeTabId) setActiveTab(activeTabId);
+
         setLoadingText('Loading workspaces...');
         const workspaceData = await window.api.workspace.load();
         const { workspaces, selectedWorkspaceId } = workspaceData;
@@ -56,7 +68,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     init();
-  }, [selectConnection, selectWorkspace, setConnections, setWorkspaces]);
+  }, [selectConnection, selectWorkspace, setActiveTab, setConnections, setTabs, setWorkspaces]);
 
   return <AppContext.Provider value={{ appLoaded, loadingText }}>{children}</AppContext.Provider>;
 }
