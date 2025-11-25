@@ -38,9 +38,9 @@ function AddConnectionFormContent({
 }) {
   const { openAndNavigateToTab } = useTabNavigation();
 
-  const { createConnection } = useConnectionStore(
+  const { saveConnection } = useConnectionStore(
     useShallow((state) => ({
-      createConnection: state.createConnection,
+      saveConnection: state.saveConnection,
     }))
   );
   const { selectedWorkspace } = useWorkspaceStore(
@@ -60,7 +60,7 @@ function AddConnectionFormContent({
     },
   });
 
-  function onSubmit(values: { name: string }) {
+  async function onSubmit(values: { name: string }) {
     if (!selectedWorkspace) {
       return;
     }
@@ -77,7 +77,7 @@ function AddConnectionFormContent({
             ...STOMP_DEFAULT_VALUES,
           };
 
-          const newConnection = createConnection(connectionPayload);
+          const newConnection = await saveConnection(connectionPayload);
           openAndNavigateToTab(newConnection);
           onClose();
           break;
