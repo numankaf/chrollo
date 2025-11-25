@@ -25,7 +25,7 @@ function WorkspaceSelector() {
       <PopoverContent align="start" className="w-[320px] p-2!">
         <div className="flex items-center justify-between p-1 gap-1">
           <Button size="sm" variant="ghost">
-            <Plus className="w-4! h-4!" />
+            <Plus size={16} />
           </Button>
           <SearchBar placeholder="Search workspaces" className="flex-1" onSearchChange={() => {}} />
         </div>

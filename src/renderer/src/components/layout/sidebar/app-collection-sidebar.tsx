@@ -33,10 +33,10 @@ function OperationsButton({ item }: { item: CollectionItem }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="opacity-0 transition-opacity">
         <div className="cursor-pointer hover:text-primary hover:bg-transparent!" id="operations-trigger">
-          <Ellipsis className="w-4 h-4" />
+          <Ellipsis size={16} />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="right" align="start" className="bg-background w-[160px]">
+      <DropdownMenuContent side="right" align="start" className="bg-background w-40">
         {(item.collectionItemType === COLLECTION_TYPE.COLLECTION ||
           item.collectionItemType === COLLECTION_TYPE.FOLDER) && (
           <>
@@ -102,8 +102,8 @@ function Tree({ item }: { item: CollectionItem }) {
         }}
       >
         <div className="flex items-center justify-center gap-1">
-          {item.collectionItemType === COLLECTION_TYPE.FOLDER && <FolderOpen className="w-4 h-4" />}
-          {item.collectionItemType === COLLECTION_TYPE.REQUEST && <Zap className="w-4 h-4 text-green-500" />}
+          {item.collectionItemType === COLLECTION_TYPE.FOLDER && <FolderOpen size={16} />}
+          {item.collectionItemType === COLLECTION_TYPE.REQUEST && <Zap size={16} color="var(--color-green-500)" />}
           <span>{item.name}</span>
         </div>
         <OperationsButton item={item} />
@@ -124,10 +124,10 @@ function Tree({ item }: { item: CollectionItem }) {
         >
           <div className="flex items-center justify-center gap-1">
             <CollapsibleTrigger asChild onDoubleClick={(e) => e.preventDefault()}>
-              <ChevronRight id="chevron-icon" className="mx-1 transition-transform w-4 h-4" />
+              <ChevronRight id="chevron-icon" size={16} className="mx-1 transition-transform" />
             </CollapsibleTrigger>
-            {item.collectionItemType === COLLECTION_TYPE.FOLDER && <FolderOpen className="w-4 h-4" />}
-            {item.collectionItemType === COLLECTION_TYPE.COLLECTION && <GalleryVerticalEnd className="w-4 h-4" />}
+            {item.collectionItemType === COLLECTION_TYPE.FOLDER && <FolderOpen size={16} />}
+            {item.collectionItemType === COLLECTION_TYPE.COLLECTION && <GalleryVerticalEnd size={16} />}
             <span>{item.name}</span>
           </div>
           <OperationsButton item={item} />
@@ -161,7 +161,7 @@ function CollectionSidebar() {
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
             <Button size="sm" variant="ghost">
-              <Plus className="w-4 h-4" />
+              <Plus size={16} />
             </Button>
             <SearchBar placeholder="Search collections" className="flex-1" onSearchChange={() => {}} />
           </div>

@@ -138,7 +138,7 @@ function AddConnectionPanel() {
     <Popover>
       <PopoverTrigger>
         <Button size="sm" variant="ghost">
-          <Plus className="w-4! h-4!" />
+          <Plus size={16} />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-68 bg-background flex flex-wrap items-center justify-center gap-1.5">

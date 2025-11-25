@@ -31,9 +31,9 @@ function EnvironmentSelector() {
         if (open) setSearch('');
       }}
     >
-      <PopoverTrigger className="w-[160px]">
+      <PopoverTrigger className="w-40">
         <Button variant="ghost" className="text-sm justify-between" size="sm">
-          {!selectedEnvironment && <CircleOff className="w-4 h-4" />}
+          {!selectedEnvironment && <CircleOff size={16} />}
           <span
             className="overflow-x-auto no-scrollbar"
             title={selectedEnvironment ? selectedEnvironment.name : 'No Environment'}
@@ -48,7 +48,7 @@ function EnvironmentSelector() {
         <div className="flex items-center justify-between p-1 gap-1">
           <SearchBar placeholder="Search environment" className="flex-1" onSearchChange={(value) => setSearch(value)} />
           <Button size="sm" variant="ghost">
-            <Plus className="w-4 h-4" />
+            <Plus size={16} />
           </Button>
         </div>
 

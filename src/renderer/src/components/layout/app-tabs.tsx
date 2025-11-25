@@ -100,7 +100,7 @@ function AppTabs() {
                       closeTabAndNavigate(tab.id);
                     }}
                   >
-                    <X className="w-4 h-4" />
+                    <X size={16} />
                   </Button>
                 </div>
                 {index !== tabs.length - 1 && (

@@ -1,6 +1,6 @@
 import type { IconProps } from '@/types/common';
 
-function StompIcon({ size = 24, color = 'var(--color-blue-600)', ...props }: IconProps) {
+function StompIcon({ size = 24, color = 'var(--color-blue-900)', ...props }: IconProps) {
   return (
     <svg viewBox="0 0 32 32" width={size} height={size} fill={color} {...props}>
       <path

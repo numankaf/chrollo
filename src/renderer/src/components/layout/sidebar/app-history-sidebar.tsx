@@ -19,7 +19,7 @@ function HistorySidebar() {
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
             <Button size="sm" variant="ghost">
-              <Plus className="w-4! h-4!" />
+              <Plus size={16} />
             </Button>
             <SearchBar placeholder="Search history" className="flex-1" onSearchChange={() => {}} />
           </div>

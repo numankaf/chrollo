@@ -52,7 +52,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarWorkspaceMainHeader />
       <Sidebar collapsible="icon" className="overflow-hidden *:data-[sidebar=sidebar]:flex-row" {...props}>
         <Sidebar collapsible="none" className={`w-[${SIDEBAR_WIDTH_ICON}] border-r`}>
-          <SidebarContent className="w-[var(--sidebar-width-icon)]!">
+          <SidebarContent className="w-(--sidebar-width-icon)!">
             <SidebarGroup>
               <SidebarGroupContent className="px-1.5 md:px-0">
                 <SidebarMenu>
@@ -65,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           setActiveItem(item);
                         }}
                       >
-                        <item.icon className="w-4! h-4!" />
+                        <item.icon size={16} />
                         <span className="text-xs">{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
