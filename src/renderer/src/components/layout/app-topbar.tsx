@@ -1,4 +1,6 @@
+import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
+import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import { Maximize, Minus, Search, X } from 'lucide-react';
 
@@ -7,6 +9,7 @@ import ThemeSwitcher from '@/components/layout/theme-switch';
 import WorkspaceSelector from '@/components/selector/workspace-selector';
 
 function Topbar() {
+  const { appLoaded } = use(AppContext);
   return (
     <nav
       style={
@@ -21,18 +24,21 @@ function Topbar() {
           <img className="w-8 h-8 shrink-0" src={AppLogo} alt="App Logo" />
           <span className="whitespace-nowrap shrink-0 text-primary">Scope WS Inspector</span>
         </div>
-        <Button variant="ghost">Home</Button>
-        <WorkspaceSelector />
+
+        {appLoaded && <Button variant="ghost">Home</Button>}
+        {appLoaded && <WorkspaceSelector />}
       </div>
 
-      <div className="flex items-center justify-center flex-1 draggable">
-        <Button variant="outline" className="bg-background! hover:border-primary!">
-          <Search />
-          <span>Search Inspector</span>
-          <span className="text-xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>
-          <span className="text-xs bg-card! py-0.5 px-1.5 rounded-md">K</span>
-        </Button>
-      </div>
+      {appLoaded && (
+        <div className="flex items-center justify-center flex-1 draggable">
+          <Button variant="outline" className="bg-background! hover:border-primary!">
+            <Search />
+            <span>Search Inspector</span>
+            <span className="text-xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>
+            <span className="text-xs bg-card! py-0.5 px-1.5 rounded-md">K</span>
+          </Button>
+        </div>
+      )}
 
       <div className="flex items-center justify-end flex-1 draggable">
         <ThemeSwitcher />

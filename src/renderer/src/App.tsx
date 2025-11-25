@@ -11,7 +11,6 @@ import AppLayout from '@/layout/app-layout';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 
 import './App.css';
-import './styles/main.css';
 
 function App() {
   useEffect(() => {

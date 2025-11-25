@@ -5,16 +5,20 @@ import type { Workspace } from '@/types/workspace';
 interface WorkspaceStore {
   workspaces: Workspace[];
   selectedWorkspace: Workspace | null;
-  createWorkspace: (environment: Workspace) => void;
-  updateWorkspace: (environment: Workspace) => void;
+  setWorkspaces: (workspaces: Workspace[]) => void;
+  createWorkspace: (workspace: Workspace) => void;
+  updateWorkspace: (workspace: Workspace) => void;
   deleteWorkspace: (id: string) => void;
-  selectWorkspace: (environment: Workspace | null) => void;
+  selectWorkspace: (workspace: Workspace | null) => void;
 }
 
 const useWorkspaceStore = create<WorkspaceStore>((set) => ({
   workspaces: [],
   selectedWorkspace: null,
-
+  setWorkspaces: (workspaces) =>
+    set(() => ({
+      workspaces,
+    })),
   createWorkspace: (workspace) =>
     set((state) => ({
       workspaces: [...state.workspaces, workspace],
@@ -22,7 +26,7 @@ const useWorkspaceStore = create<WorkspaceStore>((set) => ({
 
   updateWorkspace: (workspace) =>
     set((state) => ({
-      environments: state.workspaces.map((e) => (e.id === workspace.id ? { ...e, ...workspace } : e)),
+      workspaces: state.workspaces.map((e) => (e.id === workspace.id ? { ...e, ...workspace } : e)),
       selectedWorkspace:
         state.selectedWorkspace?.id === workspace.id
           ? { ...state.selectedWorkspace, ...workspace }
