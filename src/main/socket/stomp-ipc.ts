@@ -14,31 +14,28 @@ export function initStompIpc() {
   // ------------------------------
   // CONNECT
   // ------------------------------
-  ipcMain.on('stomp:connect', (_, connection: StompConnection) => {
+  ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
     const { id } = connection;
-    // Close existing one with the same id
+
     if (stompClients[id]) {
       stompClients[id].deactivate();
+      delete stompClients[id];
     }
 
-    // notify renderer we're starting to connect
+    const client = new Client({
+      webSocketFactory: () => new SockJS(connection.prefix + connection.url),
+      ...connection.settings,
+      debug: (msg) => {
+        mainWindow.webContents.send('console:log', msg);
+      },
+    });
+
     mainWindow.webContents.send('stomp:status', {
       connectionId: id,
       status: CONNECTION_STATUS.CONNECTING,
       timestamp: Date.now(),
     } as ConnectionStatusData);
 
-    const client = new Client({
-      webSocketFactory: () => new SockJS(connection.prefix + connection.url),
-      ...connection.settings,
-      debug: (msg) => {
-        console.log(`[${id}] ${msg}`);
-        mainWindow.webContents.send('console-log', `[${id}] ${msg}`);
-      },
-    });
-
-    // stompjs callbacks for realtime status
-    // onConnect fires when STOMP CONNECTED
     client.onConnect = () => {
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
@@ -46,7 +43,6 @@ export function initStompIpc() {
         timestamp: Date.now(),
       } as ConnectionStatusData);
     };
-
     client.onDisconnect = () => {
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
@@ -65,8 +61,7 @@ export function initStompIpc() {
 
     client.onStompError = (frame) => {
       const errorMsg = `STOMP Error (${id}): ${frame.headers['message']}`;
-      console.error(errorMsg);
-      mainWindow.webContents.send('console-log', errorMsg);
+      mainWindow.webContents.send('console:log', errorMsg);
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
         status: CONNECTION_STATUS.ERROR,
@@ -85,7 +80,6 @@ export function initStompIpc() {
     const client = stompClients[data.id];
     if (client && client.connected && client.active) {
       client.subscribe(data.topic, (msg: Message) => {
-        console.log(`📩 [${data.id}] Received:`, msg.body);
         mainWindow.webContents.send('stomp:message', {
           connectionId: data.id,
           topic: data.topic,
@@ -116,9 +110,9 @@ export function initStompIpc() {
         body: data.body,
         headers: data.headers,
       });
-      mainWindow.webContents.send('console-log', ` [${data.id}] Message sent: ${data.body}`);
+      mainWindow.webContents.send('console:log', ` [${data.id}] Message sent: ${data.body}`);
     } else {
-      mainWindow.webContents.send('console-log', ` STOMP (${data.id}) not connected`);
+      mainWindow.webContents.send('console:log', ` STOMP (${data.id}) not connected`);
     }
   });
 
@@ -130,7 +124,7 @@ export function initStompIpc() {
     if (client) {
       client.deactivate();
       delete stompClients[id];
-      mainWindow.webContents.send('console-log', `🔌 Disconnected STOMP (${id})`);
+      mainWindow.webContents.send('console:log', `Disconnected STOMP (${id})`);
     }
   });
 
@@ -142,6 +136,6 @@ export function initStompIpc() {
       client.deactivate();
       delete stompClients[id];
     });
-    mainWindow.webContents.send('console-log', `🔌 All STOMP connections closed`);
+    mainWindow.webContents.send('console:log', `All STOMP connections closed`);
   });
 }

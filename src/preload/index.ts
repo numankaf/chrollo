@@ -57,6 +57,14 @@ const listener = {
       return () => ipcRenderer.removeListener('stomp:status', handler);
     },
   },
+  console: {
+    log: (callback: (data: unknown) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);
+      ipcRenderer.on('console:log', handler);
+
+      return () => ipcRenderer.removeListener('console:log', handler);
+    },
+  },
 };
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

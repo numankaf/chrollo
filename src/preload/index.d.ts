@@ -43,6 +43,9 @@ declare global {
       stomp: {
         onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
       };
+      console: {
+        log: (callback: (data: unknown) => void) => () => void;
+      };
     };
     electron: ElectronAPI;
   }
