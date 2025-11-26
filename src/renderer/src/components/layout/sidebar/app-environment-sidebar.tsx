@@ -1,8 +1,7 @@
-import useEnvironmentStore from '@/store/environment-store';
 import { Container, Plus } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { useTabNavigation } from '@/hooks/use-tab-navigation';
+import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -19,11 +18,7 @@ import {
 function EnvironmentsSidebar() {
   const { openAndNavigateToTab } = useTabNavigation();
 
-  const { environments } = useEnvironmentStore(
-    useShallow((state) => ({
-      environments: state.environments,
-    }))
-  );
+  const environments = useWorkspaceEnvironments();
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent>

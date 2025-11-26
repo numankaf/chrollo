@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import useConnectionStore from '@/store/connection-store';
 import { applyTextSearch } from '@/utils/search-util';
-import { useShallow } from 'zustand/react/shallow';
 
 import { useTabNavigation } from '@/hooks/use-tab-navigation';
+import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
@@ -20,11 +19,7 @@ import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
   const { openAndNavigateToTab } = useTabNavigation();
-  const { connections } = useConnectionStore(
-    useShallow((state) => ({
-      connections: state.connections,
-    }))
-  );
+  const connections = useWorkspaceConnections();
   const [search, setSearch] = useState('');
   const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
 

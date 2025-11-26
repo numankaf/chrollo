@@ -14,7 +14,7 @@ import {
 import SidebarWorkspaceMainHeader from '@/components/layout/app-sidebar-main-header';
 import CollectionSidebar from '@/components/layout/sidebar/app-collection-sidebar';
 import ConnectionSidebar from '@/components/layout/sidebar/app-connection-sidebar';
-import EnvironmentsSidebar from '@/components/layout/sidebar/app-enviroment-sidebar';
+import EnvironmentsSidebar from '@/components/layout/sidebar/app-environment-sidebar';
 import HistorySidebar from '@/components/layout/sidebar/app-history-sidebar';
 
 const SIDEBAR_DATA = [

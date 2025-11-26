@@ -5,15 +5,16 @@ import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Environment } from '@/types/environment';
+import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 
 function EnvironmentSelector() {
-  const { environments, selectEnvironment, selectedEnvironment } = useEnvironmentStore(
+  const environments = useWorkspaceEnvironments();
+  const { selectEnvironment, selectedEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
-      environments: state.environments,
       selectEnvironment: state.selectEnvironment,
       selectedEnvironment: state.selectedEnvironment,
     }))

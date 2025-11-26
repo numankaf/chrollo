@@ -1,8 +1,6 @@
-import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { BASE_MODEL_TYPE } from '@/types/base';
-import type { Environment, EnvironmentVariable } from '@/types/environment';
+import type { Environment } from '@/types/environment';
 
 interface EnvironmentStore {
   environments: Environment[];
@@ -14,15 +12,7 @@ interface EnvironmentStore {
 }
 
 const useEnvironmentStore = create<EnvironmentStore>((set) => ({
-  environments: [
-    {
-      id: nanoid(8),
-      workspaceId: nanoid(8),
-      name: 'environment-tukks',
-      modelType: BASE_MODEL_TYPE.ENVIRONMENT,
-      variables: new Map<string, EnvironmentVariable>(),
-    },
-  ],
+  environments: [],
   selectedEnvironment: null,
 
   createEnvironment: (environment) =>

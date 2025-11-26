@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { ChevronDown, X } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { useTabNavigation } from '@/hooks/use-tab-navigation';
+import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
@@ -12,11 +11,7 @@ import { SearchBar } from '@/components/common/search-input';
 import TabItemContent from '@/components/tab/tab-item-content';
 
 function TabSelector() {
-  const { tabs } = useTabsStore(
-    useShallow((state) => ({
-      tabs: state.tabs,
-    }))
-  );
+  const tabs = useWorkspaceTabs();
   const [search, setSearch] = useState('');
   const filteredTabs = applyTextSearch(tabs, search, (tab) => tab.item.name);
 
