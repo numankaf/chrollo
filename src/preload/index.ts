@@ -1,4 +1,4 @@
-import { electronAPI } from '@electron-toolkit/preload';
+import { electronAPI, type ElectronAPI } from '@electron-toolkit/preload';
 import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
@@ -6,6 +6,13 @@ import type { ConnectionFile, ConnectionStatusData, StompConnection } from '@/ty
 import type { EnvironmentFile } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
 import type { WorkspaceFile } from '@/types/workspace';
+
+interface Window {
+  electron: ElectronAPI;
+  api: unknown;
+}
+
+declare const window: Window & typeof globalThis;
 
 const api = {
   view: {

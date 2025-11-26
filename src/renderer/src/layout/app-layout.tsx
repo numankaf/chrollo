@@ -22,7 +22,7 @@ function AppLayout() {
       console.log(data);
     });
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
-      //console.log(data);
+      console.log(data);
     });
 
     const unsubscribeWorkspaceChange = useWorkspaceStore.subscribe((state) => {
