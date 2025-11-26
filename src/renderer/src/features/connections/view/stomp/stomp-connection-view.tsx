@@ -7,12 +7,12 @@ import StompSubsciptions from '@/features/connections/components/stomp/stomp-sub
 import useConnectionStore from '@/store/connection-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDownIcon } from 'lucide-react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router';
+import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { WS_URL_SCHEME, type Connection } from '@/types/connection';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { Button } from '@/components/common/button';
 import {
   DropdownMenu,
@@ -25,29 +25,28 @@ import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 
 function StompConnectionView() {
-  const { id } = useParams<{ id: string }>();
+  const { activeTab } = useActiveItem();
   const { connection, updateConnection } = useConnectionStore(
     useShallow((state) => ({
       updateConnection: state.updateConnection,
-      connection: state.connections.find((c) => c.id === id),
+      connection: state.connections.find((c) => c.id === activeTab?.id),
     }))
   );
   const form = useForm<z.infer<typeof STOMP_VALIDATION_SCHEMA>>({
     resolver: zodResolver(STOMP_VALIDATION_SCHEMA),
     defaultValues: { ...connection },
+    values: { ...connection } as z.infer<typeof STOMP_VALIDATION_SCHEMA>,
   });
 
-  //sync react hook form and zustand
-  useEffect(() => {
-    if (connection) {
-      form.reset(connection);
-    }
-    const subscription = form.watch((values) => {
-      updateConnection(values as Connection);
-    });
+  const watchedValues = useWatch({
+    control: form.control,
+  });
 
-    return () => subscription.unsubscribe();
-  }, [form, updateConnection, connection]);
+  useEffect(() => {
+    if (watchedValues) {
+      updateConnection(watchedValues as Connection);
+    }
+  }, [updateConnection, watchedValues]);
 
   function onSubmit(data: z.infer<typeof STOMP_VALIDATION_SCHEMA>) {
     window.api.stomp.connect(data);

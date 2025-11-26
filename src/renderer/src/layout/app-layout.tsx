@@ -25,6 +25,7 @@ function AppLayout() {
     const unsubscribeWorkspaceChange = useWorkspaceStore.subscribe((state) => {
       const activeTabId = state.workspaceSelection[state.activeWorkspaceId ?? '']?.activeTabId;
       const tab = useTabsStore.getState().tabs.find((t) => t.id === activeTabId) ?? null;
+      console.log(tab);
       if (tab) {
         navigate(getTabRoute(tab.item));
       } else {
