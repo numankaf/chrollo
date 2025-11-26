@@ -1,4 +1,5 @@
 import useTabsStore from '@/store/tab-store';
+import useWorkspaceStore from '@/store/workspace-store';
 import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -51,12 +52,11 @@ function getTabRoute(item: TabItem): string {
 
 export function useTabNavigation() {
   const navigate = useNavigate();
-  const { openTab, addTab, closeTab, setActiveTab } = useTabsStore(
+  const { openTab, addTab, closeTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
       addTab: state.addTab,
       closeTab: state.closeTab,
-      setActiveTab: state.setActiveTab,
     }))
   );
 
@@ -76,8 +76,12 @@ export function useTabNavigation() {
   };
 
   const setActiveTabAndNavigate = (id: string) => {
-    const activatedTab = setActiveTab(id);
-    if (activatedTab) navigate(getTabRoute(activatedTab.item));
+    useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: id });
+    const tabs = useTabsStore.getState().tabs;
+    const activatedTab = tabs.find((t) => t.id === id);
+    if (activatedTab) {
+      navigate(getTabRoute(activatedTab.item));
+    }
   };
 
   return {

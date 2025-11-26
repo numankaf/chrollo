@@ -2,9 +2,9 @@ import { electronAPI } from '@electron-toolkit/preload';
 import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
-import type { Connection, ConnectionFile, StompConnection } from '@/types/connection';
-import type { Tab, TabsFile } from '@/types/layout';
-import type { Workspace, WorkspaceFile } from '@/types/workspace';
+import type { ConnectionFile, StompConnection } from '@/types/connection';
+import type { TabsFile } from '@/types/layout';
+import type { WorkspaceFile } from '@/types/workspace';
 
 const api = {
   view: {
@@ -30,17 +30,15 @@ const api = {
   },
   workspace: {
     load: () => ipcRenderer.invoke('workspaces:load') as Promise<WorkspaceFile>,
-    save: (selectedWorkspaceId: string, workspaces: Workspace[]) =>
-      ipcRenderer.invoke('workspaces:save', selectedWorkspaceId, workspaces),
+    save: (workspaceFile: WorkspaceFile) => ipcRenderer.invoke('workspaces:save', workspaceFile),
   },
   connection: {
     load: () => ipcRenderer.invoke('connections:load') as Promise<ConnectionFile>,
-    save: (selectedConnectionId: string, connections: Connection[]) =>
-      ipcRenderer.invoke('connections:save', selectedConnectionId, connections),
+    save: (connectionFile: ConnectionFile) => ipcRenderer.invoke('connections:save', connectionFile),
   },
   tab: {
     load: () => ipcRenderer.invoke('tabs:load') as Promise<TabsFile>,
-    save: (activateTabId: string, tabs: Tab[]) => ipcRenderer.invoke('tabs:save', activateTabId, tabs),
+    save: (tabsFile: TabsFile) => ipcRenderer.invoke('tabs:save', tabsFile),
   },
 };
 // Use `contextBridge` APIs to expose Electron APIs to

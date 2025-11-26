@@ -11,23 +11,23 @@ export function useWorkspaceCollectionItemMap() {
       collectionItemMap: state.collectionItemMap,
     }))
   );
-  const { workspaceId } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      workspaceId: state.selectedWorkspace?.id,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
 
   return useMemo(() => {
-    if (!workspaceId) return new Map();
+    if (!activeWorkspaceId) return new Map();
 
     const filtered = new Map<string, CollectionItem>();
 
     for (const [key, item] of collectionItemMap.entries()) {
-      if (item.workspaceId === workspaceId) {
+      if (item.workspaceId === activeWorkspaceId) {
         filtered.set(key, item);
       }
     }
 
     return filtered;
-  }, [collectionItemMap, workspaceId]);
+  }, [collectionItemMap, activeWorkspaceId]);
 }

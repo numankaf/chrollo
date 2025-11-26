@@ -11,21 +11,21 @@ export function useWorkspaceTabs() {
       tabs: state.tabs,
     }))
   );
-  const { workspaceId } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      workspaceId: state.selectedWorkspace?.id,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
 
   return useMemo(() => {
-    if (!workspaceId) return [];
+    if (!activeWorkspaceId) return [];
 
     return tabs.filter((tab) => {
       if (tab.item.modelType === BASE_MODEL_TYPE.WORKSPACE) {
-        return tab.id === workspaceId;
+        return tab.id === activeWorkspaceId;
       }
 
-      return tab.item.workspaceId === workspaceId;
+      return tab.item.workspaceId === activeWorkspaceId;
     });
-  }, [tabs, workspaceId]);
+  }, [tabs, activeWorkspaceId]);
 }

@@ -1,16 +1,17 @@
+import { default as useWorkspaceStore } from '@/store/workspace-store';
+import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import type { Tab, TabItem } from '@/types/layout';
+import type { Tab, TabItem, TabsFile } from '@/types/layout';
 
 interface TabsStore {
   tabs: Tab[];
   setTabs: (tabs: Tab[]) => void;
-  activeTab: Tab | null;
   addTab: (item: TabItem) => Tab;
   openTab: (item: TabItem) => Tab;
   closeTab: (id: string) => Tab | null;
-  setActiveTab: (id: string) => Tab | null;
+  initTabsStore: (tabsFile: TabsFile) => void;
 }
 
 const scrollToTab = (tabId: string | null) => {
@@ -24,7 +25,6 @@ const scrollToTab = (tabId: string | null) => {
 const useTabsStore = create<TabsStore>()((set, get) => ({
   tabs: [],
   setTabs: (tabs) => set({ tabs }),
-  activeTab: null,
   addTab: (item) => {
     const newTab: Tab = { id: item.id, item };
     set((state) => {
@@ -32,6 +32,7 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
       return { tabs, activeTab: newTab };
     });
     scrollToTab(newTab.id);
+    useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newTab.id });
     return newTab;
   },
 
@@ -42,11 +43,12 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
     const existingTab = state.tabs.find((t) => t.item.id === item.id);
     if (existingTab) {
       targetTab = existingTab;
-      set({ activeTab: existingTab });
+      useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: existingTab.id });
     } else {
       const newTab: Tab = { id: nanoid(8), item };
       targetTab = newTab;
-      set({ tabs: [...state.tabs, newTab], activeTab: newTab });
+      set({ tabs: [...state.tabs, newTab] });
+      useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newTab.id });
     }
 
     scrollToTab(targetTab.id);
@@ -59,26 +61,26 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
     const tabIndex = tabs.findIndex((t) => t.id === id);
     const newTabs = tabs.filter((t) => t.id !== id);
 
-    let newActiveTab: Tab | null = state.activeTab;
+    const currentActiveTabId = getActiveWorkspaceSelection('activeTabId');
 
-    if (state.activeTab?.id === id) {
+    let newActiveTabId = currentActiveTabId;
+
+    if (currentActiveTabId === id) {
       if (tabIndex > 0) {
-        newActiveTab = newTabs[tabIndex - 1] ?? null;
+        newActiveTabId = newTabs[tabIndex - 1]?.id ?? newTabs[0]?.id;
       } else {
-        newActiveTab = newTabs[0] ?? null;
+        newActiveTabId = newTabs[0]?.id;
       }
+
+      useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newActiveTabId });
     }
 
-    set({ tabs: newTabs, activeTab: newActiveTab });
-    return newActiveTab;
+    set({ tabs: newTabs });
+
+    return newTabs.find((t) => t.id === newActiveTabId) ?? null;
   },
 
-  setActiveTab: (id) => {
-    const tab = get().tabs.find((t) => t.id === id) ?? null;
-    set({ activeTab: tab });
-    scrollToTab(tab?.id ?? null);
-    return tab;
-  },
+  initTabsStore: (tabsFile) => set(() => ({ tabs: tabsFile.tabs })),
 }));
 
 export default useTabsStore;

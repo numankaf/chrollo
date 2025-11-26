@@ -9,14 +9,14 @@ export function useWorkspaceEnvironments() {
       environments: state.environments,
     }))
   );
-  const { workspaceId } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      workspaceId: state.selectedWorkspace?.id,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
 
   return useMemo(() => {
-    if (!workspaceId) return [];
-    return environments.filter((e) => e.workspaceId === workspaceId);
-  }, [environments, workspaceId]);
+    if (!activeWorkspaceId) return [];
+    return environments.filter((e) => e.workspaceId === activeWorkspaceId);
+  }, [environments, activeWorkspaceId]);
 }

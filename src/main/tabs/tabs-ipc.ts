@@ -1,34 +1,24 @@
 import fs from 'fs';
 import path from 'path';
+import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
-import { app, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 
-import type { Tab, TabsFile } from '@/types/layout';
+import type { TabsFile } from '@/types/layout';
 
-const storageDir = path.join(app.getPath('userData'), 'appdata');
-
-if (!fs.existsSync(storageDir)) {
-  fs.mkdirSync(storageDir, { recursive: true });
-}
-
-const tabsFilePath = path.join(storageDir, 'tabs.json');
+const tabsFilePath = path.join(BASE_STORAGE_DIR, 'tabs.json');
 
 function loadTabs(): TabsFile {
   if (fs.existsSync(tabsFilePath)) {
     const data = fs.readFileSync(tabsFilePath, 'utf-8');
     return JSON.parse(data) as TabsFile;
   }
-  return { tabs: [], activeTabId: undefined };
+  return { tabs: [] };
 }
 
-function saveTabs(activeTabId: string | undefined, tabs: Tab[]) {
+function saveTabs(tabsFile: TabsFile) {
   try {
-    const fileData: TabsFile = {
-      tabs,
-      activeTabId,
-    };
-
-    fs.writeFileSync(tabsFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
+    fs.writeFileSync(tabsFilePath, JSON.stringify(tabsFile, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to save tabs:', err);
   }
@@ -42,7 +32,7 @@ export function initTabsIpc() {
     return loadTabs();
   });
 
-  ipcMain.handle('tabs:save', (_, activeTabId, tabs) => {
-    saveTabs(activeTabId, tabs);
+  ipcMain.handle('tabs:save', (_, tabsFile) => {
+    saveTabs(tabsFile);
   });
 }

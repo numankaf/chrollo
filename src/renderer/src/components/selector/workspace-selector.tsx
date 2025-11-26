@@ -11,13 +11,14 @@ import { SearchBar } from '@/components/common/search-input';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 function WorkspaceSelector() {
-  const { workspaces, selectWorkspace, selectedWorkspace } = useWorkspaceStore(
+  const { workspaces, activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
       workspaces: state.workspaces,
-      selectWorkspace: state.selectWorkspace,
-      selectedWorkspace: state.selectedWorkspace,
+      setActiveWorkspace: state.setActiveWorkspace,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
+
   const [search, setSearch] = useState('');
 
   const filteredWorkspaces = applyTextSearch(workspaces, search, (workspace) => workspace.name);
@@ -44,7 +45,7 @@ function WorkspaceSelector() {
           <Label className="text-secondary text-sm m-1"> Recently Visited</Label>
           {filteredWorkspaces.map((workspace) => (
             <Button
-              onClick={() => selectWorkspace(workspace)}
+              onClick={() => setActiveWorkspace(workspace.id)}
               variant="ghost"
               key={workspace.id}
               className=" w-full justify-between gap-2 text-sm"
@@ -54,7 +55,7 @@ function WorkspaceSelector() {
                 <WorkspaceTypeIcon workspaceType={workspace.type} size={16} />
                 {workspace.name}
               </div>
-              {workspace.id === selectedWorkspace?.id && <Check size={16} />}
+              {workspace.id === activeWorkspaceId && <Check size={16} />}
             </Button>
           ))}
         </div>

@@ -1,5 +1,7 @@
+import fs from 'fs';
 import { join } from 'path';
 import { initConnectionIpc } from '@/main/connection/connection-ipc';
+import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
 import { initTabsIpc } from '@/main/tabs/tabs-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
@@ -7,6 +9,10 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 
 import icon from '../../resources/app-logo.png?asset';
+
+if (!fs.existsSync(BASE_STORAGE_DIR)) {
+  fs.mkdirSync(BASE_STORAGE_DIR, { recursive: true });
+}
 
 let mainWindow: BrowserWindow;
 

@@ -43,9 +43,9 @@ function AddConnectionFormContent({
       saveConnection: state.saveConnection,
     }))
   );
-  const { selectedWorkspace } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      selectedWorkspace: state.selectedWorkspace,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
 
@@ -61,7 +61,7 @@ function AddConnectionFormContent({
   });
 
   async function onSubmit(values: { name: string }) {
-    if (!selectedWorkspace) {
+    if (!activeWorkspaceId) {
       return;
     }
     try {
@@ -73,7 +73,7 @@ function AddConnectionFormContent({
           const connectionPayload: StompConnection = {
             id: nanoid(8),
             name: values.name,
-            workspaceId: selectedWorkspace?.id,
+            workspaceId: activeWorkspaceId,
             ...STOMP_DEFAULT_VALUES,
           };
 

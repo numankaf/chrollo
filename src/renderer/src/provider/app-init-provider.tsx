@@ -22,25 +22,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function init() {
       try {
-        setLoadingText('Loading tabs...');
-        const tabsData = await window.api.tab.load();
-        const { tabs, activeTabId } = tabsData;
-        useTabsStore.getState().setTabs(tabs);
-        if (activeTabId) useTabsStore.getState().setActiveTab(activeTabId);
-
         setLoadingText('Loading workspaces...');
         const workspaceData = await window.api.workspace.load();
-        const { workspaces, selectedWorkspaceId } = workspaceData;
-        useWorkspaceStore.getState().setWorkspaces(workspaces);
-        const selectedWorkspace = workspaces.find((w) => w.id === selectedWorkspaceId) ?? null;
-        useWorkspaceStore.getState().selectWorkspace(selectedWorkspace);
+        useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
+
+        setLoadingText('Loading tabs...');
+        const tabsData = await window.api.tab.load();
+        useTabsStore.getState().initTabsStore(tabsData);
 
         setLoadingText('Loading connections...');
         const connectionData = await window.api.connection.load();
-        const { connections, selectedConnectionId } = connectionData;
-        useConnectionStore.getState().setConnections(connections);
-        const selectedConnection = connections.find((c) => c.id === selectedConnectionId) ?? null;
-        useConnectionStore.getState().selectConnection(selectedConnection);
+        useConnectionStore.getState().initConnectionStore(connectionData);
 
         setAppLoaded(true);
       } catch (err) {

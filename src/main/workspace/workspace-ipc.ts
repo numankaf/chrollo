@@ -1,18 +1,13 @@
 import fs from 'fs';
 import path from 'path';
+import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
-import { app, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { DEFAULT_WORKSPACE_ID, WORKSPACE_TYPE, type Workspace, type WorkspaceFile } from '@/types/workspace';
 
-const storageDir = path.join(app.getPath('userData'), 'appdata');
-
-if (!fs.existsSync(storageDir)) {
-  fs.mkdirSync(storageDir, { recursive: true });
-}
-
-const workspaceFilePath = path.join(storageDir, 'workspaces.json');
+const workspaceFilePath = path.join(BASE_STORAGE_DIR, 'workspaces.json');
 
 function loadWorkspaces(): WorkspaceFile {
   if (fs.existsSync(workspaceFilePath)) {
@@ -26,10 +21,18 @@ function loadWorkspaces(): WorkspaceFile {
       type: WORKSPACE_TYPE.INTERNAL,
       description: null,
     };
+    const defaultWorkspace2: Workspace = {
+      id: DEFAULT_WORKSPACE_ID + '2',
+      modelType: BASE_MODEL_TYPE.WORKSPACE,
+      name: 'My Workspace2',
+      type: WORKSPACE_TYPE.INTERNAL,
+      description: null,
+    };
 
     const fileData: WorkspaceFile = {
-      workspaces: [defaultWorkspace],
-      selectedWorkspaceId: DEFAULT_WORKSPACE_ID,
+      workspaces: [defaultWorkspace, defaultWorkspace2],
+      workspaceSelection: {},
+      activeWorkspaceId: DEFAULT_WORKSPACE_ID,
     };
 
     fs.writeFileSync(workspaceFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
@@ -37,13 +40,9 @@ function loadWorkspaces(): WorkspaceFile {
   }
 }
 
-function saveWorkspaces(selectedWorkspaceId: string | null, workspaces: Workspace[]) {
+function saveWorkspaces(workspaceFile: WorkspaceFile) {
   try {
-    const fileData: WorkspaceFile = {
-      workspaces,
-      selectedWorkspaceId,
-    };
-    fs.writeFileSync(workspaceFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
+    fs.writeFileSync(workspaceFilePath, JSON.stringify(workspaceFile, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to save workspaces:', err);
   }
@@ -57,7 +56,7 @@ export function initWorkspaceIpc() {
     return loadWorkspaces();
   });
 
-  ipcMain.handle('workspaces:save', (_, selectedWorkspaceId, workspaces) => {
-    saveWorkspaces(selectedWorkspaceId, workspaces);
+  ipcMain.handle('workspaces:save', (_, workspaceFile) => {
+    saveWorkspaces(workspaceFile);
   });
 }

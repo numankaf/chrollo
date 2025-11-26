@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
@@ -17,7 +16,7 @@ const initialCollectionItemMap = new Map<string, CollectionItem>([
     {
       id: 'corec2',
       name: 'scope-corec2',
-      workspaceId: nanoid(8),
+      workspaceId: 'default-workspace-id',
       modelType: BASE_MODEL_TYPE.COLLECTION,
       collectionItemType: COLLECTION_TYPE.COLLECTION,
       variables: new Map(),
@@ -31,7 +30,7 @@ const initialCollectionItemMap = new Map<string, CollectionItem>([
     {
       id: 'corec2-bsi',
       name: 'bsi',
-      workspaceId: nanoid(8),
+      workspaceId: 'default-workspace-id',
       modelType: BASE_MODEL_TYPE.COLLECTION,
       collectionItemType: COLLECTION_TYPE.FOLDER,
       parentId: 'corec2',
@@ -45,7 +44,7 @@ const initialCollectionItemMap = new Map<string, CollectionItem>([
     {
       id: 'corec2-bsi-unit-getUnit',
       name: 'getUnit',
-      workspaceId: nanoid(8),
+      workspaceId: 'default-workspace-id',
       modelType: BASE_MODEL_TYPE.COLLECTION,
       collectionItemType: COLLECTION_TYPE.REQUEST,
       parentId: 'corec2-bsi',

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
@@ -9,6 +8,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
 import { useTabNavigation } from '@/hooks/use-tab-navigation';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
 import { Separator } from '@/components/common/separator';
@@ -17,13 +17,14 @@ import TabSelector from '@/components/selector/tab-selector';
 import TabItemContent from '@/components/tab/tab-item-content';
 
 function AppTabs() {
-  const { workspaceId } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      workspaceId: state.selectedWorkspace?.id,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
+
+  const { activeTab } = useActiveItem();
   const tabs = useWorkspaceTabs();
-  const { activeTab } = useTabsStore();
   const { addAndNavigateToTab, closeTabAndNavigate } = useTabNavigation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -64,10 +65,10 @@ function AppTabs() {
   }, []);
 
   const handleAddTab = () => {
-    if (workspaceId) {
+    if (activeWorkspaceId) {
       addAndNavigateToTab({
         id: nanoid(8),
-        workspaceId: workspaceId,
+        workspaceId: activeWorkspaceId,
         name: 'New Request',
         modelType: BASE_MODEL_TYPE.COLLECTION,
         collectionItemType: COLLECTION_TYPE.REQUEST,

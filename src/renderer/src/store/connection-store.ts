@@ -1,7 +1,9 @@
+import useWorkspaceStore from '@/store/workspace-store';
+import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { type Connection } from '@/types/connection';
+import { type Connection, type ConnectionFile } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];
@@ -10,9 +12,8 @@ interface ConnectionStore {
   createConnection: (connection: Connection) => Connection;
   updateConnection: (connection: Connection) => Connection;
   deleteConnection: (id: string) => void;
-  selectedConnection: Connection | null;
-  selectConnection: (connection: Connection | null) => void;
   saveConnection: (connection: Connection) => Promise<Connection>;
+  initConnectionStore: (connectionFile: ConnectionFile) => void;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
@@ -51,27 +52,26 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
   deleteConnection: (id) => {
     set((state) => {
       const newConnections = state.connections.filter((c) => c.id !== id);
-      let newSelected = state.selectedConnection;
-      if (state.selectedConnection?.id === id) {
-        newSelected = newConnections[0] ?? null;
-      }
-      return { connections: newConnections, selectedConnection: newSelected };
-    });
-  },
-  selectedConnection: null,
+      const currentActiveConnectionId = getActiveWorkspaceSelection('activeConnectionId');
 
-  selectConnection: (connection) => {
-    set({ selectedConnection: connection });
+      let newSelectedId = currentActiveConnectionId as string;
+      if (currentActiveConnectionId === id) {
+        newSelectedId = newConnections[0]?.id ?? undefined;
+      }
+      useWorkspaceStore.getState().updateWorkspaceSelection({ activeConnectionId: newSelectedId });
+      return { connections: newConnections };
+    });
   },
 
   saveConnection: async (connection) => {
     const exists = get().connections.some((c) => c.id === connection.id);
     const updatedConnection = exists ? get().updateConnection(connection) : get().createConnection(connection);
 
-    await window.api.connection.save(get().selectedConnection?.id, get().connections);
+    await window.api.connection.save({ connections: get().connections });
 
     return updatedConnection;
   },
+  initConnectionStore: (connectionFile) => set(() => ({ connections: connectionFile.connections })),
 }));
 
 export default useConnectionStore;

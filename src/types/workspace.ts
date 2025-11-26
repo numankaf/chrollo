@@ -24,7 +24,16 @@ export interface Workspace extends BaseAuditModel {
   description: string | null;
 }
 
+export type WorkspaceSelectionValue = {
+  activeConnectionId?: string | undefined;
+  activeEnvironmentId?: string | undefined;
+  activeTabId?: string | undefined;
+};
+
+export type WorkspaceSelection = Record<string, WorkspaceSelectionValue>;
+
 export type WorkspaceFile = {
   workspaces: Workspace[];
-  selectedWorkspaceId: string | null;
+  workspaceSelection: WorkspaceSelection;
+  activeWorkspaceId: string | undefined;
 };

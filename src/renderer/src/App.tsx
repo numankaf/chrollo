@@ -24,8 +24,7 @@ function App() {
 
     const handleTabsSave = () => {
       const tabs = useTabsStore.getState().tabs;
-      const activeTab = useTabsStore.getState().activeTab;
-      window.api.tab.save(activeTab?.id, tabs);
+      window.api.tab.save({ tabs });
     };
 
     window.electron.ipcRenderer.on('app:shutdown', handleTabsSave);

@@ -1,17 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
-import { app, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 
-import type { Connection, ConnectionFile } from '@/types/connection';
+import type { ConnectionFile } from '@/types/connection';
 
-const storageDir = path.join(app.getPath('userData'), 'appdata');
-
-if (!fs.existsSync(storageDir)) {
-  fs.mkdirSync(storageDir, { recursive: true });
-}
-
-const connectionFilePath = path.join(storageDir, 'connections.json');
+const connectionFilePath = path.join(BASE_STORAGE_DIR, 'connections.json');
 
 function loadConnections(): ConnectionFile {
   if (fs.existsSync(connectionFilePath)) {
@@ -20,7 +15,6 @@ function loadConnections(): ConnectionFile {
   } else {
     const fileData: ConnectionFile = {
       connections: [],
-      selectedConnectionId: undefined,
     };
 
     fs.writeFileSync(connectionFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
@@ -28,14 +22,9 @@ function loadConnections(): ConnectionFile {
   }
 }
 
-function saveConnections(selectedConnectionId: string | undefined, connections: Connection[]) {
+function saveConnections(connectionFile: ConnectionFile) {
   try {
-    const fileData: ConnectionFile = {
-      connections,
-      selectedConnectionId,
-    };
-
-    fs.writeFileSync(connectionFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
+    fs.writeFileSync(connectionFilePath, JSON.stringify(connectionFile, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to save connections:', err);
   }
@@ -49,7 +38,7 @@ export function initConnectionIpc() {
     return loadConnections();
   });
 
-  ipcMain.handle('connections:save', (_, selectedConnectionId, connections) => {
-    saveConnections(selectedConnectionId, connections);
+  ipcMain.handle('connections:save', (_, connectionFile) => {
+    saveConnections(connectionFile);
   });
 }

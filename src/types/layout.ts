@@ -12,5 +12,4 @@ export interface Tab {
 
 export type TabsFile = {
   tabs: Tab[];
-  activeTabId: string | undefined;
 };

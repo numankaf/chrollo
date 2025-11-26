@@ -51,5 +51,4 @@ export interface StompConnection extends Connection {
 
 export type ConnectionFile = {
   connections: Connection[];
-  selectedConnectionId: string | undefined;
 };

@@ -9,14 +9,14 @@ export function useWorkspaceConnections() {
       connections: state.connections,
     }))
   );
-  const { workspaceId } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      workspaceId: state.selectedWorkspace?.id,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
 
   return useMemo(() => {
-    if (!workspaceId) return [];
-    return connections.filter((c) => c.workspaceId === workspaceId);
-  }, [connections, workspaceId]);
+    if (!activeWorkspaceId) return [];
+    return connections.filter((c) => c.workspaceId === activeWorkspaceId);
+  }, [connections, activeWorkspaceId]);
 }
