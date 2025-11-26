@@ -1,7 +1,10 @@
-import { use } from 'react';
+import { use, useEffect } from 'react';
 import { SIDEBAR_TOP_OFFSET, SIDEBAR_WIDTH, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
-import { Outlet } from 'react-router';
+import useTabsStore from '@/store/tab-store';
+import useWorkspaceStore from '@/store/workspace-store';
+import { getTabRoute } from '@/utils/tab-utils';
+import { Outlet, useNavigate } from 'react-router';
 
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
 import AppLoader from '@/components/app/app-loader';
@@ -12,6 +15,24 @@ import AppTabs from '@/components/layout/app-tabs';
 import Topbar from '@/components/layout/app-topbar';
 
 function AppLayout() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = useWorkspaceStore.subscribe((state) => {
+      const activeTabId = state.workspaceSelection[state.activeWorkspaceId ?? '']?.activeTabId;
+      const tab = useTabsStore.getState().tabs.find((t) => t.id === activeTabId) ?? null;
+      if (tab) {
+        navigate(getTabRoute(tab.item));
+      } else {
+        navigate('/');
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigate]);
+
   const { appLoaded } = use(AppContext);
   return (
     <>

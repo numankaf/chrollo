@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { STOMP_DEFAULT_VALUES } from '@/constants/connection/stomp/stomp-schema';
 import useConnectionStore from '@/store/connection-store';
+import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
@@ -10,7 +11,6 @@ import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
-import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import {
   Dialog,
@@ -36,8 +36,11 @@ function AddConnectionFormContent({
   label: string;
   onClose: () => void;
 }) {
-  const { openAndNavigateToTab } = useTabNavigation();
-
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
   const { saveConnection } = useConnectionStore(
     useShallow((state) => ({
       saveConnection: state.saveConnection,
@@ -78,7 +81,7 @@ function AddConnectionFormContent({
           };
 
           const newConnection = await saveConnection(connectionPayload);
-          openAndNavigateToTab(newConnection);
+          openTab(newConnection);
           onClose();
           break;
         }

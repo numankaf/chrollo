@@ -13,7 +13,7 @@ interface ConnectionStore {
   updateConnection: (connection: Connection) => Connection;
   deleteConnection: (id: string) => void;
   saveConnection: (connection: Connection) => Promise<Connection>;
-  initConnectionStore: (connectionFile: ConnectionFile) => void;
+  initConnectionStore: (connectionFile: ConnectionFile) => Promise<void>;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
@@ -71,7 +71,14 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     return updatedConnection;
   },
-  initConnectionStore: (connectionFile) => set(() => ({ connections: connectionFile.connections })),
+  initConnectionStore: (connectionFile) => {
+    return new Promise((resolve) => {
+      set(() => ({
+        connections: connectionFile.connections,
+      }));
+      resolve();
+    });
+  },
 }));
 
 export default useConnectionStore;

@@ -1,10 +1,10 @@
 import useCollectionItemStore from '@/store/collection-item-store';
+import useTabsStore from '@/store/tab-store';
 import { hasChildren } from '@/utils/collection-util';
 import { ChevronRight, Ellipsis, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
-import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/collapsible';
 import {
@@ -77,7 +77,11 @@ function OperationsButton({ item }: { item: CollectionItem }) {
 }
 
 function Tree({ item }: { item: CollectionItem }) {
-  const { openAndNavigateToTab } = useTabNavigation();
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
   const { collectionItemMap } = useCollectionItemStore(
     useShallow((state) => ({
       collectionItemMap: state.collectionItemMap,
@@ -98,7 +102,7 @@ function Tree({ item }: { item: CollectionItem }) {
         className="data-[active=true]:bg-transparent flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
         onClick={(e) => {
           e.preventDefault();
-          if (item.collectionItemType === COLLECTION_TYPE.REQUEST) openAndNavigateToTab(item);
+          if (item.collectionItemType === COLLECTION_TYPE.REQUEST) openTab(item);
         }}
       >
         <div className="flex items-center justify-center gap-1">
@@ -119,7 +123,7 @@ function Tree({ item }: { item: CollectionItem }) {
           className="flex items-center justify-between [&:hover>#operations-trigger]:opacity-100 [&>#operations-trigger[data-state=open]]:opacity-100"
           onDoubleClick={(e) => {
             e.preventDefault();
-            openAndNavigateToTab(item);
+            openTab(item);
           }}
         >
           <div className="flex items-center justify-center gap-1">

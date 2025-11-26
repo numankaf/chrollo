@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
+import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
@@ -7,7 +8,6 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
-import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
@@ -23,12 +23,17 @@ function AppTabs() {
     }))
   );
 
+  const { addTab, openTab, closeTab } = useTabsStore(
+    useShallow((state) => ({
+      addTab: state.addTab,
+      closeTab: state.closeTab,
+      openTab: state.openTab,
+    }))
+  );
   const { activeTab } = useActiveItem();
   const tabs = useWorkspaceTabs();
-  const { addAndNavigateToTab, closeTabAndNavigate } = useTabNavigation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const { openAndNavigateToTab } = useTabNavigation();
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -66,7 +71,7 @@ function AppTabs() {
 
   const handleAddTab = () => {
     if (activeWorkspaceId) {
-      addAndNavigateToTab({
+      addTab({
         id: nanoid(8),
         workspaceId: activeWorkspaceId,
         name: 'New Request',
@@ -92,12 +97,12 @@ function AppTabs() {
                   className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
-                    openAndNavigateToTab(tab.item);
+                    openTab(tab.item);
                   }}
                   onMouseDown={(e) => {
                     if (e.button === 1) {
                       e.preventDefault();
-                      closeTabAndNavigate(tab.id);
+                      closeTab(tab.id);
                     }
                   }}
                 >
@@ -109,7 +114,7 @@ function AppTabs() {
                     size="xs"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTabAndNavigate(tab.id);
+                      closeTab(tab.id);
                     }}
                   >
                     <X size={16} />

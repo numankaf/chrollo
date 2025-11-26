@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import useTabsStore from '@/store/tab-store';
+import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { ChevronDown, X } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
@@ -14,8 +16,17 @@ function TabSelector() {
   const tabs = useWorkspaceTabs();
   const [search, setSearch] = useState('');
   const filteredTabs = applyTextSearch(tabs, search, (tab) => tab.item.name);
+  const { updateWorkspaceSelection } = useWorkspaceStore(
+    useShallow((state) => ({
+      updateWorkspaceSelection: state.updateWorkspaceSelection,
+    }))
+  );
 
-  const { setActiveTabAndNavigate, closeTabAndNavigate } = useTabNavigation();
+  const { closeTab } = useTabsStore(
+    useShallow((state) => ({
+      closeTab: state.closeTab,
+    }))
+  );
   return (
     <Popover
       onOpenChange={(open) => {
@@ -41,14 +52,14 @@ function TabSelector() {
                   key={tab.id}
                   className=" w-full justify-between gap-2 pr-0.5 [&:hover>span]:opacity-100"
                   size="sm"
-                  onClick={() => setActiveTabAndNavigate(tab.id)}
+                  onClick={() => updateWorkspaceSelection({ activeTabId: tab.id })}
                 >
                   <TabItemContent {...tab.item} />
                   <span
                     className="opacity-0 p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTabAndNavigate(tab.id);
+                      closeTab(tab.id);
                     }}
                   >
                     <X />

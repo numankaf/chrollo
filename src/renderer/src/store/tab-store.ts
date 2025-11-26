@@ -2,6 +2,7 @@ import { default as useWorkspaceStore } from '@/store/workspace-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
 import { create } from 'zustand';
 
+import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Tab, TabItem, TabsFile } from '@/types/layout';
 
 interface TabsStore {
@@ -10,7 +11,7 @@ interface TabsStore {
   addTab: (item: TabItem) => Tab;
   openTab: (item: TabItem) => Tab;
   closeTab: (id: string) => Tab | null;
-  initTabsStore: (tabsFile: TabsFile) => void;
+  initTabsStore: (tabsFile: TabsFile) => Promise<void>;
 }
 
 const scrollToTab = (tabId: string | null) => {
@@ -56,9 +57,24 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
 
   closeTab: (id) => {
     const state = get();
-    const tabs = state.tabs;
-    const tabIndex = tabs.findIndex((t) => t.id === id);
-    const newTabs = tabs.filter((t) => t.id !== id);
+    const activeWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId;
+
+    // Separate current workspace tabs and other workspace tabs
+    const currentWorkspaceTabs = state.tabs.filter((tab) => {
+      if (tab.item.modelType === BASE_MODEL_TYPE.WORKSPACE) {
+        return tab.id === activeWorkspaceId;
+      }
+      return tab.item.workspaceId === activeWorkspaceId;
+    });
+
+    const otherWorkspaceTabs = state.tabs.filter((tab) =>
+      tab.item.modelType === BASE_MODEL_TYPE.WORKSPACE
+        ? tab.id !== activeWorkspaceId
+        : tab.item.workspaceId !== activeWorkspaceId
+    );
+
+    const tabIndex = currentWorkspaceTabs.findIndex((t) => t.id === id);
+    const newCurrentTabs = currentWorkspaceTabs.filter((t) => t.id !== id);
 
     const currentActiveTabId = getActiveWorkspaceSelection('activeTabId');
 
@@ -66,20 +82,29 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
 
     if (currentActiveTabId === id) {
       if (tabIndex > 0) {
-        newActiveTabId = newTabs[tabIndex - 1]?.id ?? newTabs[0]?.id;
+        newActiveTabId = newCurrentTabs[tabIndex - 1]?.id ?? newCurrentTabs[0]?.id;
       } else {
-        newActiveTabId = newTabs[0]?.id;
+        newActiveTabId = newCurrentTabs[0]?.id;
       }
-
       useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newActiveTabId });
     }
 
-    set({ tabs: newTabs });
+    // Merge back with tabs from other workspaces
+    const mergedTabs = [...otherWorkspaceTabs, ...newCurrentTabs];
 
-    return newTabs.find((t) => t.id === newActiveTabId) ?? null;
+    set({ tabs: mergedTabs });
+
+    return mergedTabs.find((t) => t.id === newActiveTabId) ?? null;
   },
 
-  initTabsStore: (tabsFile) => set(() => ({ tabs: tabsFile.tabs })),
+  initTabsStore: async (tabsFile: TabsFile) => {
+    return new Promise((resolve) => {
+      set(() => ({
+        tabs: tabsFile.tabs,
+      }));
+      resolve();
+    });
+  },
 }));
 
 export default useTabsStore;

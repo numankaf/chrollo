@@ -1,17 +1,12 @@
 import { useState } from 'react';
-import useTabsStore from '@/store/tab-store';
 import { saveHandlers } from '@/utils/save-registry-utils';
 import { Loader2, Save } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
 
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { Button } from '@/components/common/button';
 
 function SaveItemButton() {
-  const { activeTab } = useTabsStore(
-    useShallow((state) => ({
-      activeTab: state.activeTab,
-    }))
-  );
+  const { activeTab } = useActiveItem();
 
   const [loading, setLoading] = useState(false);
 

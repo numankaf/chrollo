@@ -13,7 +13,7 @@ interface WorkspaceStore {
   deleteWorkspace: (id: string) => void;
   setActiveWorkspace: (id: string) => void;
 
-  initWorkspaceStore: (workspaceFile: WorkspaceFile) => void;
+  initWorkspaceStore: (workspaceFile: WorkspaceFile) => Promise<void>;
   updateWorkspaceSelection: (values: Partial<WorkspaceSelectionValue>) => void;
 }
 
@@ -50,15 +50,17 @@ const useWorkspaceStore = create<WorkspaceStore>((set) => ({
       activeWorkspaceId: id,
     })),
 
-  initWorkspaceStore: (workspaceFile) =>
-    set(() => {
+  initWorkspaceStore: async (workspaceFile) => {
+    return new Promise((resolve) => {
       const { activeWorkspaceId, workspaceSelection, workspaces } = workspaceFile;
-      return {
+      set(() => ({
         activeWorkspaceId: activeWorkspaceId,
         workspaceSelection: workspaceSelection,
         workspaces: workspaces,
-      };
-    }),
+      }));
+      resolve();
+    });
+  },
 
   updateWorkspaceSelection: (values: Partial<WorkspaceSelectionValue>) =>
     set((state) => {

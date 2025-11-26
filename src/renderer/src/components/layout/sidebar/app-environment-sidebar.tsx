@@ -1,6 +1,7 @@
+import useTabsStore from '@/store/tab-store';
 import { Container, Plus } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
@@ -16,7 +17,11 @@ import {
 } from '@/components/common/sidebar';
 
 function EnvironmentsSidebar() {
-  const { openAndNavigateToTab } = useTabNavigation();
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
 
   const environments = useWorkspaceEnvironments();
   return (
@@ -35,7 +40,7 @@ function EnvironmentsSidebar() {
             <SidebarMenu>
               {environments.map((item) => (
                 <SidebarMenuButton
-                  onClick={() => openAndNavigateToTab(item)}
+                  onClick={() => openTab(item)}
                   className="data-[active=true]:bg-transparent"
                   key={item.id}
                   size="sm"

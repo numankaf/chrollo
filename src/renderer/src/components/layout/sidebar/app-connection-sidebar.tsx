@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
+import { useShallow } from 'zustand/react/shallow';
 
-import { useTabNavigation } from '@/hooks/use-tab-navigation';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -18,7 +19,11 @@ import AddConnectionPanel from '@/components/connection/add-connection-panel';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
-  const { openAndNavigateToTab } = useTabNavigation();
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
   const connections = useWorkspaceConnections();
   const [search, setSearch] = useState('');
   const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
@@ -46,7 +51,7 @@ function ConnectionSidebar() {
                   size="sm"
                   className="data-[active=true]:bg-transparent"
                   key={item.id}
-                  onClick={() => openAndNavigateToTab(item)}
+                  onClick={() => openTab(item)}
                 >
                   <ConnectionIcon connectionType={item.connectionType} />
                   <span>{item.name}</span>

@@ -13,6 +13,8 @@ import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 
 import './App.css';
 
+import useWorkspaceStore from '@/store/workspace-store';
+
 function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -22,20 +24,27 @@ function App() {
       }
     };
 
-    const handleTabsSave = () => {
+    const handleSyncSave = () => {
       const tabs = useTabsStore.getState().tabs;
       window.api.tab.save({ tabs });
+
+      const { workspaces, activeWorkspaceId, workspaceSelection } = useWorkspaceStore.getState();
+      window.api.workspace.save({
+        workspaces: workspaces,
+        activeWorkspaceId: activeWorkspaceId,
+        workspaceSelection: workspaceSelection,
+      });
     };
 
-    window.electron.ipcRenderer.on('app:shutdown', handleTabsSave);
+    window.electron.ipcRenderer.on('app:shutdown', handleSyncSave);
 
-    window.addEventListener('beforeunload', handleTabsSave);
+    window.addEventListener('beforeunload', handleSyncSave);
 
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.electron.ipcRenderer.removeListener('app:shutdown', handleTabsSave);
-      window.removeEventListener('beforeunload', handleTabsSave);
+      window.electron.ipcRenderer.removeListener('app:shutdown', handleSyncSave);
+      window.removeEventListener('beforeunload', handleSyncSave);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);

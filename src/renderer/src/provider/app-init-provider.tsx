@@ -22,17 +22,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function init() {
       try {
-        setLoadingText('Loading workspaces...');
-        const workspaceData = await window.api.workspace.load();
-        useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
-
         setLoadingText('Loading tabs...');
         const tabsData = await window.api.tab.load();
-        useTabsStore.getState().initTabsStore(tabsData);
+        await useTabsStore.getState().initTabsStore(tabsData);
+
+        setLoadingText('Loading workspaces...');
+        const workspaceData = await window.api.workspace.load();
+        await useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
 
         setLoadingText('Loading connections...');
         const connectionData = await window.api.connection.load();
-        useConnectionStore.getState().initConnectionStore(connectionData);
+        await useConnectionStore.getState().initConnectionStore(connectionData);
 
         setAppLoaded(true);
       } catch (err) {
