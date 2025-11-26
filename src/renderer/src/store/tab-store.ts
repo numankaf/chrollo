@@ -1,6 +1,5 @@
 import { default as useWorkspaceStore } from '@/store/workspace-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
-import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
 import type { Tab, TabItem, TabsFile } from '@/types/layout';
@@ -45,7 +44,7 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
       targetTab = existingTab;
       useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: existingTab.id });
     } else {
-      const newTab: Tab = { id: nanoid(8), item };
+      const newTab: Tab = { id: item.id, item };
       targetTab = newTab;
       set({ tabs: [...state.tabs, newTab] });
       useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newTab.id });

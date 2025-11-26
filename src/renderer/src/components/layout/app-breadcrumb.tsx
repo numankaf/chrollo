@@ -1,21 +1,17 @@
 import { Fragment } from 'react';
 import { APP_BREADCRUMB_OFFSET } from '@/constants/layout-constants';
 import useCollectionItemStore from '@/store/collection-item-store';
-import useTabsStore from '@/store/tab-store';
 import { hasParent } from '@/utils/collection-util';
 import { useShallow } from 'zustand/react/shallow';
 
 import { type CollectionItem } from '@/types/collection';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/common/breadcrumb';
 import SaveItemButton from '@/components/app/save-item-button';
 import TabItemContent from '@/components/tab/tab-item-content';
 
 function AppBreadcrumb() {
-  const { activeTab } = useTabsStore(
-    useShallow((state) => ({
-      activeTab: state.activeTab,
-    }))
-  );
+  const { activeTab } = useActiveItem();
 
   const { collectionItemMap } = useCollectionItemStore(
     useShallow((state) => ({
