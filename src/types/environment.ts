@@ -12,3 +12,7 @@ export interface Environment extends BaseAuditModel {
   name: string;
   variables: Map<string, EnvironmentVariable>;
 }
+
+export type EnvironmentFile = {
+  environments: Environment[];
+};

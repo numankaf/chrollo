@@ -2,6 +2,7 @@ import fs from 'fs';
 import { join } from 'path';
 import { initConnectionIpc } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
+import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
 import { initTabsIpc } from '@/main/tabs/tabs-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
@@ -98,6 +99,7 @@ app.whenReady().then(() => {
   initTabsIpc();
   initWorkspaceIpc();
   initConnectionIpc();
+  initEnvironmentIpc();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

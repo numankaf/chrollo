@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import useEnvironmentStore from '@/store/environment-store';
+import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Environment } from '@/types/environment';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
@@ -13,12 +14,13 @@ import { SearchBar } from '@/components/common/search-input';
 
 function EnvironmentSelector() {
   const environments = useWorkspaceEnvironments();
-  const { selectEnvironment, selectedEnvironment } = useEnvironmentStore(
+  const { updateWorkspaceSelection } = useWorkspaceStore(
     useShallow((state) => ({
-      selectEnvironment: state.selectEnvironment,
-      selectedEnvironment: state.selectedEnvironment,
+      updateWorkspaceSelection: state.updateWorkspaceSelection,
     }))
   );
+
+  const { activeEnvironment } = useActiveItem();
 
   const [search, setSearch] = useState('');
 
@@ -34,12 +36,12 @@ function EnvironmentSelector() {
     >
       <PopoverTrigger className="w-40">
         <Button variant="ghost" className="text-sm justify-between" size="sm">
-          {!selectedEnvironment && <CircleOff size={16} />}
+          {!activeEnvironment && <CircleOff size={16} />}
           <span
             className="overflow-x-auto no-scrollbar"
-            title={selectedEnvironment ? selectedEnvironment.name : 'No Environment'}
+            title={activeEnvironment ? activeEnvironment.name : 'No Environment'}
           >
-            {selectedEnvironment ? selectedEnvironment.name : 'No Environment'}
+            {activeEnvironment ? activeEnvironment.name : 'No Environment'}
           </span>
           <ChevronDown />
         </Button>
@@ -66,9 +68,13 @@ function EnvironmentSelector() {
                   key={environment.id}
                   className="w-full justify-start gap-2"
                   size="sm"
-                  onClick={() => (environment.id === 'none' ? selectEnvironment(null) : selectEnvironment(environment))}
+                  onClick={() =>
+                    environment.id === 'none'
+                      ? updateWorkspaceSelection({ activeEnvironmentId: undefined })
+                      : updateWorkspaceSelection({ activeEnvironmentId: environment.id })
+                  }
                 >
-                  {environment.id === selectedEnvironment?.id || (!selectedEnvironment && environment.id === 'none') ? (
+                  {environment.id === activeEnvironment?.id || (!activeEnvironment && environment.id === 'none') ? (
                     <Check className="h-4 w-4" />
                   ) : null}
                   <p className={environment.id === 'none' ? 'text-muted-foreground' : undefined}>{environment.name}</p>
