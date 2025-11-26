@@ -5,6 +5,7 @@ import type { Header } from '@/types/common';
 import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection } from '@/types/connection';
 
 const STOMP_VALIDATION_SCHEMA = z.object({
+  id: z.string(),
   prefix: z.string(),
   url: z.string().min(1, 'URL is required.'),
   settings: z.object({

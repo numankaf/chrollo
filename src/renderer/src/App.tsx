@@ -17,12 +17,12 @@ import useWorkspaceStore from '@/store/workspace-store';
 
 function App() {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F5') {
-        e.preventDefault();
-        window.api?.view?.reload();
-      }
-    };
+    // const handleKeyDown = (e: KeyboardEvent) => {
+    //   if (e.key === 'F5') {
+    //     e.preventDefault();
+    //     window.api?.view?.reload();
+    //   }
+    // };
 
     const handleSyncSave = () => {
       const tabs = useTabsStore.getState().tabs;
@@ -40,12 +40,12 @@ function App() {
 
     window.addEventListener('beforeunload', handleSyncSave);
 
-    window.addEventListener('keydown', handleKeyDown);
+    //window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.electron.ipcRenderer.removeListener('app:shutdown', handleSyncSave);
       window.removeEventListener('beforeunload', handleSyncSave);
-      window.removeEventListener('keydown', handleKeyDown);
+      //window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 

@@ -39,6 +39,11 @@ declare global {
         save: (environmentFile: EnvironmentFile) => Promise<void>;
       };
     };
+    listener: {
+      stomp: {
+        onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
+      };
+    };
     electron: ElectronAPI;
   }
 }

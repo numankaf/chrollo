@@ -2,7 +2,7 @@ import { electronAPI } from '@electron-toolkit/preload';
 import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
-import type { ConnectionFile, StompConnection } from '@/types/connection';
+import type { ConnectionFile, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { EnvironmentFile } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
 import type { WorkspaceFile } from '@/types/workspace';
@@ -46,6 +46,18 @@ const api = {
     save: (environmentFile: EnvironmentFile) => ipcRenderer.invoke('environments:save', environmentFile),
   },
 };
+
+const listener = {
+  stomp: {
+    onStatus: (callback: (data: ConnectionStatusData) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);
+
+      ipcRenderer.on('stomp:status', handler);
+
+      return () => ipcRenderer.removeListener('stomp:status', handler);
+    },
+  },
+};
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
@@ -53,6 +65,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI);
     contextBridge.exposeInMainWorld('api', api);
+    contextBridge.exposeInMainWorld('listener', listener);
   } catch (error) {
     console.error(error);
   }

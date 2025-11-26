@@ -18,7 +18,11 @@ function AppLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = useWorkspaceStore.subscribe((state) => {
+    const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
+      console.log(data);
+    });
+
+    const unsubscribeWorkspaceChange = useWorkspaceStore.subscribe((state) => {
       const activeTabId = state.workspaceSelection[state.activeWorkspaceId ?? '']?.activeTabId;
       const tab = useTabsStore.getState().tabs.find((t) => t.id === activeTabId) ?? null;
       if (tab) {
@@ -29,7 +33,8 @@ function AppLayout() {
     });
 
     return () => {
-      unsubscribe();
+      unsubscribeStompStatus();
+      unsubscribeWorkspaceChange();
     };
   }, [navigate]);
 

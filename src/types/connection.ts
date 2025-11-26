@@ -52,3 +52,19 @@ export interface StompConnection extends Connection {
 export type ConnectionFile = {
   connections: Connection[];
 };
+
+export const CONNECTION_STATUS = {
+  CONNECTING: 'connecting',
+  CONNECTED: 'connected',
+  DISCONNECTED: 'disconnected',
+  ERROR: 'error',
+  CLOSED: 'closed',
+} as const;
+
+export type ConnectionStatus = (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];
+
+export type ConnectionStatusData = {
+  connectionId: string;
+  status: ConnectionStatus;
+  timestamp: number;
+};
