@@ -28,7 +28,6 @@ export function useAppSubscriptions() {
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
       const { connectionId, status } = data;
       useStompStatusStore.getState().setStatus(connectionId, status);
-      console.log(data);
     });
 
     const unsubscribeWorkspaceChange = useWorkspaceStore.subscribe((state) => {

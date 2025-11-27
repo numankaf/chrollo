@@ -48,10 +48,6 @@ function StompConnectionView() {
     }
   }, [updateConnection, watchedValues]);
 
-  function onSubmit(data: z.infer<typeof STOMP_VALIDATION_SCHEMA>) {
-    window.api.stomp.connect(data);
-  }
-
   if (!connection) return <div>Connection not found</div>;
 
   return (
@@ -107,7 +103,11 @@ function StompConnectionView() {
             />
             <ConnectionButton
               connection={connection}
-              onConnect={(connection: Connection) => window.api.stomp.connect(connection)}
+              onConnect={() =>
+                form.handleSubmit((data) => {
+                  window.api.stomp.connect(data);
+                })()
+              }
               onDisconnect={(conenctionId: string) => window.api.stomp.disconnect(conenctionId)}
             />
           </div>
