@@ -3,7 +3,12 @@ import { Client, StompHeaders, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
-import { CONNECTION_STATUS, type ConnectionStatusData, type StompConnection } from '@/types/connection';
+import {
+  CONNECTION_STATUS,
+  type ConnectionStatus,
+  type ConnectionStatusData,
+  type StompConnection,
+} from '@/types/connection';
 
 const stompClients: Record<string, Client> = {};
 
@@ -15,7 +20,7 @@ export function initStompIpc() {
   // CONNECT
   // ------------------------------
   ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
-    const { id } = connection;
+    const { id, name } = connection;
 
     if (stompClients[id]) {
       stompClients[id].deactivate();
@@ -30,46 +35,63 @@ export function initStompIpc() {
       },
     });
 
-    mainWindow.webContents.send('stomp:status', {
-      connectionId: id,
-      status: CONNECTION_STATUS.CONNECTING,
-      timestamp: Date.now(),
-    } as ConnectionStatusData);
+    let lastStompStatus: ConnectionStatus | null = null;
 
     client.onConnect = () => {
+      lastStompStatus = CONNECTION_STATUS.CONNECTED;
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
-        status: CONNECTION_STATUS.CONNECTED,
-        timestamp: Date.now(),
-      } as ConnectionStatusData);
-    };
-    client.onDisconnect = () => {
-      mainWindow.webContents.send('stomp:status', {
-        connectionId: id,
-        status: CONNECTION_STATUS.DISCONNECTED,
+        status: lastStompStatus,
         timestamp: Date.now(),
       } as ConnectionStatusData);
     };
 
-    client.onWebSocketClose = () => {
+    client.onChangeState = (state) => {
+      if (
+        state === 2 &&
+        lastStompStatus !== CONNECTION_STATUS.DISCONNECTED &&
+        lastStompStatus !== CONNECTION_STATUS.ERROR
+      ) {
+        lastStompStatus = CONNECTION_STATUS.DEACTIVATED;
+        mainWindow.webContents.send('stomp:status', {
+          connectionId: id,
+          status: lastStompStatus,
+          timestamp: Date.now(),
+        } as ConnectionStatusData);
+        mainWindow.webContents.send('console:log', `Deactivated (${id} : ${name})`);
+      }
+    };
+
+    client.onDisconnect = () => {
+      lastStompStatus = CONNECTION_STATUS.DISCONNECTED;
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
-        status: CONNECTION_STATUS.CLOSED,
+        status: lastStompStatus,
         timestamp: Date.now(),
       } as ConnectionStatusData);
     };
 
     client.onStompError = (frame) => {
-      const errorMsg = `STOMP Error (${id}): ${frame.headers['message']}`;
-      mainWindow.webContents.send('console:log', errorMsg);
+      lastStompStatus = CONNECTION_STATUS.ERROR;
+      mainWindow.webContents.send('console:log', `STOMP Error (${id}: ${name}): ${frame.headers['message']}`);
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
-        status: CONNECTION_STATUS.ERROR,
+        status: lastStompStatus,
         timestamp: Date.now(),
       } as ConnectionStatusData);
     };
 
+    client.onWebSocketClose = () => {
+      if (lastStompStatus !== CONNECTION_STATUS.DISCONNECTED && lastStompStatus !== CONNECTION_STATUS.ERROR) {
+        mainWindow.webContents.send('stomp:status', {
+          connectionId: id,
+          status: CONNECTION_STATUS.CLOSED,
+          timestamp: Date.now(),
+        } as ConnectionStatusData);
+      }
+    };
     client.activate();
+
     stompClients[id] = client;
   });
 

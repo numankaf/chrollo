@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { URL_SCHEME_COLORS } from '@/constants/color-constants';
 import { STOMP_VALIDATION_SCHEMA } from '@/constants/connection/stomp/stomp-schema';
+import ConnectionButton from '@/features/connections/components/common/connection-button';
 import StompHeaders from '@/features/connections/components/stomp/stomp-headers';
 import StompSettings from '@/features/connections/components/stomp/stomp-settings';
 import StompSubsciptions from '@/features/connections/components/stomp/stomp-subscriptions';
@@ -13,7 +14,6 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { WS_URL_SCHEME, type Connection } from '@/types/connection';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
-import { Button } from '@/components/common/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,7 +57,7 @@ function StompConnectionView() {
   return (
     <div className="h-full">
       <FormProvider {...form}>
-        <form className="h-full" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <form className="h-full" noValidate>
           <div className="flex gap-2 m-2">
             <Controller
               name="prefix"
@@ -105,7 +105,11 @@ function StompConnectionView() {
                 </InputGroup>
               )}
             />
-            <Button onClick={() => form.handleSubmit(onSubmit)}>Connect</Button>
+            <ConnectionButton
+              connection={connection}
+              onConnect={(connection: Connection) => window.api.stomp.connect(connection)}
+              onDisconnect={(conenctionId: string) => window.api.stomp.disconnect(conenctionId)}
+            />
           </div>
           <Tabs
             defaultValue="settings"

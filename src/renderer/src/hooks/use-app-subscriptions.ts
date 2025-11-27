@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import useStompStatusStore from '@/store/stomp-status-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { getTabRoute } from '@/utils/tab-utils';
@@ -25,6 +26,8 @@ export function useAppSubscriptions() {
     });
 
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
+      const { connectionId, status } = data;
+      useStompStatusStore.getState().setStatus(connectionId, status);
       console.log(data);
     });
 

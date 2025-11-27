@@ -19,6 +19,16 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         toggle:
           'data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:shadow-xs data-[state=off]:bg-muted data-[state=off]:text-muted-foreground',
+        'success-bordered-ghost':
+          'border border-green-600/30 bg-green-600/10 text-green-600 hover:bg-green-600/20 focus-visible:ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:hover:bg-green-400/20 dark:focus-visible:ring-green-400/40',
+        'error-bordered-ghost':
+          'border border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
+        'info-bordered-ghost':
+          'border border-sky-600/30 bg-sky-600/10 text-sky-600 hover:bg-sky-600/20 focus-visible:ring-sky-600/20 dark:bg-sky-400/10 dark:text-sky-400 dark:hover:bg-sky-400/20 dark:focus-visible:ring-sky-400/40',
+        'warn-bordered-ghost':
+          'border border-amber-600/30 bg-amber-600/10 text-amber-600 hover:bg-amber-600/20 focus-visible:ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-400 dark:hover:bg-amber-400/20 dark:focus-visible:ring-amber-400/40',
+        'primary-bordered-ghost':
+          'border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 focus-visible:ring-primary/20 dark:bg-primary/10 dark:text-primary dark:hover:bg-primary/20 dark:focus-visible:ring-primary/40',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
