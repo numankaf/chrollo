@@ -1,11 +1,9 @@
-import { use, useEffect } from 'react';
+import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET, SIDEBAR_WIDTH, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
-import useTabsStore from '@/store/tab-store';
-import useWorkspaceStore from '@/store/workspace-store';
-import { getTabRoute } from '@/utils/tab-utils';
-import { Outlet, useNavigate } from 'react-router';
+import { Outlet } from 'react-router';
 
+import { useAppSubscriptions } from '@/hooks/use-app-subscriptions';
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
 import AppLoader from '@/components/app/app-loader';
 import AppBreadCrumb from '@/components/layout/app-breadcrumb';
@@ -15,34 +13,9 @@ import AppTabs from '@/components/layout/app-tabs';
 import Topbar from '@/components/layout/app-topbar';
 
 function AppLayout() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const unsubscribeConsoleLog = window.listener.console.log((data) => {
-      console.log(data);
-    });
-    const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
-      console.log(data);
-    });
-
-    const unsubscribeWorkspaceChange = useWorkspaceStore.subscribe((state) => {
-      const activeTabId = state.workspaceSelection[state.activeWorkspaceId ?? '']?.activeTabId;
-      const tab = useTabsStore.getState().tabs.find((t) => t.id === activeTabId) ?? null;
-      if (tab) {
-        navigate(getTabRoute(tab.item));
-      } else {
-        navigate('/');
-      }
-    });
-
-    return () => {
-      unsubscribeConsoleLog();
-      unsubscribeStompStatus();
-      unsubscribeWorkspaceChange();
-    };
-  }, [navigate]);
-
   const { appLoaded } = use(AppContext);
+  useAppSubscriptions();
+
   return (
     <>
       <SidebarProvider
