@@ -1,6 +1,8 @@
 import * as React from 'react';
+import type { CellContext } from '@tanstack/react-table';
 
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/common/input';
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
@@ -64,10 +66,33 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
   );
 }
 
+function EditableTextCell<T>({ getValue, row: { index }, column, table }: CellContext<T, unknown>) {
+  const initialValue = getValue() as string;
+  const [value, setValue] = React.useState(initialValue);
+  const onBlur = () => {
+    table.options.meta?.updateData(index, column.id, value);
+  };
+
+  React.useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  return (
+    <Input
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={onBlur}
+      placeholder={`Add ${column.columnDef.header}`}
+      className="focus-visible:ring-ring px-2 py-1 h-8 w-full border border-transparent bg-background! rounded-none focus-visible:ring-1 text-sm"
+      aria-label="editable-text-input"
+    />
+  );
+}
+
 function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
   return (
     <caption data-slot="table-caption" className={cn('text-muted-foreground mt-4 text-sm', className)} {...props} />
   );
 }
 
-export { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow };
+export { EditableTextCell, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow };

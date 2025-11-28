@@ -40,6 +40,7 @@ export interface StompSettings {
 export interface StompSubscription {
   topic: string;
   description?: string;
+  enabled: boolean;
 }
 
 export interface StompConnection extends Connection {
