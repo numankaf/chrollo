@@ -5,6 +5,7 @@ import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -26,6 +27,7 @@ function ConnectionSidebar() {
       openTab: state.openTab,
     }))
   );
+  const { activeTab } = useActiveItem();
   const connections = useWorkspaceConnections();
   const [search, setSearch] = useState('');
   const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
@@ -51,7 +53,7 @@ function ConnectionSidebar() {
               {filteredConnections.map((item) => (
                 <SidebarMenuButton
                   size="sm"
-                  className="data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
+                  className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
                   key={item.id}
                   onClick={() => openTab(item)}
                 >
