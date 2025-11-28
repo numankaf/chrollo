@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/common/button';
 
 type ConnectionButtonProps = React.ComponentProps<'button'> & {
+  asChild?: boolean;
+} & {
   connection: Connection;
   onConnect: (connection: Connection) => void;
   onDisconnect: (connectionId: string) => void;

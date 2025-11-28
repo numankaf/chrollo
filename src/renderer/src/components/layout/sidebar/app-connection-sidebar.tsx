@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { useShallow } from 'zustand/react/shallow';
@@ -30,7 +31,7 @@ function ConnectionSidebar() {
 
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-      <SidebarContent>
+      <SidebarContent className="w-(--sidebar-width-content)!">
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
             <AddConnectionPanel />
@@ -54,7 +55,8 @@ function ConnectionSidebar() {
                   onClick={() => openTab(item)}
                 >
                   <ConnectionIcon connectionType={item.connectionType} />
-                  <span>{item.name}</span>
+                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                  <ConnectionStatusBadge connectionId={item.id} />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

@@ -26,7 +26,7 @@ function EnvironmentsSidebar() {
   const environments = useWorkspaceEnvironments();
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-      <SidebarContent>
+      <SidebarContent className="w-(--sidebar-width-content)!">
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
             <Button size="sm" variant="ghost">
