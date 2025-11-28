@@ -1,3 +1,4 @@
+import { confirmDialog } from '@/store/confirm-dialog-store';
 import { operationHandlers } from '@/utils/base-item-utils';
 import { Ellipsis } from 'lucide-react';
 
@@ -16,7 +17,16 @@ type OperationsButtonProps = {
 
 function OperationsButton({ item }: OperationsButtonProps) {
   const { deleteItem } = operationHandlers[item.modelType];
-
+  const confirmDeleteItem = () => {
+    confirmDialog({
+      header: `Delete "${item.name}"`,
+      message: `Are you sure you want to delete "${item.name}"?`,
+      actionLabel: 'Delete',
+      accept: async () => {
+        await deleteItem(item.id);
+      },
+    });
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="">
@@ -43,10 +53,9 @@ function OperationsButton({ item }: OperationsButtonProps) {
         </DropdownMenuItem>
         <DropdownMenuItem
           className="text-red-500 text-sm hover:bg-red-500! hover:text-white!"
-          onClick={(e) => {
-            e.preventDefault();
+          onClick={async (e) => {
             e.stopPropagation();
-            deleteItem(item.id);
+            confirmDeleteItem();
           }}
         >
           Delete

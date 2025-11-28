@@ -4,7 +4,7 @@ import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { type Connection, type ConnectionFile } from '@/types/connection';
+import { CONNECTION_TYPE, type Connection, type ConnectionFile } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];
@@ -12,7 +12,7 @@ interface ConnectionStore {
   getConnection: (id: string) => Connection | undefined;
   createConnection: (connection: Connection) => Connection;
   updateConnection: (connection: Connection) => Connection;
-  deleteConnection: (id: string) => void;
+  deleteConnection: (id: string) => Promise<void>;
   saveConnection: (connection: Connection) => Promise<Connection>;
   initConnectionStore: (connectionFile: ConnectionFile) => Promise<void>;
 }
@@ -50,19 +50,34 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
     return updatedConnection;
   },
 
-  deleteConnection: (id) => {
-    set((state) => {
-      const newConnections = state.connections.filter((c) => c.id !== id);
-      const currentActiveConnectionId = getActiveWorkspaceSelection('activeConnectionId');
+  deleteConnection: async (id) => {
+    const newConnections = get().connections.filter((c) => c.id !== id);
+    const currentActiveConnectionId = getActiveWorkspaceSelection('activeConnectionId');
 
-      let newSelectedId = currentActiveConnectionId as string;
-      if (currentActiveConnectionId === id) {
-        newSelectedId = newConnections[0]?.id ?? undefined;
+    let newSelectedId = currentActiveConnectionId as string;
+    if (currentActiveConnectionId === id) {
+      newSelectedId = newConnections[0]?.id ?? undefined;
+    }
+    useWorkspaceStore.getState().updateWorkspaceSelection({ activeConnectionId: newSelectedId });
+    useTabsStore.getState().closeTab(id);
+
+    // Close connection on delete
+    const connectionToDelete = get().connections.find((c) => c.id === id);
+    if (connectionToDelete) {
+      switch (connectionToDelete.connectionType) {
+        case CONNECTION_TYPE.STOMP: {
+          window.api.stomp.disconnect(id);
+          break;
+        }
+        default: {
+          break;
+        }
       }
-      useWorkspaceStore.getState().updateWorkspaceSelection({ activeConnectionId: newSelectedId });
-      useTabsStore.getState().closeTab(id);
-      return { connections: newConnections };
-    });
+    }
+
+    //Save to file system
+    await window.api.connection.save({ connections: newConnections });
+    set({ connections: newConnections });
   },
 
   saveConnection: async (connection) => {
