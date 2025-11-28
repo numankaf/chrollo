@@ -78,20 +78,20 @@ const useTabsStore = create<TabsStore>()((set, get) => ({
 
     const currentActiveTabId = getActiveWorkspaceSelection('activeTabId');
 
-    let newActiveTabId = currentActiveTabId;
+    let newActiveTabId = currentActiveTabId as string;
 
-    if (currentActiveTabId === id) {
+    if (id === currentActiveTabId) {
       if (tabIndex > 0) {
         newActiveTabId = newCurrentTabs[tabIndex - 1]?.id ?? newCurrentTabs[0]?.id;
       } else {
         newActiveTabId = newCurrentTabs[0]?.id;
       }
-      useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newActiveTabId });
     }
+
+    useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newActiveTabId });
 
     // Merge back with tabs from other workspaces
     const mergedTabs = [...otherWorkspaceTabs, ...newCurrentTabs];
-
     set({ tabs: mergedTabs });
 
     return mergedTabs.find((t) => t.id === newActiveTabId) ?? null;

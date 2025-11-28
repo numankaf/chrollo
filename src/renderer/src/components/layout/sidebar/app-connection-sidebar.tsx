@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AddConnectionPanel from '@/features/connections/components/common/add-connection-panel';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
@@ -16,7 +17,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import AddConnectionPanel from '@/components/connection/add-connection-panel';
+import OperationsButton from '@/components/app/operations-button';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
@@ -50,13 +51,14 @@ function ConnectionSidebar() {
               {filteredConnections.map((item) => (
                 <SidebarMenuButton
                   size="sm"
-                  className="data-[active=true]:bg-transparent"
+                  className="data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
                   key={item.id}
                   onClick={() => openTab(item)}
                 >
                   <ConnectionIcon connectionType={item.connectionType} />
-                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
                   <ConnectionStatusBadge connectionId={item.id} />
+                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                  <OperationsButton item={item} />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

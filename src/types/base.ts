@@ -1,3 +1,7 @@
+import type { CollectionItem } from '@/types/collection';
+import type { Connection } from '@/types/connection';
+import type { Environment } from '@/types/environment';
+
 export const BASE_MODEL_TYPE = {
   WORKSPACE: 'WORKSPACE',
   ENVIRONMENT: 'ENVIRONMENT',
@@ -19,3 +23,5 @@ export interface BaseAuditModel extends BaseModel {
   updatedBy?: string;
   updatedDate?: string;
 }
+
+export type BaseItem = Connection | CollectionItem | Environment;

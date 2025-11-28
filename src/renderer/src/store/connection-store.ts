@@ -1,3 +1,4 @@
+import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
 import { nanoid } from 'nanoid';
@@ -59,6 +60,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
         newSelectedId = newConnections[0]?.id ?? undefined;
       }
       useWorkspaceStore.getState().updateWorkspaceSelection({ activeConnectionId: newSelectedId });
+      useTabsStore.getState().closeTab(id);
       return { connections: newConnections };
     });
   },
