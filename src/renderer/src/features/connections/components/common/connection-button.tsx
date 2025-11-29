@@ -66,8 +66,8 @@ function ConnectionButton({
       case CONNECTION_STATUS.ERROR:
         return {
           disabled: false,
-          label: 'Retry',
-          onClick: () => onConnect(connection),
+          label: 'Close',
+          onClick: () => onDisconnect(connection.id),
           variant: 'warn-bordered-ghost',
           icon: <CircleAlert />,
         };

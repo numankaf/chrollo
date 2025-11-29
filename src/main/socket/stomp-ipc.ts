@@ -20,16 +20,18 @@ export function initStompIpc() {
   // CONNECT
   // ------------------------------
   ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
-    const { id, name, subscriptions } = connection;
+    const { id, name, connectHeaders, subscriptions } = connection;
 
     if (stompClients[id]) {
       stompClients[id].deactivate();
       delete stompClients[id];
     }
 
+    const headers = connectHeaders.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
     const client = new Client({
       webSocketFactory: () => new SockJS(connection.prefix + connection.url),
       ...connection.settings,
+      connectHeaders: headers,
       debug: (msg) => {
         mainWindow.webContents.send('console:log', msg);
       },
@@ -162,6 +164,11 @@ export function initStompIpc() {
       client.deactivate();
       delete stompClients[id];
       mainWindow.webContents.send('console:log', `Disconnected STOMP (${id})`);
+      mainWindow.webContents.send('stomp:status', {
+        connectionId: id,
+        status: CONNECTION_STATUS.DISCONNECTED,
+        timestamp: Date.now(),
+      } as ConnectionStatusData);
     }
   });
 

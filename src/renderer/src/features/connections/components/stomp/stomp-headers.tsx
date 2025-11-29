@@ -21,14 +21,23 @@ function StompHeaders() {
         header: '',
         size: 40,
         cell: ({ row, column, table }) => {
-          const value = row.original.enabled;
+          const key = row.original.key;
+          const disabled = !key?.trim();
+
+          if (disabled && row.original.enabled) {
+            table.options.meta?.updateData(row.index, column.id, false);
+          }
+
           return (
             <div className="flex items-center justify-center">
               <Checkbox
                 className="cursor-pointer"
-                checked={value}
+                checked={row.original.enabled}
+                disabled={disabled}
                 onCheckedChange={(checked) => {
-                  table.options.meta?.updateData(row.index, column.id, checked);
+                  if (!disabled) {
+                    table.options.meta?.updateData(row.index, column.id, checked);
+                  }
                 }}
               />
             </div>
