@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useTabsStore from '@/store/tab-store';
 import { hasChildren } from '@/utils/collection-util';
@@ -90,6 +90,8 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
 }
 
 export default function CollectionArboristSidebar() {
+  const [search, setSearch] = useState<string>('');
+
   const { collectionItemMap } = useCollectionItemStore(
     useShallow((state) => ({
       collectionItemMap: state.collectionItemMap,
@@ -121,7 +123,13 @@ export default function CollectionArboristSidebar() {
             <Button size="sm" variant="ghost">
               <Plus size={16} />
             </Button>
-            <SearchBar placeholder="Search collections" className="flex-1" onSearchChange={() => {}} />
+            <SearchBar
+              placeholder="Search collections"
+              className="flex-1"
+              onSearchChange={(e) => {
+                setSearch(e.target.value);
+              }}
+            />
           </div>
         </SidebarHeader>
 
@@ -133,6 +141,10 @@ export default function CollectionArboristSidebar() {
                 width={'100%'}
                 childrenAccessor={childrenAccessor}
                 rowHeight={30}
+                searchTerm={search}
+                searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
+                disableDrag
+                disableDrop
               >
                 {CollectionItemNode}
               </Tree>
