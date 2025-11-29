@@ -20,7 +20,7 @@ export function initStompIpc() {
   // CONNECT
   // ------------------------------
   ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
-    const { id, name } = connection;
+    const { id, name, subscriptions } = connection;
 
     if (stompClients[id]) {
       stompClients[id].deactivate();
@@ -44,6 +44,21 @@ export function initStompIpc() {
         status: lastStompStatus,
         timestamp: Date.now(),
       } as ConnectionStatusData);
+
+      // ------------------------------
+      // ADD ENABLED SUBSCRIBTIONS
+      // ------------------------------
+      for (const subscription of subscriptions) {
+        if (subscription.enabled) {
+          client.subscribe(subscription.topic, (msg: Message) => {
+            mainWindow.webContents.send('stomp:message', {
+              connectionId: subscription.id,
+              topic: subscription.topic,
+              body: msg.body,
+            });
+          });
+        }
+      }
     };
 
     client.onChangeState = (state) => {

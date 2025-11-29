@@ -1,93 +1,111 @@
-import type { ColumnDef } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useFormContext } from 'react-hook-form';
 
 import type { StompSubscription } from '@/types/connection';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { Button } from '@/components/common/button';
 import { Switch } from '@/components/common/switch';
 import { EditableTextCell } from '@/components/common/table';
 import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
-const columns: ColumnDef<StompSubscription>[] = [
-  {
-    accessorKey: 'enabled',
-    header: 'Enabled',
-    size: 40,
-    cell: ({ row, column, table }) => {
-      const value = row.original.enabled;
-      const topic = row.original.topic;
-      const disabled = !topic?.trim();
-      return (
-        <div className="flex items-center justify-center">
-          <Switch
-            className="cursor-pointer"
-            checked={value}
-            disabled={disabled}
-            onCheckedChange={(checked) => {
-              table.options.meta?.updateData(row.index, column.id, checked);
-            }}
-          />
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'topic',
-    meta: {
-      placeholder: 'Add Topic',
-    },
-    header: ({ table }) => (
-      <div className="flex items-center gap-3 justify-between">
-        <span>Topic</span>
-        <Button
-          type="button"
-          onClick={() => table.options.meta?.addRow()}
-          className="w-6 h-6"
-          size="icon"
-          variant="primary-bordered-ghost"
-        >
-          <Plus />
-        </Button>
-      </div>
-    ),
-    cell: EditableTextCell<StompSubscription>,
-    size: 500,
-  },
-  {
-    accessorKey: 'description',
-    header: 'Description',
-    cell: EditableTextCell<StompSubscription>,
-    size: 500,
-    meta: {
-      placeholder: 'Add Description',
-    },
-  },
-  {
-    accessorKey: 'delete',
-    header: '',
-    size: 40,
-    cell: ({ row, table }) => {
-      return (
-        <div className="flex items-center justify-center">
-          <Button
-            type="button"
-            variant="error-bordered-ghost"
-            size="icon"
-            className="w-6 h-6"
-            onClick={() => table.options.meta?.deleteRow(row.index)}
-          >
-            <Trash2 />
-          </Button>
-        </div>
-      );
-    },
-  },
-];
-
 function StompSubsciptions() {
+  const { activeTab } = useActiveItem();
   const form = useFormContext();
   const subscriptions = form.getValues('subscriptions');
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'enabled',
+        header: 'Enabled',
+        size: 40,
+        cell: ({ row, column, table }) => {
+          const value = row.original.enabled;
+          const topic = row.original.topic;
+          const disabled = !topic?.trim();
+          return (
+            <div className="flex items-center justify-center">
+              <Switch
+                className="cursor-pointer"
+                checked={value}
+                disabled={disabled}
+                onCheckedChange={(checked) => {
+                  table.options.meta?.updateData(row.index, column.id, checked);
+                  if (activeTab) {
+                    if (checked) {
+                      window.api.stomp.subscribe(activeTab.id, topic);
+                    } else {
+                      window.api.stomp.unsubscribe(activeTab.id, topic);
+                    }
+                  }
+                }}
+              />
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'topic',
+        meta: {
+          placeholder: 'Add Topic',
+        },
+        header: ({ table }) => (
+          <div className="flex items-center gap-3 justify-between">
+            <span>Topic</span>
+            <Button
+              type="button"
+              onClick={() => table.options.meta?.addRow()}
+              className="w-6 h-6"
+              size="icon"
+              variant="primary-bordered-ghost"
+            >
+              <Plus />
+            </Button>
+          </div>
+        ),
+        cell: EditableTextCell<StompSubscription>,
+        size: 500,
+      },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        cell: EditableTextCell<StompSubscription>,
+        size: 500,
+        meta: {
+          placeholder: 'Add Description',
+        },
+      },
+      {
+        accessorKey: 'delete',
+        header: '',
+        size: 40,
+        cell: ({ row, table }) => {
+          const topic = row.original.topic;
+          return (
+            <div className="flex items-center justify-center">
+              <Button
+                type="button"
+                variant="error-bordered-ghost"
+                size="icon"
+                className="w-6 h-6"
+                onClick={() => {
+                  table.options.meta?.deleteRow(row.index);
+                  if (activeTab) {
+                    window.api.stomp.unsubscribe(activeTab.id, topic);
+                  }
+                }}
+              >
+                <Trash2 />
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    [activeTab]
+  );
 
   const updateData = (rowIndex: number, columnId: keyof StompSubscription, value: unknown) => {
     const updated = subscriptions.map((row: StompSubscription, i: number) =>

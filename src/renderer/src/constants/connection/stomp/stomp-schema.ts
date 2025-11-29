@@ -36,7 +36,14 @@ const STOMP_VALIDATION_SCHEMA = z.object({
       .min(0, 'Max WS chunk size cannot be negative.'),
   }),
   headers: z.object(),
-  subscriptions: z.array(z.object()),
+  subscriptions: z.array(
+    z.object({
+      id: z.string(),
+      topic: z.string(),
+      description: z.string().optional(),
+      enabled: z.boolean(),
+    })
+  ),
 });
 
 const STOMP_DEFAULT_VALUES: Omit<StompConnection, 'id' | 'name' | 'workspaceId'> = {

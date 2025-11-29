@@ -12,7 +12,7 @@ import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
-import { WS_URL_SCHEME, type Connection } from '@/types/connection';
+import { WS_URL_SCHEME, type StompConnection } from '@/types/connection';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import {
   DropdownMenu,
@@ -44,7 +44,7 @@ function StompConnectionView() {
 
   useEffect(() => {
     if (watchedValues) {
-      updateConnection(watchedValues as Connection);
+      updateConnection(watchedValues as unknown as StompConnection);
     }
   }, [updateConnection, watchedValues]);
 
