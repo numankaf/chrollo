@@ -19,13 +19,6 @@ import {
 import { Input } from '@/components/common/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/table';
 
-declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: string | number) => void;
-  }
-}
-
 // Sample data
 const initialData: Variable[] = [
   {

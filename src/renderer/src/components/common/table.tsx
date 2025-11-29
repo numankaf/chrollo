@@ -80,9 +80,11 @@ function EditableTextCell<T>({ getValue, row: { index }, column, table }: CellCo
   return (
     <Input
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e) => {
+        setValue(e.target.value);
+      }}
       onBlur={onBlur}
-      placeholder={`Add ${column.columnDef.header}`}
+      placeholder={`Add ${column.columnDef.id}`}
       className="focus-visible:ring-ring px-2 py-1 h-8 w-full border border-transparent bg-background! rounded-none focus-visible:ring-1 text-sm"
       aria-label="editable-text-input"
     />
