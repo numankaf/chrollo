@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { saveHandlers } from '@/utils/save-registry-utils';
 import { Loader2, Save } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { Button } from '@/components/common/button';
@@ -22,6 +23,7 @@ function SaveItemButton() {
     try {
       setLoading(true);
       await handler.save(item);
+      toast.success(`${item.name} saved.`, { duration: 1000 });
     } finally {
       setLoading(false);
     }
