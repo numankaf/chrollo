@@ -8,6 +8,7 @@ import type { Environment, EnvironmentFile } from '@/types/environment';
 
 interface EnvironmentStore {
   environments: Environment[];
+  getEnvironment: (id: string) => Environment | undefined;
   createEnvironment: (environment: Environment) => Environment;
   updateEnvironment: (environment: Environment) => Environment;
   deleteEnvironment: (id: string) => Promise<void>;
@@ -17,7 +18,9 @@ interface EnvironmentStore {
 
 const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   environments: [],
-
+  getEnvironment: (id: string) => {
+    return get().environments.find((e) => e.id === id)!;
+  },
   createEnvironment: (environment) => {
     const newEnvironment = { ...environment, id: nanoid(8) };
     set((state) => ({

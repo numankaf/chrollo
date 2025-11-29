@@ -3,6 +3,7 @@ import { AddItemDialog } from '@/features/connections/components/common/add-item
 import useEnvironmentStore from '@/store/environment-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { applyTextSearch } from '@/utils/search-util';
 import { Container, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
@@ -35,6 +36,9 @@ function EnvironmentsSidebar() {
   const { activeTab } = useActiveItem();
 
   const environments = useWorkspaceEnvironments();
+  const [search, setSearch] = useState('');
+
+  const filteredEnvironments = applyTextSearch(environments, search, (environment) => environment.name);
 
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
@@ -75,26 +79,34 @@ function EnvironmentsSidebar() {
       <SidebarContent className="w-(--sidebar-width-content)!">
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
-            <AddItemDialog
-              title="Create Environment"
-              inputLabel="Environment Name"
-              inputRequiredLabel="Environment name is required."
-              inputPlaceholder="Enter a environment name"
-              defaultValue="New Environment"
-              open={addDialogOpen}
-              onOpenChange={(open) => setAddDialogOpen(open)}
-              onSubmit={onAddSubmit}
-            />
+            {addDialogOpen && (
+              <AddItemDialog
+                title="Create Environment"
+                inputLabel="Environment Name"
+                inputRequiredLabel="Environment name is required."
+                inputPlaceholder="Enter a environment name"
+                defaultValue="New Environment"
+                open={addDialogOpen}
+                onOpenChange={(open) => setAddDialogOpen(open)}
+                onSubmit={onAddSubmit}
+              />
+            )}
             <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
               <Plus size={16} />
             </Button>
-            <SearchBar placeholder="Search environments" className="flex-1" onSearchChange={() => {}} />
+            <SearchBar
+              placeholder="Search environments"
+              className="flex-1"
+              onSearchChange={(e) => {
+                setSearch(e.target.value);
+              }}
+            />
           </div>
         </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {environments.map((item) => (
+              {filteredEnvironments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
                   className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}

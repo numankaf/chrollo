@@ -1,6 +1,7 @@
 import { BASE_MODEL_TYPE, type BaseAuditModel } from '@/types/base';
 
 export interface EnvironmentVariable {
+  id: string;
   key: string;
   value: string;
   description: string;

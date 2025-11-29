@@ -1,165 +1,135 @@
 /* eslint-disable react-hooks/incompatible-library */
-import { useEffect, useState } from 'react';
-import type {
-  CellContext,
-  ColumnDef,
-  ColumnFiltersState,
-  RowData,
-  SortingState,
-  VisibilityState,
-} from '@tanstack/react-table';
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { useMemo } from 'react';
+import useEnvironmentStore from '@/store/environment-store';
+import { Plus, Trash2 } from 'lucide-react';
+import { nanoid } from 'nanoid';
+import { useShallow } from 'zustand/react/shallow';
 
-import { Input } from '@/components/common/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/table';
-
-// Sample data
-const initialData: Variable[] = [
-  {
-    id: '1',
-    variable: 'service',
-    value: 'corec2',
-  },
-  {
-    id: '2',
-    variable: 'path',
-    value: 'bsi',
-  },
-];
-
-export type Variable = {
-  id: string;
-  variable: string;
-  value: string;
-};
-
-// Editable cell component for text inputs
-function EditableTextCell({ getValue, row: { index }, column: { id }, table }: CellContext<Variable, unknown>) {
-  const initialValue = getValue() as string;
-  const [value, setValue] = useState(initialValue);
-
-  const onBlur = () => {
-    table.options.meta?.updateData(index, id, value);
-  };
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  return (
-    <Input
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={onBlur}
-      className="focus-visible:ring-ring h-8 w-full border-0 bg-background! p-0 rounded-none focus-visible:ring-1 text-sm"
-      aria-label="editable-text-input"
-    />
-  );
-}
-
-// Column definitions with editable cells
-export const columns: ColumnDef<Variable>[] = [
-  {
-    accessorKey: 'variable',
-    header: 'Variable',
-    cell: EditableTextCell,
-  },
-  {
-    accessorKey: 'value',
-    header: 'Value',
-    cell: EditableTextCell,
-  },
-];
+import type { EnvironmentVariable } from '@/types/environment';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { Button } from '@/components/common/button';
+import { Checkbox } from '@/components/common/checkbox';
+import { EditableTextCell } from '@/components/common/table';
+import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
 function EnvironmentView() {
-  const [data, setData] = useState(() => [...initialData]);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const { activeTab } = useActiveItem();
+  const { environment, updateEnvironment } = useEnvironmentStore(
+    useShallow((state) => ({
+      updateEnvironment: state.updateEnvironment,
+      environment: state.environments.find((e) => e.id === activeTab?.id),
+    }))
+  );
+  const variables = environment ? environment.variables : [];
 
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    meta: {
-      updateData: (rowIndex, columnId, value) => {
-        setData((old) =>
-          old.map((row, index) => {
-            if (index === rowIndex) {
-              return {
-                ...old[rowIndex]!,
-                [columnId]: value,
-              };
-            }
-
-            return row;
-          })
-        );
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'enabled',
+        header: '',
+        size: 40,
+        cell: ({ row, column, table }) => {
+          return (
+            <div className="flex items-center justify-center">
+              <Checkbox
+                className="cursor-pointer"
+                checked={row.original.enabled}
+                onCheckedChange={(checked) => {
+                  table.options.meta?.updateData(row.index, column.id, checked);
+                }}
+              />
+            </div>
+          );
+        },
       },
-    },
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
+      {
+        accessorKey: 'key',
+        meta: {
+          placeholder: 'Add Key',
+        },
+        header: ({ table }) => (
+          <div className="flex items-center gap-3 justify-between">
+            <span>Key</span>
+            <Button
+              type="button"
+              onClick={() => table.options.meta?.addRow()}
+              className="w-6 h-6"
+              size="icon"
+              variant="primary-bordered-ghost"
+            >
+              <Plus />
+            </Button>
+          </div>
+        ),
+        cell: EditableTextCell<EnvironmentVariable>,
+        size: 500,
+      },
+      {
+        accessorKey: 'value',
+        header: 'Value',
+        cell: EditableTextCell<EnvironmentVariable>,
+        size: 500,
+        meta: {
+          placeholder: 'Add Value',
+        },
+      },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        cell: EditableTextCell<EnvironmentVariable>,
+        size: 500,
+        meta: {
+          placeholder: 'Add Description',
+        },
+      },
+      {
+        accessorKey: 'delete',
+        header: '',
+        size: 40,
+        cell: ({ row, table }) => {
+          return (
+            <div className="flex items-center justify-center">
+              <Button
+                type="button"
+                variant="error-bordered-ghost"
+                size="icon"
+                className="w-6 h-6"
+                onClick={() => table.options.meta?.deleteRow(row.index)}
+              >
+                <Trash2 />
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  const updateData = (rowIndex: number, columnId: keyof EnvironmentVariable, value: unknown) => {
+    const updated = variables.map((row: EnvironmentVariable, i: number) =>
+      i === rowIndex ? { ...row, [columnId]: value } : row
+    );
+    if (environment) updateEnvironment({ ...environment, variables: updated });
+  };
+
+  const deleteRow = (rowIndex: number) => {
+    const updated = variables.filter((_: EnvironmentVariable, i: number) => i !== rowIndex);
+    if (environment) updateEnvironment({ ...environment, variables: updated });
+  };
+
+  const addRow = () => {
+    const updated = [...variables, { id: nanoid(8), key: '', value: '', description: '', enabled: true }];
+    if (environment) updateEnvironment({ ...environment, variables: updated });
+  };
 
   return (
-    <div className="m-2">
-      <Table className="border">
-        <TableHeader className="bg-card">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="*:border-border [&>:not(:last-child)]:border-r">
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead className="h-8" key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
-                    )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className="*:border-border [&>:not(:last-child)]:border-r"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell className="p-0.5" key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+    <div className="mx-4 my-2">
+      <TanstackDataTable<EnvironmentVariable>
+        data={environment ? environment.variables : []}
+        columns={columns}
+        meta={{ updateData, deleteRow, addRow }}
+      />
     </div>
   );
 }

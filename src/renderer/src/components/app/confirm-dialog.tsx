@@ -27,9 +27,13 @@ export function ConfirmDialog() {
   return (
     <AlertDialog open={open} onOpenChange={(v) => !v && close()}>
       <AlertDialogContent className="data-[state=closed]:animate-none!">
-        <AlertDialogHeader>
-          <AlertDialogTitle>{options?.header ?? 'Confirmation'}</AlertDialogTitle>
-          <AlertDialogDescription>{options?.message ?? ''}</AlertDialogDescription>
+        <AlertDialogHeader className="overflow-hidden text-ellipsis">
+          <AlertDialogTitle className="overflow-hidden text-ellipsis ">
+            {options?.header ?? 'Confirmation'}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="overflow-hidden text-ellipsis ">
+            {options?.message ?? ''}
+          </AlertDialogDescription>
         </AlertDialogHeader>
 
         {options?.icon && <div className="flex items-center gap-2 text-muted-foreground">{options.icon}</div>}
