@@ -54,11 +54,9 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
     const newConnections = get().connections.filter((c) => c.id !== id);
     const currentActiveConnectionId = getActiveWorkspaceSelection('activeConnectionId');
 
-    let newSelectedId = currentActiveConnectionId as string;
     if (currentActiveConnectionId === id) {
-      newSelectedId = newConnections[0]?.id ?? undefined;
+      useWorkspaceStore.getState().updateWorkspaceSelection({ activeConnectionId: undefined });
     }
-    useWorkspaceStore.getState().updateWorkspaceSelection({ activeConnectionId: newSelectedId });
     useTabsStore.getState().closeTab(id);
 
     // Close connection on delete
