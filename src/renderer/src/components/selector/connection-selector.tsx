@@ -1,5 +1,113 @@
+import { useState } from 'react';
+import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
+import useStompStatusStore from '@/store/stomp-status-store';
+import useWorkspaceStore from '@/store/workspace-store';
+import { applyTextSearch } from '@/utils/search-util';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+
+import { CONNECTION_STATUS } from '@/types/connection';
+import { cn } from '@/lib/utils';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
+import { Button } from '@/components/common/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/common/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
+
 function ConnectionSelector() {
-  return <div></div>;
+  const connections = useWorkspaceConnections();
+  const { updateWorkspaceSelection } = useWorkspaceStore(
+    useShallow((state) => ({
+      updateWorkspaceSelection: state.updateWorkspaceSelection,
+    }))
+  );
+  const { activeConnection } = useActiveItem();
+  const [open, setOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>('');
+
+  const status = useStompStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
+  const filteredConnections = applyTextSearch(connections, search, (c) => c.name);
+
+  function getButtonVariant(): {
+    variant: 'error-bordered-ghost' | 'success-bordered-ghost' | 'warn-bordered-ghost' | 'outline';
+  } {
+    switch (status) {
+      case CONNECTION_STATUS.CONNECTED:
+        return {
+          variant: 'success-bordered-ghost',
+        };
+      case CONNECTION_STATUS.CLOSED:
+      case CONNECTION_STATUS.DISCONNECTED: {
+        return {
+          variant: 'error-bordered-ghost',
+        };
+      }
+      case CONNECTION_STATUS.ERROR:
+        return {
+          variant: 'warn-bordered-ghost',
+        };
+
+      case CONNECTION_STATUS.DEACTIVATED:
+      default:
+        return {
+          variant: 'outline',
+        };
+    }
+  }
+
+  const { variant } = getButtonVariant();
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant={variant} role="combobox" aria-expanded={open} className="w-[200px] justify-between">
+          <div className="flex items-center gap-2 overflow-hidden">
+            {activeConnection && <ConnectionStatusBadge connectionId={activeConnection.id} />}
+            <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">
+              {activeConnection
+                ? connections.find((connection) => connection.id === activeConnection.id)?.name
+                : 'Select connection...'}
+            </span>
+          </div>
+          <ChevronsUpDown className="opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command shouldFilter={false}>
+          <CommandInput value={search} onValueChange={setSearch} placeholder="Search conenction..." className="h-9" />
+          <CommandList>
+            <CommandEmpty>No connection found.</CommandEmpty>
+            <CommandGroup>
+              {filteredConnections.map((connection) => (
+                <CommandItem
+                  key={connection.id}
+                  value={connection.id}
+                  data-search={connection.name.toLowerCase()}
+                  onSelect={(value) => {
+                    updateWorkspaceSelection({ activeConnectionId: value });
+                    setOpen(false);
+                  }}
+                >
+                  <ConnectionStatusBadge connectionId={connection.id} />
+                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{connection.name}</span>
+                  <Check
+                    className={cn('ml-auto', activeConnection?.id === connection.id ? 'opacity-100' : 'opacity-0')}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 export default ConnectionSelector;
