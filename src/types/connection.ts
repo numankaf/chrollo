@@ -38,6 +38,7 @@ export interface StompSettings {
 }
 
 export interface StompSubscription {
+  id: string;
   topic: string;
   description?: string;
   enabled: boolean;

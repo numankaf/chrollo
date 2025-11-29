@@ -66,16 +66,18 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
   );
 }
 
-function EditableTextCell<T>({ getValue, row: { index }, column, table }: CellContext<T, unknown>) {
+function EditableTextCell<T>({ getValue, row, column, table }: CellContext<T, unknown>) {
   const initialValue = getValue() as string;
   const [value, setValue] = React.useState(initialValue);
   const onBlur = () => {
-    table.options.meta?.updateData(index, column.id, value);
+    table.options.meta?.updateData(row.index, column.id, value);
   };
 
   React.useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
+
+  const placeholder = (column.columnDef.meta as { placeholder?: string } | undefined)?.placeholder;
 
   return (
     <Input
@@ -84,7 +86,7 @@ function EditableTextCell<T>({ getValue, row: { index }, column, table }: CellCo
         setValue(e.target.value);
       }}
       onBlur={onBlur}
-      placeholder={`Add ${column.columnDef.id}`}
+      placeholder={placeholder}
       className="focus-visible:ring-ring px-2 py-1 h-8 w-full border border-transparent bg-background! rounded-none focus-visible:ring-1 text-sm"
       aria-label="editable-text-input"
     />
