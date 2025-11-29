@@ -1,11 +1,11 @@
 import * as z from 'zod';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection } from '@/types/connection';
+import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection, type WsUrlScheme } from '@/types/connection';
 
 const STOMP_VALIDATION_SCHEMA = z.object({
   id: z.string(),
-  prefix: z.string(),
+  prefix: z.enum(Object.values(WS_URL_SCHEME) as [WsUrlScheme, ...WsUrlScheme[]]),
   url: z.string().min(1, 'URL is required.'),
   settings: z.object({
     connectionTimeout: z

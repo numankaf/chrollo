@@ -5,6 +5,7 @@ import SockJS from 'sockjs-client';
 
 import {
   CONNECTION_STATUS,
+  WS_URL_SCHEME,
   type ConnectionStatus,
   type ConnectionStatusData,
   type StompConnection,
@@ -28,8 +29,28 @@ export function initStompIpc() {
     }
 
     const headers = connectHeaders.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+
+    const prefix = connection.prefix;
+    let socketFactory: () => WebSocket | InstanceType<typeof SockJS>;
+    switch (prefix) {
+      case WS_URL_SCHEME.WS:
+      case WS_URL_SCHEME.WSS:
+        socketFactory = () => new WebSocket(prefix + connection.url);
+        break;
+
+      case WS_URL_SCHEME.HTTP:
+      case WS_URL_SCHEME.HTTPS:
+        socketFactory = () => new SockJS(prefix + connection.url);
+        break;
+
+      //FALLBACK: Normally this should never happen
+      default:
+        mainWindow.webContents.send('console:error', `Unsupported URL scheme: ${prefix}`);
+        return;
+    }
+
     const client = new Client({
-      webSocketFactory: () => new SockJS(connection.prefix + connection.url),
+      webSocketFactory: socketFactory,
       ...connection.settings,
       connectHeaders: headers,
       debug: (msg) => {
