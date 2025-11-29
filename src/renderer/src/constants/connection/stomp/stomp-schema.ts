@@ -1,7 +1,6 @@
 import * as z from 'zod';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import type { Header } from '@/types/common';
 import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection } from '@/types/connection';
 
 const STOMP_VALIDATION_SCHEMA = z.object({
@@ -35,7 +34,15 @@ const STOMP_VALIDATION_SCHEMA = z.object({
       .int('Max WS chunk size must be an integer.')
       .min(0, 'Max WS chunk size cannot be negative.'),
   }),
-  headers: z.object(),
+  connectHeaders: z.array(
+    z.object({
+      id: z.string(),
+      key: z.string(),
+      value: z.string(),
+      description: z.string().optional(),
+      enabled: z.boolean(),
+    })
+  ),
   subscriptions: z.array(
     z.object({
       id: z.string(),
@@ -60,7 +67,7 @@ const STOMP_DEFAULT_VALUES: Omit<StompConnection, 'id' | 'name' | 'workspaceId'>
     splitLargeFrames: false,
     maxWebSocketChunkSize: 8192,
   },
-  headers: new Map<string, Header>(),
+  connectHeaders: [],
   subscriptions: [],
 };
 

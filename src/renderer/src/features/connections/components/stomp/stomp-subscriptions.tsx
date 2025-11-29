@@ -10,10 +10,12 @@ import { Switch } from '@/components/common/switch';
 import { EditableTextCell } from '@/components/common/table';
 import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
+const PROPERTY_KEY = 'subscriptions';
+
 function StompSubsciptions() {
   const { activeTab } = useActiveItem();
   const form = useFormContext();
-  const subscriptions = form.getValues('subscriptions');
+  const subscriptions = form.getValues(PROPERTY_KEY);
 
   const columns = useMemo(
     () => [
@@ -83,6 +85,7 @@ function StompSubsciptions() {
         size: 40,
         cell: ({ row, table }) => {
           const topic = row.original.topic;
+          const disabled = !topic?.trim();
           return (
             <div className="flex items-center justify-center">
               <Button
@@ -92,7 +95,7 @@ function StompSubsciptions() {
                 className="w-6 h-6"
                 onClick={() => {
                   table.options.meta?.deleteRow(row.index);
-                  if (activeTab) {
+                  if (activeTab && !disabled) {
                     window.api.stomp.unsubscribe(activeTab.id, topic);
                   }
                 }}
@@ -111,21 +114,23 @@ function StompSubsciptions() {
     const updated = subscriptions.map((row: StompSubscription, i: number) =>
       i === rowIndex ? { ...row, [columnId]: value } : row
     );
-    form.setValue('subscriptions', updated, { shouldDirty: true });
+    form.setValue(PROPERTY_KEY, updated, { shouldDirty: true });
   };
 
   const deleteRow = (rowIndex: number) => {
     const updated = subscriptions.filter((_: StompSubscription, i: number) => i !== rowIndex);
-    form.setValue('subscriptions', updated, { shouldDirty: true });
+    form.setValue(PROPERTY_KEY, updated, { shouldDirty: true });
   };
 
   const addRow = () => {
     const updated = [...subscriptions, { id: nanoid(8), topic: '', description: '', enabled: false }];
-    form.setValue('subscriptions', updated, { shouldDirty: true });
+    form.setValue(PROPERTY_KEY, updated, { shouldDirty: true });
   };
 
   return (
-    <div className="mx-4 my-2">
+    <div className="mx-4">
+      <p className="text-muted-foreground my-1">Stomp Subscriptions</p>
+
       <TanstackDataTable<StompSubscription>
         data={subscriptions}
         columns={columns}

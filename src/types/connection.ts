@@ -47,7 +47,7 @@ export interface StompSubscription {
 export interface StompConnection extends Connection {
   connectionType: 'STOMP';
   settings: StompSettings;
-  connectHeaders: Map<string, Header>;
+  connectHeaders: Header[];
   subscriptions: StompSubscription[];
 }
 

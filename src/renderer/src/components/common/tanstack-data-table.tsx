@@ -13,6 +13,7 @@ interface TanstackDataTableProps<T> {
 }
 
 export function TanstackDataTable<T extends { id: string }>({ data, columns, meta }: TanstackDataTableProps<T>) {
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
