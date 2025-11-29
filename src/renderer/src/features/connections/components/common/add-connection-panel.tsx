@@ -1,135 +1,20 @@
 import { useState } from 'react';
 import { STOMP_DEFAULT_VALUES } from '@/constants/connection/stomp/stomp-schema';
+import { AddItemDialog } from '@/features/connections/components/common/add-item-dialog';
 import useConnectionStore from '@/store/connection-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { Controller, useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
 import { Button } from '@/components/common/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/common/dialog';
-import { Field, FieldError, FieldLabel } from '@/components/common/field';
-import { Input } from '@/components/common/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { SocketIoIcon } from '@/components/icon/socket-io-icon';
 import { StompIcon } from '@/components/icon/stomp-icon';
 import { WebSocketIcon } from '@/components/icon/websocket-icon';
-
-function AddConnectionFormContent({
-  connectionType,
-  label,
-  onClose,
-}: {
-  connectionType: ConnectionType;
-  label: string;
-  onClose: () => void;
-}) {
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
-  const { saveConnection } = useConnectionStore(
-    useShallow((state) => ({
-      saveConnection: state.saveConnection,
-    }))
-  );
-  const { activeWorkspaceId } = useWorkspaceStore(
-    useShallow((state) => ({
-      activeWorkspaceId: state.activeWorkspaceId,
-    }))
-  );
-
-  const formSchema = z.object({
-    name: z.string().min(1, 'Connection name is required'),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: `New ${label} Connection`,
-    },
-  });
-
-  async function onSubmit(values: { name: string }) {
-    if (!activeWorkspaceId) {
-      return;
-    }
-    try {
-      switch (connectionType) {
-        case CONNECTION_TYPE.RAW_WEBSOCKET:
-          break;
-
-        case CONNECTION_TYPE.STOMP: {
-          const connectionPayload: StompConnection = {
-            id: nanoid(8),
-            name: values.name,
-            workspaceId: activeWorkspaceId,
-            ...STOMP_DEFAULT_VALUES,
-          };
-
-          const newConnection = await saveConnection(connectionPayload);
-          openTab(newConnection);
-          onClose();
-          break;
-        }
-
-        case CONNECTION_TYPE.SOCKETIO:
-          break;
-
-        default:
-          throw new Error('Unsupported connection type');
-      }
-    } catch (error) {
-      console.error('Failed to submit connection:', error);
-    }
-  }
-
-  return (
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Create {label} connection</DialogTitle>
-      </DialogHeader>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-3">
-        <Controller
-          name="name"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Connection Name</FieldLabel>
-              <Input
-                {...field}
-                id={field.name}
-                aria-invalid={fieldState.invalid}
-                placeholder="Enter a connection name"
-                autoComplete="off"
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button type="submit">Create</Button>
-        </DialogFooter>
-      </form>
-    </DialogContent>
-  );
-}
 
 function AddConnectionPanel() {
   const [dialogInfo, setDialogInfo] = useState<{
@@ -143,6 +28,58 @@ function AddConnectionPanel() {
 
   function closeDialog() {
     setDialogInfo(null);
+  }
+
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
+
+  const { saveConnection } = useConnectionStore(
+    useShallow((state) => ({
+      saveConnection: state.saveConnection,
+    }))
+  );
+  const { activeWorkspaceId } = useWorkspaceStore(
+    useShallow((state) => ({
+      activeWorkspaceId: state.activeWorkspaceId,
+    }))
+  );
+
+  async function onAddSubmit(values: { name: string }) {
+    if (!activeWorkspaceId) {
+      return;
+    }
+    try {
+      switch (dialogInfo?.connectionType) {
+        case CONNECTION_TYPE.RAW_WEBSOCKET:
+          break;
+
+        case CONNECTION_TYPE.STOMP: {
+          const connectionPayload: StompConnection = {
+            id: nanoid(8),
+            name: values.name,
+            workspaceId: activeWorkspaceId,
+            ...STOMP_DEFAULT_VALUES,
+          };
+
+          const newConnection = await saveConnection(connectionPayload);
+          openTab(newConnection);
+          closeDialog();
+          break;
+        }
+
+        case CONNECTION_TYPE.SOCKETIO:
+          break;
+
+        default:
+          throw new Error('Unsupported connection type');
+      }
+    } catch (error) {
+      console.error('Failed to submit connection:', error);
+      toast.error('Failed to submit connection.');
+    }
   }
 
   return (
@@ -189,13 +126,20 @@ function AddConnectionPanel() {
       </PopoverContent>
 
       {dialogInfo && (
-        <Dialog open onOpenChange={(open) => !open && closeDialog()}>
-          <AddConnectionFormContent
-            connectionType={dialogInfo.connectionType}
-            label={dialogInfo.label}
-            onClose={closeDialog}
-          />
-        </Dialog>
+        <AddItemDialog
+          title={`Create ${dialogInfo?.label} Connection`}
+          inputLabel={`${dialogInfo?.label} Name`}
+          inputRequiredLabel="Connection name is required."
+          inputPlaceholder="Enter a connection name"
+          defaultValue={`New ${dialogInfo?.label} Connection`}
+          open={!!dialogInfo}
+          onOpenChange={(open) => {
+            if (!open) {
+              closeDialog();
+            }
+          }}
+          onSubmit={onAddSubmit}
+        />
       )}
     </Popover>
   );

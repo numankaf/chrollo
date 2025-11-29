@@ -5,10 +5,12 @@ import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Container, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Environment } from '@/types/environment';
 import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
+import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
@@ -22,6 +24,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
+import OperationsButton from '@/components/app/operations-button';
 
 function EnvironmentsSidebar() {
   const { openTab } = useTabsStore(
@@ -29,6 +32,7 @@ function EnvironmentsSidebar() {
       openTab: state.openTab,
     }))
   );
+  const { activeTab } = useActiveItem();
 
   const environments = useWorkspaceEnvironments();
 
@@ -61,7 +65,8 @@ function EnvironmentsSidebar() {
       openTab(newEnvironment);
       setAddDialogOpen(false);
     } catch (error) {
-      console.error('Failed to submit connection:', error);
+      console.error('Failed to submit environment:', error);
+      toast.error('Failed to submit environment.');
     }
   }
 
@@ -92,12 +97,13 @@ function EnvironmentsSidebar() {
               {environments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
-                  className="data-[active=true]:bg-transparent"
+                  className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
                   key={item.id}
                   size="sm"
                 >
                   <Container size={16} />
-                  <span className="text-sm">{item.name}</span>
+                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                  <OperationsButton item={item} />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>
