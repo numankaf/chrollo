@@ -2,13 +2,23 @@ import { useCallback, useMemo, useState } from 'react';
 import { AddItemDialog } from '@/features/connections/components/common/add-item-dialog';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useTabsStore from '@/store/tab-store';
+import useWorkspaceStore from '@/store/workspace-store';
 import { hasChildren } from '@/utils/collection-util';
 import { ChevronRight, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
+import { nanoid } from 'nanoid';
 import { Tree, type NodeRendererProps, type RowRendererProps } from 'react-arborist';
+import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
-import { COLLECTION_TYPE, type CollectionItem, type CollectionType } from '@/types/collection';
+import {
+  COLLECTION_DEFAULT_VALUES,
+  COLLECTION_TYPE,
+  type Collection,
+  type CollectionItem,
+  type CollectionType,
+} from '@/types/collection';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-collection-item-map';
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -104,12 +114,7 @@ export default function CollectionSidebar() {
   const [search, setSearch] = useState<string>('');
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
-  const { collectionItemMap } = useCollectionItemStore(
-    useShallow((state) => ({
-      collectionItemMap: state.collectionItemMap,
-    }))
-  );
-
+  const collectionItemMap = useWorkspaceCollectionItemMap();
   const roots = useMemo(() => {
     if (!collectionItemMap || collectionItemMap.size === 0) {
       return [];
@@ -131,6 +136,42 @@ export default function CollectionSidebar() {
     [collectionItemMap]
   );
 
+  const { activeWorkspaceId } = useWorkspaceStore(
+    useShallow((state) => ({
+      activeWorkspaceId: state.activeWorkspaceId,
+    }))
+  );
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
+  const { saveCollectionItem } = useCollectionItemStore(
+    useShallow((state) => ({
+      saveCollectionItem: state.saveCollectionItem,
+    }))
+  );
+
+  async function onAddSubmit(values: { name: string }) {
+    if (!activeWorkspaceId) {
+      return;
+    }
+    try {
+      const collectionPayload: Collection = {
+        id: nanoid(8),
+        name: values.name,
+        workspaceId: activeWorkspaceId,
+        ...COLLECTION_DEFAULT_VALUES,
+      };
+      const newCollection = await saveCollectionItem(collectionPayload);
+      openTab(newCollection);
+      setAddDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to submit collection:', error);
+      toast.error('Failed to submit collection.');
+    }
+  }
+
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent className="w-(--sidebar-width-content)!">
@@ -145,7 +186,7 @@ export default function CollectionSidebar() {
                 defaultValue="New Collection"
                 open={addDialogOpen}
                 onOpenChange={(open) => setAddDialogOpen(open)}
-                onSubmit={() => {}}
+                onSubmit={onAddSubmit}
               />
             )}
             <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
@@ -165,7 +206,7 @@ export default function CollectionSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <Tree<CollectionItem>
-                initialData={roots}
+                data={roots}
                 width="100%"
                 childrenAccessor={childrenAccessor}
                 rowHeight={30}

@@ -1,4 +1,4 @@
-import type { BaseAuditModel } from '@/types/base';
+import { BASE_MODEL_TYPE, type BaseAuditModel } from '@/types/base';
 import type { Header, Scripts } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
 
@@ -28,8 +28,8 @@ export interface CollectionItem extends BaseAuditModel {
 export interface Collection extends CollectionItem {
   collectionItemType: 'COLLECTION';
   variables: EnvironmentVariable[];
-  overview: string;
-  scripts: Scripts;
+  overview?: string;
+  scripts?: Scripts;
   children: string[];
 }
 
@@ -38,7 +38,7 @@ export interface Folder extends CollectionItem {
   overview?: string;
   scripts?: Scripts;
   parentId: string;
-  children?: string[];
+  children: string[];
 }
 
 export interface RequestHeader extends Header {
@@ -58,7 +58,7 @@ export interface Request extends CollectionItem {
   destination: string;
   body: RequestBody;
   headers: RequestHeader[];
-  scripts: Scripts;
+  scripts?: Scripts;
   parentId: string;
   children: string[];
 }
@@ -73,4 +73,11 @@ export interface RequestResponse extends CollectionItem {
 
 export type CollectionFile = {
   collectionItemMap: Record<string, CollectionItem>;
+};
+
+export const COLLECTION_DEFAULT_VALUES: Omit<Collection, 'id' | 'name' | 'workspaceId'> = {
+  modelType: BASE_MODEL_TYPE.COLLECTION,
+  collectionItemType: COLLECTION_TYPE.COLLECTION,
+  variables: [],
+  children: [],
 };
