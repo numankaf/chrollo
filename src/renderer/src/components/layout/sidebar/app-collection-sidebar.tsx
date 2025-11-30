@@ -55,7 +55,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
 
   return (
     <div ref={dragHandle} style={style} className="flex items-center justify-between">
-      <div className="flex items-center w-full h-8 text-sm gap-2 p-1">
+      <div className="flex items-center w-full h-8 text-sm gap-2 px-2 py-1">
         {!node.isLeaf && (
           <ChevronRight
             id="chevron-icon"
@@ -81,7 +81,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
           />
         ) : (
           <div
-            className="flex items-center gap-1 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
+            className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
             key={item.id}
             onClick={() => openTab(item)}
           >
@@ -103,7 +103,7 @@ function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
     <div
       {...attrs}
       ref={innerRef}
-      className={`${activeTab?.id === node.data.id && 'pb-1 gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent`}
+      className={`${activeTab?.id === node.data.id && 'gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent`}
     >
       {children}
     </div>

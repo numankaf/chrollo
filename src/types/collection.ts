@@ -54,9 +54,9 @@ export interface RequestBody {
 
 export interface Request extends CollectionItem {
   collectionItemType: 'REQUEST';
-  documentation: string;
+  documentation?: string;
   destination: string;
-  body: RequestBody;
+  body: RequestBody | undefined;
   headers: RequestHeader[];
   scripts?: Scripts;
   parentId: string;
@@ -80,4 +80,19 @@ export const COLLECTION_DEFAULT_VALUES: Omit<Collection, 'id' | 'name' | 'worksp
   collectionItemType: COLLECTION_TYPE.COLLECTION,
   variables: [],
   children: [],
+};
+
+export const FOLDER_DEFAULT_VALUES: Omit<Folder, 'id' | 'name' | 'workspaceId' | 'parentId'> = {
+  modelType: BASE_MODEL_TYPE.COLLECTION,
+  collectionItemType: COLLECTION_TYPE.FOLDER,
+  children: [],
+};
+
+export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId' | 'parentId'> = {
+  modelType: BASE_MODEL_TYPE.COLLECTION,
+  collectionItemType: COLLECTION_TYPE.REQUEST,
+  children: [],
+  destination: '',
+  body: undefined,
+  headers: [],
 };

@@ -1,8 +1,9 @@
 import useTabsStore from '@/store/tab-store';
+import { deleteItemAndChildren, hasChildren, hasParent } from '@/utils/collection-util';
 import { toMap } from '@/utils/map-utils';
 import { create } from 'zustand';
 
-import { type CollectionFile, type CollectionItem } from '@/types/collection';
+import { type Collection, type CollectionFile, type CollectionItem, type Folder } from '@/types/collection';
 
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
@@ -16,32 +17,67 @@ interface CollectionItemStore {
 const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
   collectionItemMap: new Map(),
 
-  createCollectionItem: (collection) => {
+  createCollectionItem: (collection: CollectionItem) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
+
+      // Add/update this item
       newMap.set(collection.id, collection);
+
+      if (hasParent(collection)) {
+        const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
+        if (parent) {
+          const children = parent.children ? [...parent.children] : [];
+          if (!children.includes(collection.id)) {
+            children.push(collection.id);
+          }
+          if (hasChildren(parent)) {
+            const updatedParent = { ...parent, children };
+            newMap.set(parent.id, updatedParent);
+          }
+        }
+      }
+
       return { collectionItemMap: newMap };
     });
 
     return collection;
   },
 
-  updateCollectionItem: (collection) => {
+  updateCollectionItem: (collection: CollectionItem) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
+
       if (newMap.has(collection.id)) {
         newMap.set(collection.id, collection);
+
+        if (hasParent(collection)) {
+          const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
+          if (parent) {
+            const children = parent.children ? [...parent.children] : [];
+            if (!children.includes(collection.id)) {
+              children.push(collection.id);
+            }
+            if (hasChildren(parent)) {
+              const updatedParent = { ...parent, children };
+              newMap.set(parent.id, updatedParent);
+            }
+          }
+        }
       }
+
       return { collectionItemMap: newMap };
     });
 
     return collection;
   },
 
-  deleteCollectionItem: async (id) => {
+  deleteCollectionItem: async (id: string) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
-      newMap.delete(id);
+
+      deleteItemAndChildren(newMap, id);
+
       return { collectionItemMap: newMap };
     });
 
