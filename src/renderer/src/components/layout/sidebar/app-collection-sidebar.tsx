@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
+import { AddItemDialog } from '@/features/connections/components/common/add-item-dialog';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useTabsStore from '@/store/tab-store';
 import { hasChildren } from '@/utils/collection-util';
 import { ChevronRight, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
-import { Tree, type NodeRendererProps } from 'react-arborist';
+import { Tree, type NodeRendererProps, type RowRendererProps } from 'react-arborist';
 import { useShallow } from 'zustand/react/shallow';
 
 import { COLLECTION_TYPE, type CollectionItem, type CollectionType } from '@/types/collection';
@@ -17,7 +18,6 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
 import OperationsButton from '@/components/app/operations-button';
@@ -42,14 +42,10 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       openTab: state.openTab,
     }))
   );
-  const { activeTab } = useActiveItem();
 
   return (
     <div ref={dragHandle} style={style} className="flex items-center justify-between">
-      <SidebarMenuButton
-        size="sm"
-        className={`${activeTab?.id === item.id && 'gap-1 border-l-primary! bg-sidebar-accent'} border-l border-l-transparent`}
-      >
+      <div className="flex items-center w-full h-8 text-sm gap-2 p-1">
         {!node.isLeaf && (
           <ChevronRight
             id="chevron-icon"
@@ -84,13 +80,29 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
             <OperationsButton item={item} />
           </div>
         )}
-      </SidebarMenuButton>
+      </div>
     </div>
   );
 }
 
-export default function CollectionArboristSidebar() {
+function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
+  const { node, innerRef, attrs, children } = props;
+  const { activeTab } = useActiveItem();
+
+  return (
+    <div
+      {...attrs}
+      ref={innerRef}
+      className={`${activeTab?.id === node.data.id && 'pb-1 gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent`}
+    >
+      {children}
+    </div>
+  );
+}
+
+export default function CollectionSidebar() {
   const [search, setSearch] = useState<string>('');
+  const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
   const { collectionItemMap } = useCollectionItemStore(
     useShallow((state) => ({
@@ -120,7 +132,19 @@ export default function CollectionArboristSidebar() {
       <SidebarContent className="w-(--sidebar-width-content)!">
         <SidebarHeader className="m-0! p-0!">
           <div className="flex items-center justify-between p-1 gap-1">
-            <Button size="sm" variant="ghost">
+            {addDialogOpen && (
+              <AddItemDialog
+                title="Create Collection"
+                inputLabel="Collection Name"
+                inputRequiredLabel="Collection name is required."
+                inputPlaceholder="Enter a collection name"
+                defaultValue="New Collection"
+                open={addDialogOpen}
+                onOpenChange={(open) => setAddDialogOpen(open)}
+                onSubmit={() => {}}
+              />
+            )}
+            <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
               <Plus size={16} />
             </Button>
             <SearchBar
@@ -138,13 +162,15 @@ export default function CollectionArboristSidebar() {
             <SidebarMenu>
               <Tree<CollectionItem>
                 initialData={roots}
-                width={'100%'}
+                width="100%"
                 childrenAccessor={childrenAccessor}
                 rowHeight={30}
                 searchTerm={search}
                 searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
                 disableDrag
                 disableDrop
+                rowClassName="hover:bg-sidebar-accent rounded-lg"
+                renderRow={CollectionSidebarItem}
               >
                 {CollectionItemNode}
               </Tree>
