@@ -34,8 +34,6 @@ function RequestView() {
   useEffect(() => {
     if (watchedValues) {
       updateCollectionItem({ ...watchedValues } as Request);
-      console.log(watchedValues);
-      console.log('Request: ', request);
     }
   }, [updateCollectionItem, watchedValues]);
 

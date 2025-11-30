@@ -3,13 +3,47 @@ import { ThemeProviderContext } from '@/provider/theme-provider';
 import { getEditorTheme } from '@/utils/editor-theme-util';
 import { json } from '@codemirror/lang-json';
 import CodeMirror from '@uiw/react-codemirror';
+import { Controller, useFormContext } from 'react-hook-form';
 
+import { REQUEST_BODY_TYPE } from '@/types/collection';
+import { Button } from '@/components/common/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { ScrollArea } from '@/components/common/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
+
+const BODY_TYPE_PROPERTY_KEY = 'body.type';
+const BODY_DATA_PROPERTY_KEY = 'body.data';
+
+function BodyTypeSelector() {
+  const form = useFormContext();
+  return (
+    <Controller
+      name={BODY_TYPE_PROPERTY_KEY}
+      control={form.control}
+      render={({ field, fieldState }) => (
+        <Select name={field.name} value={field.value} onValueChange={field.onChange}>
+          <SelectTrigger size="sm" className="text-sm h-6! w-22 " aria-invalid={fieldState.invalid}>
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(REQUEST_BODY_TYPE).map((value) => (
+              <SelectItem className="text-sm h-6 rounded-md" key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    />
+  );
+}
 
 function RequestBody() {
   const { theme } = use(ThemeProviderContext);
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(theme));
+  const form = useFormContext();
+  const bodyType = form.getValues(BODY_TYPE_PROPERTY_KEY);
+  const bodyData = form.getValues(BODY_DATA_PROPERTY_KEY);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -30,22 +64,31 @@ function RequestBody() {
 
     return () => observer.disconnect();
   }, [theme]);
+
   return (
-    <ResizablePanelGroup direction="vertical">
-      <ResizablePanel minSize={25} className="border rounded-lg mx-2 mb-2">
-        <ScrollArea className="h-full">
-          <CodeMirror
-            value=""
-            height="auto"
-            theme={editorTheme}
-            extensions={[json()]}
-            onChange={(value) => console.log('value:', value)}
-          />
-        </ScrollArea>
-      </ResizablePanel>
-      <ResizableHandle className="hover:bg-primary" />
-      <ResizablePanel minSize={25}>Two</ResizablePanel>
-    </ResizablePanelGroup>
+    <>
+      <div className="flex items-center justify-end gap-2 mx-2 mb-1 -mt-5">
+        <BodyTypeSelector />
+        <Button size="sm" className="h-6" variant="outline">
+          Beautify
+        </Button>
+      </div>
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel minSize={25} className="border rounded-lg mx-2 mb-2">
+          <ScrollArea className="h-full">
+            <CodeMirror
+              value={bodyData}
+              height="auto"
+              theme={editorTheme}
+              extensions={bodyType === REQUEST_BODY_TYPE.JSON ? [json()] : []}
+              onChange={(value) => form.setValue(BODY_DATA_PROPERTY_KEY, value)}
+            />
+          </ScrollArea>
+        </ResizablePanel>
+        <ResizableHandle className="hover:bg-primary" />
+        <ResizablePanel minSize={25}>Response</ResizablePanel>
+      </ResizablePanelGroup>
+    </>
   );
 }
 
