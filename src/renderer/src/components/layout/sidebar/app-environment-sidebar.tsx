@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AddItemDialog } from '@/features/connections/components/common/add-item-dialog';
+import { confirmDialog } from '@/store/confirm-dialog-store';
 import useEnvironmentStore from '@/store/environment-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
@@ -25,7 +25,8 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import OperationsButton from '@/components/app/operations-button';
+import { AddItemDialog } from '@/components/app/add-item-dialog';
+import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
 
 function EnvironmentsSidebar() {
   const { openTab } = useTabsStore(
@@ -48,9 +49,10 @@ function EnvironmentsSidebar() {
     }))
   );
 
-  const { saveEnvironment } = useEnvironmentStore(
+  const { saveEnvironment, deleteEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       saveEnvironment: state.saveEnvironment,
+      deleteEnvironment: state.deleteEnvironment,
     }))
   );
 
@@ -74,6 +76,35 @@ function EnvironmentsSidebar() {
     }
   }
 
+  function getOperationItems(item: Environment): OperationButtonItem[] {
+    return [
+      {
+        content: 'Rename',
+        props: { className: 'text-sm' },
+      },
+      {
+        content: 'Duplicate',
+        props: { className: 'text-sm' },
+      },
+      {
+        content: 'Delete',
+        props: {
+          className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
+          onClick: (e) => {
+            e.stopPropagation();
+            confirmDialog({
+              header: `Delete "${item.name}"`,
+              message: `Are you sure you want to delete "${item.name}"?`,
+              actionLabel: 'Delete',
+              accept: async () => {
+                await deleteEnvironment(item.id);
+              },
+            });
+          },
+        },
+      },
+    ];
+  }
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent className="w-(--sidebar-width-content)!">
@@ -115,7 +146,7 @@ function EnvironmentsSidebar() {
                 >
                   <Container size={16} />
                   <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
-                  <OperationsButton item={item} />
+                  <OperationsButton items={getOperationItems(item)} />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

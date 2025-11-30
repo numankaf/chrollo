@@ -50,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <>
       <SidebarWorkspaceMainHeader />
-      <Sidebar collapsible="icon" className="overflow-hidden *:data-[sidebar=sidebar]:flex-row" {...props}>
+      <Sidebar collapsible="icon" className="select-none overflow-hidden *:data-[sidebar=sidebar]:flex-row" {...props}>
         <Sidebar collapsible="none" className={`w-[${SIDEBAR_WIDTH_ICON}] border-r`}>
           <SidebarContent className="w-(--sidebar-width-icon)!">
             <SidebarGroup>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { STOMP_DEFAULT_VALUES } from '@/constants/connection/stomp/stomp-schema';
-import { AddItemDialog } from '@/features/connections/components/common/add-item-dialog';
 import useConnectionStore from '@/store/connection-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
@@ -12,6 +11,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
+import { AddItemDialog } from '@/components/app/add-item-dialog';
 import { SocketIoIcon } from '@/components/icon/socket-io-icon';
 import { StompIcon } from '@/components/icon/stomp-icon';
 import { WebSocketIcon } from '@/components/icon/websocket-icon';

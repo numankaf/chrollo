@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import AddConnectionPanel from '@/features/connections/components/common/add-connection-panel';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
+import { confirmDialog } from '@/store/confirm-dialog-store';
+import useConnectionStore from '@/store/connection-store';
 import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { useShallow } from 'zustand/react/shallow';
 
+import type { Connection } from '@/types/connection';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import { SearchBar } from '@/components/common/search-input';
@@ -18,7 +21,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import OperationsButton from '@/components/app/operations-button';
+import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
@@ -31,6 +34,42 @@ function ConnectionSidebar() {
   const connections = useWorkspaceConnections();
   const [search, setSearch] = useState('');
   const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
+
+  const { deleteConnection } = useConnectionStore(
+    useShallow((state) => ({
+      deleteConnection: state.deleteConnection,
+    }))
+  );
+
+  function getOperationItems(item: Connection): OperationButtonItem[] {
+    return [
+      {
+        content: 'Rename',
+        props: { className: 'text-sm' },
+      },
+      {
+        content: 'Duplicate',
+        props: { className: 'text-sm' },
+      },
+      {
+        content: 'Delete',
+        props: {
+          className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
+          onClick: (e) => {
+            e.stopPropagation();
+            confirmDialog({
+              header: `Delete "${item.name}"`,
+              message: `Are you sure you want to delete "${item.name}"?`,
+              actionLabel: 'Delete',
+              accept: async () => {
+                await deleteConnection(item.id);
+              },
+            });
+          },
+        },
+      },
+    ];
+  }
 
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
@@ -60,7 +99,7 @@ function ConnectionSidebar() {
                   <ConnectionIcon connectionType={item.connectionType} />
                   <ConnectionStatusBadge connectionId={item.id} />
                   <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
-                  <OperationsButton item={item} />
+                  <OperationsButton items={getOperationItems(item)} />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>
