@@ -110,11 +110,15 @@ export default function CollectionSidebar() {
     }))
   );
 
-  const roots = useMemo(
-    () =>
-      Array.from(collectionItemMap.values()).filter((item) => item.collectionItemType === COLLECTION_TYPE.COLLECTION),
-    [collectionItemMap]
-  );
+  const roots = useMemo(() => {
+    if (!collectionItemMap || collectionItemMap.size === 0) {
+      return [];
+    }
+
+    return Array.from(collectionItemMap.values()).filter(
+      (item) => item.collectionItemType === COLLECTION_TYPE.COLLECTION
+    );
+  }, [collectionItemMap]);
 
   const childrenAccessor = useCallback(
     (nodeData: CollectionItem) => {

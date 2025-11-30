@@ -1,5 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
+import type { CollectionFile } from '@/types/collection';
 import type { ConnectionFile } from '@/types/connection';
 import type { EnvironmentFile } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
@@ -29,6 +30,10 @@ declare global {
       connection: {
         load: () => Promise<ConnectionFile>;
         save: (connectionFile: ConnectionFile) => Promise<void>;
+      };
+      collection: {
+        load: () => Promise<CollectionFile>;
+        save: (collectionFile: CollectionFile) => Promise<void>;
       };
       tab: {
         load: () => Promise<TabsFile>;

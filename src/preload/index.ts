@@ -2,6 +2,7 @@ import { electronAPI, type ElectronAPI } from '@electron-toolkit/preload';
 import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
+import type { CollectionFile } from '@/types/collection';
 import type { ConnectionFile, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { EnvironmentFile } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
@@ -43,6 +44,10 @@ const api = {
   connection: {
     load: () => ipcRenderer.invoke('connections:load') as Promise<ConnectionFile>,
     save: (connectionFile: ConnectionFile) => ipcRenderer.invoke('connections:save', connectionFile),
+  },
+  collection: {
+    load: () => ipcRenderer.invoke('collections:load') as Promise<CollectionFile>,
+    save: (collectionFile: CollectionFile) => ipcRenderer.invoke('collections:save', collectionFile),
   },
   tab: {
     load: () => ipcRenderer.invoke('tabs:load') as Promise<TabsFile>,

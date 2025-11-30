@@ -1,86 +1,73 @@
+import useTabsStore from '@/store/tab-store';
+import { toMap } from '@/utils/map-utils';
 import { create } from 'zustand';
 
-import { BASE_MODEL_TYPE } from '@/types/base';
-import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
+import { type CollectionFile, type CollectionItem } from '@/types/collection';
 
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
-  createCollectionItem: (collection: CollectionItem) => void;
-  updateCollectionItem: (collection: CollectionItem) => void;
-  deleteCollectionItem: (id: string) => void;
+  createCollectionItem: (collection: CollectionItem) => CollectionItem;
+  updateCollectionItem: (collection: CollectionItem) => CollectionItem;
+  deleteCollectionItem: (id: string) => Promise<void>;
+  saveCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
+  initCollectionItemStore: (collectionFile: CollectionFile) => Promise<void>;
 }
 
-const initialCollectionItemMap = new Map<string, CollectionItem>([
-  [
-    'corec2',
-    {
-      id: 'corec2',
-      name: 'scope-corec2',
-      workspaceId: 'default-workspace-id',
-      modelType: BASE_MODEL_TYPE.COLLECTION,
-      collectionItemType: COLLECTION_TYPE.COLLECTION,
-      variables: new Map(),
-      overview: '',
-      scripts: {},
-      children: ['corec2-bsi'],
-    } as CollectionItem,
-  ],
-  [
-    'corec2-bsi',
-    {
-      id: 'corec2-bsi',
-      name: 'bsi',
-      workspaceId: 'default-workspace-id',
-      modelType: BASE_MODEL_TYPE.COLLECTION,
-      collectionItemType: COLLECTION_TYPE.FOLDER,
-      parentId: 'corec2',
-      overview: '',
-      scripts: {},
-      children: ['corec2-bsi-unit-getUnit'],
-    } as CollectionItem,
-  ],
-  [
-    'corec2-bsi-unit-getUnit',
-    {
-      id: 'corec2-bsi-unit-getUnit',
-      name: 'getUnit',
-      workspaceId: 'default-workspace-id',
-      modelType: BASE_MODEL_TYPE.COLLECTION,
-      collectionItemType: COLLECTION_TYPE.REQUEST,
-      parentId: 'corec2-bsi',
-      documentation: '',
-      destination: '',
-      body: { body: '', type: 'TEXT' },
-      headers: new Map(),
-      scripts: {},
-      children: [],
-    } as CollectionItem,
-  ],
-]);
+const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
+  collectionItemMap: new Map(),
 
-const useCollectionItemStore = create<CollectionItemStore>((set) => ({
-  collectionItemMap: initialCollectionItemMap,
-
-  createCollectionItem: (collection) =>
+  createCollectionItem: (collection) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
       newMap.set(collection.id, collection);
       return { collectionItemMap: newMap };
-    }),
+    });
 
-  updateCollectionItem: (collection) =>
+    return collection;
+  },
+
+  updateCollectionItem: (collection) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
-      if (newMap.has(collection.id)) newMap.set(collection.id, collection);
+      if (newMap.has(collection.id)) {
+        newMap.set(collection.id, collection);
+      }
       return { collectionItemMap: newMap };
-    }),
+    });
 
-  deleteCollectionItem: (id) =>
+    return collection;
+  },
+
+  deleteCollectionItem: async (id) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
       newMap.delete(id);
       return { collectionItemMap: newMap };
-    }),
+    });
+
+    useTabsStore.getState().closeTab(id);
+
+    const updatedMap = get().collectionItemMap;
+    await window.api.collection.save({ collectionItemMap: Object.fromEntries(updatedMap) });
+  },
+
+  saveCollectionItem: async (collection) => {
+    const exists = get().collectionItemMap.has(collection.id);
+    const updatedCollection = exists ? get().updateCollectionItem(collection) : get().createCollectionItem(collection);
+
+    await window.api.collection.save({ collectionItemMap: Object.fromEntries(get().collectionItemMap) });
+
+    return updatedCollection;
+  },
+
+  initCollectionItemStore: (collectionFile) => {
+    return new Promise((resolve) => {
+      set(() => ({
+        collectionItemMap: toMap(collectionFile.collectionItemMap),
+      }));
+      resolve();
+    });
+  },
 }));
 
 export default useCollectionItemStore;

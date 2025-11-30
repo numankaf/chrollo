@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
+import useCollectionItemStore from '@/store/collection-item-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
 import useTabsStore from '@/store/tab-store';
@@ -34,6 +35,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLoadingText('Loading connections...');
         const connectionData = await window.api.connection.load();
         await useConnectionStore.getState().initConnectionStore(connectionData);
+
+        setLoadingText('Loading collections...');
+        const collectionData = await window.api.collection.load();
+        await useCollectionItemStore.getState().initCollectionItemStore(collectionData);
 
         setLoadingText('Loading environments...');
         const environmentData = await window.api.environment.load();

@@ -27,7 +27,7 @@ export interface CollectionItem extends BaseAuditModel {
 
 export interface Collection extends CollectionItem {
   collectionItemType: 'COLLECTION';
-  variables: Map<string, EnvironmentVariable>;
+  variables: EnvironmentVariable[];
   overview: string;
   scripts: Scripts;
   children: string[];
@@ -42,6 +42,7 @@ export interface Folder extends CollectionItem {
 }
 
 export interface RequestHeader extends Header {
+  id: string;
   required: boolean;
   deprecated: boolean;
 }
@@ -56,7 +57,7 @@ export interface Request extends CollectionItem {
   documentation: string;
   destination: string;
   body: RequestBody;
-  headers: Map<string, RequestHeader>;
+  headers: RequestHeader[];
   scripts: Scripts;
   parentId: string;
   children: string[];
@@ -65,7 +66,11 @@ export interface Request extends CollectionItem {
 export interface RequestResponse extends CollectionItem {
   collectionItemType: 'REQUEST_RESPONSE';
   request: Request;
-  headers: Map<string, RequestHeader>;
+  headers: RequestHeader[];
   body: RequestBody;
   parentId: string;
 }
+
+export type CollectionFile = {
+  collectionItemMap: Record<string, CollectionItem>;
+};

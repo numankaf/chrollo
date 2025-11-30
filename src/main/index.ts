@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
+import { initCollectionIpc } from '@/main/collection/collection-ipc';
 import { initConnectionIpc } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
@@ -99,6 +100,7 @@ app.whenReady().then(() => {
   initTabsIpc();
   initWorkspaceIpc();
   initConnectionIpc();
+  initCollectionIpc();
   initEnvironmentIpc();
 
   app.on('activate', function () {
