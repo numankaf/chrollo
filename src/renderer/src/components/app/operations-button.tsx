@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Ellipsis } from 'lucide-react';
-import { nanoid } from 'nanoid';
 
 import { Button } from '@/components/common/button';
 import {
@@ -12,6 +11,7 @@ import {
 } from '@/components/common/dropdown-menu';
 
 export type OperationButtonItem = {
+  id: string;
   content: ReactNode;
   props: React.ComponentPropsWithRef<typeof DropdownMenuItem>;
   separatorTop?: boolean;
@@ -39,13 +39,11 @@ function OperationsButton({ id = 'operations-trigger', items }: OperationsButton
       </DropdownMenuTrigger>
       <DropdownMenuContent side="bottom" align="start" className="bg-background w-40 data-[state=closed]:animate-none!">
         {items.map((item) => (
-          <>
+          <Fragment key={item.id}>
             {item.separatorTop && <DropdownMenuSeparator />}
-            <DropdownMenuItem key={nanoid(4)} {...item.props}>
-              {item.content}
-            </DropdownMenuItem>
+            <DropdownMenuItem {...item.props}>{item.content}</DropdownMenuItem>
             {item.separatorBottom && <DropdownMenuSeparator />}
-          </>
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

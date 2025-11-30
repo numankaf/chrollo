@@ -10,6 +10,7 @@ import { useShallow } from 'zustand/react/shallow';
 import type { Connection } from '@/types/connection';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
@@ -44,14 +45,17 @@ function ConnectionSidebar() {
   function getOperationItems(item: Connection): OperationButtonItem[] {
     return [
       {
+        id: 'rename',
         content: 'Rename',
         props: { className: 'text-sm' },
       },
       {
+        id: 'duplicate',
         content: 'Duplicate',
         props: { className: 'text-sm' },
       },
       {
+        id: 'delete',
         content: 'Delete',
         props: {
           className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
@@ -86,25 +90,27 @@ function ConnectionSidebar() {
             />
           </div>
         </SidebarHeader>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {filteredConnections.map((item) => (
-                <SidebarMenuButton
-                  size="sm"
-                  className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
-                  key={item.id}
-                  onClick={() => openTab(item)}
-                >
-                  <ConnectionIcon connectionType={item.connectionType} />
-                  <ConnectionStatusBadge connectionId={item.id} />
-                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
-                  <OperationsButton items={getOperationItems(item)} />
-                </SidebarMenuButton>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <ScrollArea style={{ height: 'calc(100% - 3.5rem)' }}>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredConnections.map((item) => (
+                  <SidebarMenuButton
+                    size="sm"
+                    className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
+                    key={item.id}
+                    onClick={() => openTab(item)}
+                  >
+                    <ConnectionIcon connectionType={item.connectionType} />
+                    <ConnectionStatusBadge connectionId={item.id} />
+                    <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                    <OperationsButton items={getOperationItems(item)} />
+                  </SidebarMenuButton>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </ScrollArea>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

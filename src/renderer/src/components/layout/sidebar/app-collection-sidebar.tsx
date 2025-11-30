@@ -21,6 +21,7 @@ import {
   type Folder,
   type Request,
 } from '@/types/collection';
+import { useResizeObserver } from '@/hooks/use-resize-observer';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-collection-item-map';
 import { Button } from '@/components/common/button';
@@ -31,7 +32,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarMenu,
   SidebarRail,
 } from '@/components/common/sidebar';
 import { AddItemDialog } from '@/components/app/add-item-dialog';
@@ -117,14 +117,17 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
   function getOperationItems(item: CollectionItem): OperationButtonItem[] {
     const operationItems = [
       {
+        id: 'rename',
         content: 'Rename',
         props: { className: 'text-sm' },
       },
       {
+        id: 'duplicate',
         content: 'Duplicate',
         props: { className: 'text-sm' },
       },
       {
+        id: 'delete',
         content: 'Delete',
         props: {
           className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
@@ -145,6 +148,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
     if (item.collectionItemType === COLLECTION_TYPE.COLLECTION || item.collectionItemType === COLLECTION_TYPE.FOLDER) {
       return [
         {
+          id: 'add_request',
           content: 'Add Request',
           props: {
             className: 'text-sm',
@@ -155,6 +159,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
           },
         },
         {
+          id: 'add_folder',
           content: 'Add Folder',
           props: {
             className: 'text-sm',
@@ -318,6 +323,8 @@ export default function CollectionSidebar() {
     }
   }
 
+  const { ref, height } = useResizeObserver();
+
   return (
     <Sidebar collapsible="none" className="hidden flex-1 md:flex">
       <SidebarContent className="w-(--sidebar-width-content)!">
@@ -347,25 +354,27 @@ export default function CollectionSidebar() {
             />
           </div>
         </SidebarHeader>
-
-        <SidebarGroup>
+        <SidebarGroup
+          className="p-1! h-[calc(100%-3rem)] scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent"
+          ref={ref}
+        >
           <SidebarGroupContent>
-            <SidebarMenu>
-              <Tree<CollectionItem>
-                data={roots}
-                width="100%"
-                childrenAccessor={childrenAccessor}
-                rowHeight={30}
-                searchTerm={search}
-                searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
-                disableDrag
-                disableDrop
-                rowClassName="hover:bg-sidebar-accent rounded-lg"
-                renderRow={CollectionSidebarItem}
-              >
-                {CollectionItemNode}
-              </Tree>
-            </SidebarMenu>
+            <Tree<CollectionItem>
+              data={roots}
+              width="100%"
+              height={height}
+              childrenAccessor={childrenAccessor}
+              rowHeight={30}
+              searchTerm={search}
+              searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
+              disableDrag
+              disableDrop
+              rowClassName="hover:bg-sidebar-accent rounded-lg"
+              className="app-scroll"
+              renderRow={CollectionSidebarItem}
+            >
+              {CollectionItemNode}
+            </Tree>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

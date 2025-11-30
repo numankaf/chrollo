@@ -14,6 +14,7 @@ import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
@@ -79,14 +80,17 @@ function EnvironmentsSidebar() {
   function getOperationItems(item: Environment): OperationButtonItem[] {
     return [
       {
+        id: 'rename',
         content: 'Rename',
         props: { className: 'text-sm' },
       },
       {
+        id: 'duplicate',
         content: 'Duplicate',
         props: { className: 'text-sm' },
       },
       {
+        id: 'delete',
         content: 'Delete',
         props: {
           className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
@@ -134,24 +138,26 @@ function EnvironmentsSidebar() {
             />
           </div>
         </SidebarHeader>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {filteredEnvironments.map((item) => (
-                <SidebarMenuButton
-                  onClick={() => openTab(item)}
-                  className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
-                  key={item.id}
-                  size="sm"
-                >
-                  <Container size={16} />
-                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
-                  <OperationsButton items={getOperationItems(item)} />
-                </SidebarMenuButton>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <ScrollArea style={{ height: 'calc(100% - 3.5rem)' }}>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredEnvironments.map((item) => (
+                  <SidebarMenuButton
+                    onClick={() => openTab(item)}
+                    className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
+                    key={item.id}
+                    size="sm"
+                  >
+                    <Container size={16} />
+                    <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                    <OperationsButton items={getOperationItems(item)} />
+                  </SidebarMenuButton>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </ScrollArea>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

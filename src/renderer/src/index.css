@@ -201,3 +201,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+.app-scroll::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+
+.app-scroll::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.app-scroll::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full;
+}
+
+.app-scroll::-webkit-scrollbar-thumb:hover {
+  @apply bg-transparent;
+}
