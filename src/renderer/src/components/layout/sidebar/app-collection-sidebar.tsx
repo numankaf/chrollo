@@ -224,10 +224,10 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
               defaultValue={item.name}
               className="w-full bg-transparent border-none outline-none"
               onBlur={() => node.reset()}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') node.reset();
-                if (e.key === 'Enter') node.submit((e.currentTarget as HTMLInputElement).value);
-              }}
+              // onKeyDown={(e) => {
+              //   if (e.key === 'Escape') node.reset();
+              //   if (e.key === 'Enter') node.submit((e.currentTarget as HTMLInputElement).value);
+              // }}
             />
           ) : (
             <div
@@ -252,6 +252,12 @@ function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
 
   return (
     <div
+      onKeyDown={(e) => {
+        // Prevent space and enter from expanding/collapsing
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.stopPropagation();
+        }
+      }}
       {...attrs}
       ref={innerRef}
       className={`${activeTab?.id === node.data.id && 'gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent`}

@@ -7,8 +7,8 @@ export interface Header {
 }
 
 export interface Scripts {
-  preScript: string;
-  postScript: string;
+  preRequest: string;
+  postRequest: string;
 }
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {

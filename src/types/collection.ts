@@ -29,26 +29,20 @@ export interface Collection extends CollectionItem {
   collectionItemType: 'COLLECTION';
   variables: EnvironmentVariable[];
   overview?: string;
-  scripts?: Scripts;
+  scripts: Scripts;
   children: string[];
 }
 
 export interface Folder extends CollectionItem {
   collectionItemType: 'FOLDER';
   overview?: string;
-  scripts?: Scripts;
+  scripts: Scripts;
   parentId: string;
   children: string[];
 }
 
-export interface RequestHeader extends Header {
-  id: string;
-  required: boolean;
-  deprecated: boolean;
-}
-
 export interface RequestBody {
-  body: string;
+  data: string;
   type: RequestBodyType;
 }
 
@@ -56,9 +50,9 @@ export interface Request extends CollectionItem {
   collectionItemType: 'REQUEST';
   documentation?: string;
   destination: string;
-  body: RequestBody | undefined;
-  headers: RequestHeader[];
-  scripts?: Scripts;
+  body: RequestBody;
+  headers: Header[];
+  scripts: Scripts;
   parentId: string;
   children: string[];
 }
@@ -66,7 +60,7 @@ export interface Request extends CollectionItem {
 export interface RequestResponse extends CollectionItem {
   collectionItemType: 'REQUEST_RESPONSE';
   request: Request;
-  headers: RequestHeader[];
+  headers: Header[];
   body: RequestBody;
   parentId: string;
 }
@@ -80,12 +74,20 @@ export const COLLECTION_DEFAULT_VALUES: Omit<Collection, 'id' | 'name' | 'worksp
   collectionItemType: COLLECTION_TYPE.COLLECTION,
   variables: [],
   children: [],
+  scripts: {
+    preRequest: '',
+    postRequest: '',
+  },
 };
 
 export const FOLDER_DEFAULT_VALUES: Omit<Folder, 'id' | 'name' | 'workspaceId' | 'parentId'> = {
   modelType: BASE_MODEL_TYPE.COLLECTION,
   collectionItemType: COLLECTION_TYPE.FOLDER,
   children: [],
+  scripts: {
+    preRequest: '',
+    postRequest: '',
+  },
 };
 
 export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId' | 'parentId'> = {
@@ -93,6 +95,13 @@ export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId'
   collectionItemType: COLLECTION_TYPE.REQUEST,
   children: [],
   destination: '',
-  body: undefined,
+  body: {
+    data: '',
+    type: REQUEST_BODY_TYPE.TEXT,
+  },
   headers: [],
+  scripts: {
+    preRequest: '',
+    postRequest: '',
+  },
 };

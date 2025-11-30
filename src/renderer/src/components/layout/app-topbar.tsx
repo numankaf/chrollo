@@ -1,8 +1,8 @@
+import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import { Maximize, Minus, Search, X } from 'lucide-react';
-import { use } from 'react';
 
 import { Button } from '@/components/common/button';
 import ThemeSwitcher from '@/components/layout/theme-switch';
