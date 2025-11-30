@@ -21,16 +21,9 @@ function loadWorkspaces(): WorkspaceFile {
       type: WORKSPACE_TYPE.INTERNAL,
       description: null,
     };
-    const defaultWorkspace2: Workspace = {
-      id: DEFAULT_WORKSPACE_ID + '2',
-      modelType: BASE_MODEL_TYPE.WORKSPACE,
-      name: 'My Workspace2',
-      type: WORKSPACE_TYPE.INTERNAL,
-      description: null,
-    };
 
     const fileData: WorkspaceFile = {
-      workspaces: [defaultWorkspace, defaultWorkspace2],
+      workspaces: [defaultWorkspace],
       workspaceSelection: {},
       activeWorkspaceId: DEFAULT_WORKSPACE_ID,
     };

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { REQUEST_VALIDATION_SCHEMA } from '@/constants/collection/request-schema';
 import RequestBody from '@/features/collections/components/request/request-body';
+import RequestHeaders from '@/features/collections/components/request/request-headers';
 import RequestViewHeader from '@/features/collections/components/request/request-view-header';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,19 +15,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ta
 
 function RequestView() {
   const { activeTab } = useActiveItem();
-  const { collectionItemMap, updateCollectionItem } = useCollectionItemStore(
+  const { request, updateCollectionItem } = useCollectionItemStore(
     useShallow((state) => ({
       updateCollectionItem: state.updateCollectionItem,
-      collectionItemMap: state.collectionItemMap,
+      request: activeTab?.id ? (state.collectionItemMap.get(activeTab.id) as Request) : undefined,
     }))
   );
-
-  const request = activeTab?.id ? (collectionItemMap.get(activeTab.id) as Request) : undefined;
-
   const form = useForm<z.infer<typeof REQUEST_VALIDATION_SCHEMA>>({
     resolver: zodResolver(REQUEST_VALIDATION_SCHEMA),
-    defaultValues: request ? { ...request } : undefined,
-    values: request ? ({ ...request } as z.infer<typeof REQUEST_VALIDATION_SCHEMA>) : undefined,
+    defaultValues: { ...request },
+    values: { ...request } as z.infer<typeof REQUEST_VALIDATION_SCHEMA>,
   });
 
   const watchedValues = useWatch({
@@ -35,10 +33,13 @@ function RequestView() {
 
   useEffect(() => {
     if (watchedValues) {
-      updateCollectionItem(watchedValues as unknown as Request);
+      updateCollectionItem({ ...watchedValues } as Request);
+      console.log(watchedValues);
+      console.log('Request: ', request);
     }
   }, [updateCollectionItem, watchedValues]);
 
+  if (!request) return <div>Request not found</div>;
   return (
     <div className="h-full">
       <FormProvider {...form}>
@@ -49,10 +50,12 @@ function RequestView() {
               <TabsTrigger value="docs">Docs</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="body">Body</TabsTrigger>
-              <TabsTrigger value="scipts">Scripts</TabsTrigger>
+              <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
             <TabsContent value="docs">Docs</TabsContent>
-            <TabsContent value="headers">Headers</TabsContent>
+            <TabsContent value="headers">
+              <RequestHeaders headers={request.headers} />
+            </TabsContent>
             <TabsContent value="body">
               <RequestBody />
             </TabsContent>
