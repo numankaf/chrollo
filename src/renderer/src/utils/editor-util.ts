@@ -1,6 +1,7 @@
 import type { Theme } from '@/provider/theme-provider';
 import { cssVar } from '@/utils/css-util';
 import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
+import { js as beautify } from 'js-beautify';
 
 export function getEditorTheme(theme: Theme) {
   const settings = {
@@ -17,4 +18,17 @@ export function getEditorTheme(theme: Theme) {
   };
 
   return theme === 'dark' ? vscodeDarkInit({ settings }) : vscodeLightInit({ settings });
+}
+
+export function formatJson(text: string) {
+  try {
+    return beautify(text, {
+      indent_size: 2,
+      space_in_empty_paren: true,
+      e4x: false,
+      end_with_newline: true,
+    });
+  } catch {
+    return text;
+  }
 }

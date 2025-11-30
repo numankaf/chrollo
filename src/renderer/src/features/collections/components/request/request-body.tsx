@@ -1,7 +1,8 @@
 import { use, useEffect, useState } from 'react';
 import { ThemeProviderContext } from '@/provider/theme-provider';
-import { getEditorTheme } from '@/utils/editor-theme-util';
-import { json } from '@codemirror/lang-json';
+import { formatJson, getEditorTheme } from '@/utils/editor-util';
+import { json, jsonParseLinter } from '@codemirror/lang-json';
+import { linter, lintGutter } from '@codemirror/lint';
 import CodeMirror from '@uiw/react-codemirror';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -65,11 +66,18 @@ function RequestBody() {
     return () => observer.disconnect();
   }, [theme]);
 
+  const formatCode = () => {
+    const text = form.getValues(BODY_DATA_PROPERTY_KEY);
+    const formatted = bodyType === REQUEST_BODY_TYPE.JSON ? formatJson(text) : text;
+    form.setValue(BODY_DATA_PROPERTY_KEY, formatted);
+    return true;
+  };
+
   return (
     <>
       <div className="flex items-center justify-end gap-2 mx-2 mb-1 -mt-5">
         <BodyTypeSelector />
-        <Button size="sm" className="h-6" variant="outline">
+        <Button size="sm" className="h-6" variant="outline" type="button" onClick={formatCode}>
           Beautify
         </Button>
       </div>
@@ -80,8 +88,18 @@ function RequestBody() {
               value={bodyData}
               height="auto"
               theme={editorTheme}
-              extensions={bodyType === REQUEST_BODY_TYPE.JSON ? [json()] : []}
+              extensions={[
+                bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [],
+                lintGutter(),
+              ]}
               onChange={(value) => form.setValue(BODY_DATA_PROPERTY_KEY, value)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                  e.preventDefault();
+                  formatCode();
+                }
+              }}
             />
           </ScrollArea>
         </ResizablePanel>
