@@ -90,7 +90,7 @@ function EnvironmentsSidebar() {
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: async (e) => {
+          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
               await cloneEnvironment(item.id);
@@ -107,7 +107,7 @@ function EnvironmentsSidebar() {
         content: 'Delete',
         props: {
           className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
-          onClick: (e) => {
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             confirmDialog({
               header: `Delete "${item.name}"`,

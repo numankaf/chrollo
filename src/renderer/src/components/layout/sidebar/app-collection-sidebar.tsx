@@ -127,7 +127,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: async (e) => {
+          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
               await cloneCollectionItem(item.id);
@@ -144,7 +144,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
         content: 'Delete',
         props: {
           className: 'text-red-500 text-sm hover:bg-red-500! hover:text-white!',
-          onClick: (e) => {
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             confirmDialog({
               header: `Delete "${item.name}"`,
@@ -165,7 +165,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
           content: 'Add Request',
           props: {
             className: 'text-sm',
-            onClick: (e) => {
+            onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
               e.stopPropagation();
               setAddRequestDialogOpen(true);
             },
@@ -176,7 +176,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
           content: 'Add Folder',
           props: {
             className: 'text-sm',
-            onClick: (e) => {
+            onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
               e.stopPropagation();
               setAddFolderDialogOpen(true);
             },
