@@ -32,10 +32,14 @@ function RequestView() {
   });
 
   useEffect(() => {
-    if (watchedValues) {
-      updateCollectionItem({ ...watchedValues } as Request);
-    }
-  }, [updateCollectionItem, watchedValues]);
+    if (!watchedValues) return;
+
+    const handler = setTimeout(() => {
+      updateCollectionItem(watchedValues as Request);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [watchedValues, updateCollectionItem]);
 
   if (!request) return <div>Request not found</div>;
   return (

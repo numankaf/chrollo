@@ -97,7 +97,7 @@ export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId'
   destination: '',
   body: {
     data: '',
-    type: REQUEST_BODY_TYPE.TEXT,
+    type: REQUEST_BODY_TYPE.JSON,
   },
   headers: [],
   scripts: {

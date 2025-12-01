@@ -43,9 +43,13 @@ function StompConnectionView() {
   });
 
   useEffect(() => {
-    if (watchedValues) {
+    if (!watchedValues) return;
+
+    const handler = setTimeout(() => {
       updateConnection(watchedValues as unknown as StompConnection);
-    }
+    }, 500);
+
+    return () => clearTimeout(handler);
   }, [updateConnection, watchedValues]);
 
   if (!connection) return <div>Connection not found</div>;
