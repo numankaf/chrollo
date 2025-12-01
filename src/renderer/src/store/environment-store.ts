@@ -12,6 +12,7 @@ interface EnvironmentStore {
   createEnvironment: (environment: Environment) => Environment;
   updateEnvironment: (environment: Environment) => Environment;
   deleteEnvironment: (id: string) => Promise<void>;
+  cloneEnvironment: (id: string) => Promise<Environment>;
   saveEnvironment: (environment: Environment) => Promise<Environment>;
   initEnvironmentStore: (environmentFile: EnvironmentFile) => Promise<void>;
 }
@@ -58,6 +59,32 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
     //Save to file system
     await window.api.environment.save({ environments: newEnvironments });
     set({ environments: newEnvironments });
+  },
+
+  cloneEnvironment: async (id: string) => {
+    const state = get();
+    const environments = state.environments;
+    const index = environments.findIndex((c) => c.id === id);
+    if (index === -1) {
+      throw new Error(`Cannot clone environment: no environment found with id "${id}"`);
+    }
+
+    const original = environments[index];
+
+    const newEnvironment = {
+      ...original,
+      id: nanoid(8),
+      name: `${original.name} (Copy)`,
+    } as Environment;
+
+    const newEnvironments = [...environments.slice(0, index + 1), newEnvironment, ...environments.slice(index + 1)];
+
+    await window.api.environment.save({ environments: newEnvironments });
+
+    set({ environments: newEnvironments });
+
+    useTabsStore.getState().openTab(newEnvironment);
+    return newEnvironment;
   },
 
   saveEnvironment: async (environment) => {

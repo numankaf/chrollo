@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 import {
   COLLECTION_TYPE,
   type Collection,
@@ -43,4 +45,50 @@ export function deleteItemAndChildren(map: Map<string, CollectionItem>, id: stri
 
   //Delete this item from map
   map.delete(id);
+}
+
+export function cloneCollectionItemDeep(
+  collectionItemMap: Map<string, CollectionItem>,
+  originalId: string,
+  idMap = new Map<string, string>()
+): { newMap: Map<string, CollectionItem>; clonedRootId: string } {
+  const newMap = new Map(collectionItemMap);
+  let clonedRootId = '';
+
+  function recursiveClone(itemId: string, parentId?: string) {
+    const original = collectionItemMap.get(itemId);
+    if (!original) return;
+
+    const newId = nanoid(8);
+    idMap.set(itemId, newId);
+
+    const name = itemId === originalId ? `${original.name} (Copy)` : original.name;
+    const cloned: CollectionItem = {
+      ...original,
+      id: newId,
+      name,
+      ...(hasParent(original) && parentId ? { parentId } : {}),
+      ...(hasChildren(original) ? { children: [] } : {}),
+    };
+
+    newMap.set(newId, cloned);
+
+    if (itemId === originalId) clonedRootId = newId;
+
+    if (hasChildren(original) && hasChildren(cloned)) {
+      cloned.children = original.children.map((childId) => {
+        recursiveClone(childId, newId);
+        return idMap.get(childId)!;
+      });
+    }
+  }
+
+  // Always clone the root item first, pass parentId only if it exists
+  const collectionItem = collectionItemMap.get(originalId);
+  if (collectionItem) {
+    const parentId = hasParent(collectionItem) ? collectionItem.parentId : undefined;
+    recursiveClone(originalId, parentId);
+  }
+
+  return { newMap, clonedRootId };
 }

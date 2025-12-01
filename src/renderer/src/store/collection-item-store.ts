@@ -1,5 +1,5 @@
 import useTabsStore from '@/store/tab-store';
-import { deleteItemAndChildren, hasChildren, hasParent } from '@/utils/collection-util';
+import { cloneCollectionItemDeep, deleteItemAndChildren, hasChildren, hasParent } from '@/utils/collection-util';
 import { toMap } from '@/utils/map-utils';
 import { create } from 'zustand';
 
@@ -10,6 +10,7 @@ interface CollectionItemStore {
   createCollectionItem: (collection: CollectionItem) => CollectionItem;
   updateCollectionItem: (collection: CollectionItem) => CollectionItem;
   deleteCollectionItem: (id: string) => Promise<void>;
+  cloneCollectionItem: (id: string) => Promise<void>;
   saveCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
   initCollectionItemStore: (collectionFile: CollectionFile) => Promise<void>;
 }
@@ -21,7 +22,6 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
-      // Add/update this item
       newMap.set(collection.id, collection);
 
       if (hasParent(collection)) {
@@ -85,6 +85,31 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
 
     const updatedMap = get().collectionItemMap;
     await window.api.collection.save({ collectionItemMap: Object.fromEntries(updatedMap) });
+  },
+
+  cloneCollectionItem: async (id: string) => {
+    let clonedId = '';
+    set((state) => {
+      const { newMap, clonedRootId } = cloneCollectionItemDeep(state.collectionItemMap, id);
+      clonedId = clonedRootId;
+      const original = state.collectionItemMap.get(id);
+      if (original && hasParent(original)) {
+        const parent = newMap.get(original.parentId) as Collection | Folder | undefined;
+        if (parent) {
+          const index = parent.children?.indexOf(id) ?? -1;
+          if (index !== -1) {
+            parent.children!.splice(index + 1, 0, clonedRootId);
+          }
+        }
+      }
+
+      return { collectionItemMap: newMap };
+    });
+
+    const clonedCollectionItem = get().collectionItemMap.get(clonedId);
+    if (clonedCollectionItem) useTabsStore.getState().openTab(clonedCollectionItem);
+
+    await window.api.collection.save({ collectionItemMap: Object.fromEntries(get().collectionItemMap) });
   },
 
   saveCollectionItem: async (collection) => {

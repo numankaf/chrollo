@@ -5,6 +5,7 @@ import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
 import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
+import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Connection } from '@/types/connection';
@@ -36,9 +37,10 @@ function ConnectionSidebar() {
   const [search, setSearch] = useState('');
   const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
 
-  const { deleteConnection } = useConnectionStore(
+  const { deleteConnection, cloneConnection } = useConnectionStore(
     useShallow((state) => ({
       deleteConnection: state.deleteConnection,
+      cloneConnection: state.cloneConnection,
     }))
   );
 
@@ -52,7 +54,19 @@ function ConnectionSidebar() {
       {
         id: 'duplicate',
         content: 'Duplicate',
-        props: { className: 'text-sm' },
+        props: {
+          className: 'text-sm',
+          onClick: async (e) => {
+            e.stopPropagation();
+            try {
+              await cloneConnection(item.id);
+            } catch (error) {
+              if (error instanceof Error) {
+                toast.error(error?.message);
+              }
+            }
+          },
+        },
       },
       {
         id: 'delete',

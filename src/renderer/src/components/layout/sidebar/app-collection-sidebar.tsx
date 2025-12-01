@@ -57,10 +57,11 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       openTab: state.openTab,
     }))
   );
-  const { saveCollectionItem, deleteCollectionItem } = useCollectionItemStore(
+  const { saveCollectionItem, deleteCollectionItem, cloneCollectionItem } = useCollectionItemStore(
     useShallow((state) => ({
       deleteCollectionItem: state.deleteCollectionItem,
       saveCollectionItem: state.saveCollectionItem,
+      cloneCollectionItem: state.cloneCollectionItem,
     }))
   );
 
@@ -124,7 +125,19 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       {
         id: 'duplicate',
         content: 'Duplicate',
-        props: { className: 'text-sm' },
+        props: {
+          className: 'text-sm',
+          onClick: async (e) => {
+            e.stopPropagation();
+            try {
+              await cloneCollectionItem(item.id);
+            } catch (error) {
+              if (error instanceof Error) {
+                toast.error(error?.message);
+              }
+            }
+          },
+        },
       },
       {
         id: 'delete',

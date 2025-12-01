@@ -13,6 +13,7 @@ interface ConnectionStore {
   createConnection: (connection: Connection) => Connection;
   updateConnection: (connection: Connection) => Connection;
   deleteConnection: (id: string) => Promise<void>;
+  cloneConnection: (id: string) => Promise<Connection>;
   saveConnection: (connection: Connection) => Promise<Connection>;
   initConnectionStore: (connectionFile: ConnectionFile) => Promise<void>;
 }
@@ -78,6 +79,32 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
     set({ connections: newConnections });
   },
 
+  cloneConnection: async (id: string) => {
+    const state = get();
+    const connections = state.connections;
+    const index = connections.findIndex((c) => c.id === id);
+    if (index === -1) {
+      throw new Error(`Cannot clone connection: no connection found with id "${id}"`);
+    }
+
+    const original = connections[index];
+
+    const newConnection = {
+      ...original,
+      id: nanoid(8),
+      name: `${original.name} (Copy)`,
+    } as Connection;
+
+    const newConnections = [...connections.slice(0, index + 1), newConnection, ...connections.slice(index + 1)];
+
+    await window.api.connection.save({ connections: newConnections });
+
+    set({ connections: newConnections });
+
+    useTabsStore.getState().openTab(newConnection);
+    return newConnection;
+  },
+
   saveConnection: async (connection) => {
     const exists = get().connections.some((c) => c.id === connection.id);
     const updatedConnection = exists ? get().updateConnection(connection) : get().createConnection(connection);
@@ -86,6 +113,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     return updatedConnection;
   },
+
   initConnectionStore: (connectionFile) => {
     return new Promise((resolve) => {
       set(() => ({

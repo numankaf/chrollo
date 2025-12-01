@@ -50,10 +50,11 @@ function EnvironmentsSidebar() {
     }))
   );
 
-  const { saveEnvironment, deleteEnvironment } = useEnvironmentStore(
+  const { saveEnvironment, deleteEnvironment, cloneEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       saveEnvironment: state.saveEnvironment,
       deleteEnvironment: state.deleteEnvironment,
+      cloneEnvironment: state.cloneEnvironment,
     }))
   );
 
@@ -87,7 +88,19 @@ function EnvironmentsSidebar() {
       {
         id: 'duplicate',
         content: 'Duplicate',
-        props: { className: 'text-sm' },
+        props: {
+          className: 'text-sm',
+          onClick: async (e) => {
+            e.stopPropagation();
+            try {
+              await cloneEnvironment(item.id);
+            } catch (error) {
+              if (error instanceof Error) {
+                toast.error(error?.message);
+              }
+            }
+          },
+        },
       },
       {
         id: 'delete',
