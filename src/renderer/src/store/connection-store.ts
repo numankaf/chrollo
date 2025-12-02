@@ -16,6 +16,7 @@ interface ConnectionStore {
   cloneConnection: (id: string) => Promise<Connection>;
   saveConnection: (connection: Connection) => Promise<Connection>;
   initConnectionStore: (connectionFile: ConnectionFile) => Promise<void>;
+  saveConnectionStore: () => Promise<void>;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
@@ -97,7 +98,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     const newConnections = [...connections.slice(0, index + 1), newConnection, ...connections.slice(index + 1)];
 
-    await window.api.connection.save({ connections: newConnections });
+    await get().saveConnectionStore();
 
     set({ connections: newConnections });
 
@@ -121,6 +122,10 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       }));
       resolve();
     });
+  },
+
+  saveConnectionStore: async () => {
+    await window.api.connection.save({ connections: get().connections });
   },
 }));
 

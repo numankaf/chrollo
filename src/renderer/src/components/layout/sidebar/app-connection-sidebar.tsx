@@ -11,6 +11,7 @@ import { useShallow } from 'zustand/react/shallow';
 import type { Connection } from '@/types/connection';
 import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
+import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -27,6 +28,7 @@ import OperationsButton, { type OperationButtonItem } from '@/components/app/ope
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -37,10 +39,11 @@ function ConnectionSidebar() {
   const [search, setSearch] = useState('');
   const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
 
-  const { deleteConnection, cloneConnection } = useConnectionStore(
+  const { deleteConnection, cloneConnection, updateConnection } = useConnectionStore(
     useShallow((state) => ({
       deleteConnection: state.deleteConnection,
       cloneConnection: state.cloneConnection,
+      updateConnection: state.updateConnection,
     }))
   );
 
@@ -49,7 +52,13 @@ function ConnectionSidebar() {
       {
         id: 'rename',
         content: 'Rename',
-        props: { className: 'text-sm' },
+        props: {
+          className: 'text-sm',
+          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            e.stopPropagation();
+            setEditingItemId(item.id);
+          },
+        },
       },
       {
         id: 'duplicate',
@@ -117,7 +126,14 @@ function ConnectionSidebar() {
                   >
                     <ConnectionIcon connectionType={item.connectionType} />
                     <ConnectionStatusBadge connectionId={item.id} />
-                    <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                    <InlineEditText
+                      value={item.name}
+                      editing={item.id === editingItemId}
+                      onComplete={(value) => {
+                        updateConnection({ ...item, name: value });
+                        setEditingItemId(null);
+                      }}
+                    />
                     <OperationsButton items={getOperationItems(item)} />
                   </SidebarMenuButton>
                 ))}
