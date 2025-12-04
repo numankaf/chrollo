@@ -37,8 +37,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         useConnectionStore.getState().setConnections(connections);
 
         setLoadingText('Loading collections...');
-        const collectionData = await window.api.collection.load();
-        await useCollectionItemStore.getState().initCollectionItemStore(collectionData);
+        const collectionItems = await window.api.collection.list();
+        useCollectionItemStore.getState().setCollectionItemMap(collectionItems);
 
         setLoadingText('Loading environments...');
         const environments = await window.api.environment.list();

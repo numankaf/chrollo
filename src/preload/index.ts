@@ -2,7 +2,7 @@ import { electronAPI, type ElectronAPI } from '@electron-toolkit/preload';
 import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
-import type { CollectionFile } from '@/types/collection';
+import type { CollectionItem } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
@@ -37,10 +37,12 @@ const api = {
     send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) =>
       ipcRenderer.send('stomp:send', data),
   },
+
   workspace: {
     load: () => ipcRenderer.invoke('workspaces:load') as Promise<WorkspaceFile>,
     save: (workspaceFile: WorkspaceFile) => ipcRenderer.invoke('workspaces:save', workspaceFile),
   },
+
   connection: {
     save: (connection: Connection) => ipcRenderer.invoke('connections:save', connection) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('connections:get', id) as Promise<Connection | undefined>,
@@ -48,14 +50,20 @@ const api = {
     list: () => ipcRenderer.invoke('connections:list') as Promise<Connection[]>,
     clear: () => ipcRenderer.invoke('connections:clear') as Promise<void>,
   },
+
   collection: {
-    load: () => ipcRenderer.invoke('collections:load') as Promise<CollectionFile>,
-    save: (collectionFile: CollectionFile) => ipcRenderer.invoke('collections:save', collectionFile),
+    save: (collectionItem: CollectionItem) => ipcRenderer.invoke('collections:save', collectionItem) as Promise<void>,
+    get: (id: string) => ipcRenderer.invoke('collections:get', id) as Promise<CollectionItem | undefined>,
+    delete: (id: string) => ipcRenderer.invoke('collections:delete', id) as Promise<void>,
+    list: () => ipcRenderer.invoke('collections:list') as Promise<CollectionItem[]>,
+    clear: () => ipcRenderer.invoke('collections:clear') as Promise<void>,
   },
+
   tab: {
     load: () => ipcRenderer.invoke('tabs:load') as Promise<TabsFile>,
     save: (tabsFile: TabsFile) => ipcRenderer.invoke('tabs:save', tabsFile),
   },
+
   environment: {
     save: (environment: Environment) => ipcRenderer.invoke('environments:save', environment) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('environments:get', id) as Promise<Environment | undefined>,
@@ -75,6 +83,7 @@ const listener = {
       return () => ipcRenderer.removeListener('stomp:status', handler);
     },
   },
+
   console: {
     log: (callback: (data: unknown) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);

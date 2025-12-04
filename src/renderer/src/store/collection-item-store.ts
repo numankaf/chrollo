@@ -1,28 +1,38 @@
 import useTabsStore from '@/store/tab-store';
 import { cloneCollectionItemDeep, deleteItemAndChildren, hasChildren, hasParent } from '@/utils/collection-util';
-import { toMap } from '@/utils/map-utils';
 import { create } from 'zustand';
 
-import { type Collection, type CollectionFile, type CollectionItem, type Folder } from '@/types/collection';
+import { type Collection, type CollectionItem, type Folder } from '@/types/collection';
 
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
+  setCollectionItemMap: (items: CollectionItem[]) => void;
   createCollectionItem: (collection: CollectionItem) => CollectionItem;
   updateCollectionItem: (collection: CollectionItem) => CollectionItem;
-  deleteCollectionItem: (id: string) => Promise<void>;
-  cloneCollectionItem: (id: string) => Promise<void>;
-  saveCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
-  initCollectionItemStore: (collectionFile: CollectionFile) => Promise<void>;
+  deleteCollectionItem: (id: string) => void;
+  cloneCollectionItem: (id: string) => void;
+  saveCollectionItem: (collection: CollectionItem) => CollectionItem;
 }
 
 const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
   collectionItemMap: new Map(),
+  setCollectionItemMap: (items: CollectionItem[]) =>
+    set(() => {
+      const map = new Map<string, CollectionItem>();
+
+      for (const item of items) {
+        map.set(item.id, item);
+      }
+
+      return { collectionItemMap: map };
+    }),
 
   createCollectionItem: (collection: CollectionItem) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
       newMap.set(collection.id, collection);
+      window.api.collection.save(collection);
 
       if (hasParent(collection)) {
         const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
@@ -34,6 +44,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
           if (hasChildren(parent)) {
             const updatedParent = { ...parent, children };
             newMap.set(parent.id, updatedParent);
+            window.api.collection.save(updatedParent);
           }
         }
       }
@@ -50,6 +61,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
 
       if (newMap.has(collection.id)) {
         newMap.set(collection.id, collection);
+        window.api.collection.save(collection);
 
         if (hasParent(collection)) {
           const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
@@ -61,6 +73,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
             if (hasChildren(parent)) {
               const updatedParent = { ...parent, children };
               newMap.set(parent.id, updatedParent);
+              window.api.collection.save(updatedParent);
             }
           }
         }
@@ -72,7 +85,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
     return collection;
   },
 
-  deleteCollectionItem: async (id: string) => {
+  deleteCollectionItem: (id: string) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
@@ -82,12 +95,9 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
     });
 
     useTabsStore.getState().closeTab(id);
-
-    const updatedMap = get().collectionItemMap;
-    await window.api.collection.save({ collectionItemMap: Object.fromEntries(updatedMap) });
   },
 
-  cloneCollectionItem: async (id: string) => {
+  cloneCollectionItem: (id: string) => {
     let clonedId = '';
     set((state) => {
       const { newMap, clonedRootId } = cloneCollectionItemDeep(state.collectionItemMap, id);
@@ -108,26 +118,13 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
 
     const clonedCollectionItem = get().collectionItemMap.get(clonedId);
     if (clonedCollectionItem) useTabsStore.getState().openTab(clonedCollectionItem);
-
-    await window.api.collection.save({ collectionItemMap: Object.fromEntries(get().collectionItemMap) });
   },
 
-  saveCollectionItem: async (collection) => {
+  saveCollectionItem: (collection) => {
     const exists = get().collectionItemMap.has(collection.id);
     const updatedCollection = exists ? get().updateCollectionItem(collection) : get().createCollectionItem(collection);
 
-    await window.api.collection.save({ collectionItemMap: Object.fromEntries(get().collectionItemMap) });
-
     return updatedCollection;
-  },
-
-  initCollectionItemStore: (collectionFile) => {
-    return new Promise((resolve) => {
-      set(() => ({
-        collectionItemMap: toMap(collectionFile.collectionItemMap),
-      }));
-      resolve();
-    });
   },
 }));
 

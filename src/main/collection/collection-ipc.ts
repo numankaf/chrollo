@@ -1,44 +1,74 @@
-import fs from 'fs';
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
+import { applyAuditFields } from '@/main/utils/audit-util';
+import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
+import { Level } from 'level';
 
-import type { CollectionFile } from '@/types/collection';
+import type { CollectionItem } from '@/types/collection';
 
-const collectionFilePath = path.join(BASE_STORAGE_DIR, 'collections.json');
+const collectionItemDatabasePath = path.join(BASE_STORAGE_DIR, 'collection');
+const collectionItemDb = new Level<string, CollectionItem>(collectionItemDatabasePath, { valueEncoding: 'json' });
 
-function loadCollections(): CollectionFile {
-  if (fs.existsSync(collectionFilePath)) {
-    const data = fs.readFileSync(collectionFilePath, 'utf-8');
-    return JSON.parse(data) as CollectionFile;
-  } else {
-    const fileData: CollectionFile = {
-      collectionItemMap: Object.fromEntries(new Map()),
-    };
+async function saveCollectionItem(collectionItem: CollectionItem) {
+  await collectionItemDb.put(collectionItem.id, collectionItem);
+}
 
-    fs.writeFileSync(collectionFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
-    return fileData;
+async function getCollectionItem(id: string): Promise<CollectionItem | undefined> {
+  try {
+    return await collectionItemDb.get(id);
+  } catch (error: unknown) {
+    console.error(error);
+    return undefined;
   }
 }
 
-function saveCollections(collectionFile: CollectionFile) {
+async function deleteCollectionItem(id: string): Promise<void> {
   try {
-    fs.writeFileSync(collectionFilePath, JSON.stringify(collectionFile, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to save collections:', err);
+    await collectionItemDb.del(id);
+  } catch (error: unknown) {
+    console.error(error);
+    return;
   }
+}
+
+async function listAllCollectionItems(): Promise<CollectionItem[]> {
+  const results: CollectionItem[] = [];
+
+  for await (const [, value] of collectionItemDb.iterator()) {
+    results.push(value);
+  }
+
+  return sortByDate(results, 'createdDate');
+}
+
+async function clearCollectionItems(): Promise<void> {
+  await collectionItemDb.clear();
 }
 
 export function initCollectionIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
 
-  ipcMain.handle('collections:load', () => {
-    return loadCollections();
+  ipcMain.handle('collections:save', async (_, collectionItem) => {
+    const auditedCollectionItem = applyAuditFields(collectionItem);
+    return await saveCollectionItem(auditedCollectionItem);
   });
 
-  ipcMain.handle('collections:save', (_, collectionFile) => {
-    saveCollections(collectionFile);
+  ipcMain.handle('collections:get', async (_, id) => {
+    return await getCollectionItem(id);
+  });
+
+  ipcMain.handle('collections:delete', async (_, id) => {
+    return await deleteCollectionItem(id);
+  });
+
+  ipcMain.handle('collections:list', async () => {
+    return await listAllCollectionItems();
+  });
+
+  ipcMain.handle('collections:clear', async () => {
+    return await clearCollectionItems();
   });
 }

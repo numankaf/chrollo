@@ -65,10 +65,6 @@ export interface RequestResponse extends CollectionItem {
   parentId: string;
 }
 
-export type CollectionFile = {
-  collectionItemMap: Record<string, CollectionItem>;
-};
-
 export const COLLECTION_DEFAULT_VALUES: Omit<Collection, 'id' | 'name' | 'workspaceId'> = {
   modelType: BASE_MODEL_TYPE.COLLECTION,
   collectionItemType: COLLECTION_TYPE.COLLECTION,

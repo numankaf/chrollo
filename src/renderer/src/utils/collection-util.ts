@@ -40,11 +40,13 @@ export function deleteItemAndChildren(map: Map<string, CollectionItem>, id: stri
     if (parent && hasChildren(parent)) {
       parent.children = parent.children.filter((cid) => cid !== id);
       map.set(parent.id, { ...parent });
+      window.api.collection.save({ ...parent });
     }
   }
 
   //Delete this item from map
   map.delete(id);
+  window.api.collection.delete(id);
 }
 
 export function cloneCollectionItemDeep(
@@ -81,6 +83,7 @@ export function cloneCollectionItemDeep(
         return idMap.get(childId)!;
       });
     }
+    window.api.collection.save(cloned);
   }
 
   // Always clone the root item first, pass parentId only if it exists
