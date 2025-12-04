@@ -34,19 +34,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         setLoadingText('Loading connections...');
         const connections = await window.api.connection.list();
-        useConnectionStore.getState().setConnections(connections);
+        await useConnectionStore.getState().initConnectionStore(connections);
 
         setLoadingText('Loading collections...');
         const collectionItems = await window.api.collection.list();
-        useCollectionItemStore.getState().setCollectionItemMap(collectionItems);
+        await useCollectionItemStore.getState().initCollectionStore(collectionItems);
 
         setLoadingText('Loading environments...');
         const environments = await window.api.environment.list();
-        useEnvironmentStore.getState().setEnvironments(environments);
+        await useEnvironmentStore.getState().initEnvironmentStore(environments);
 
         setAppLoaded(true);
       } catch (err) {
-        console.error('Failed to load workspaces:', err);
+        console.error('Failed to init app:', err);
       }
     }
     init();

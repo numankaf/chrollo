@@ -294,7 +294,6 @@ export default function CollectionSidebar() {
       (item) => item.collectionItemType === COLLECTION_TYPE.COLLECTION
     );
   }, [collectionItemMap]);
-
   const childrenAccessor = useCallback(
     (nodeData: CollectionItem) => {
       if (!hasChildren(nodeData)) return null;

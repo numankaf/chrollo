@@ -8,7 +8,7 @@ import { CONNECTION_TYPE, type Connection } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];
-  setConnections: (connections: Connection[]) => void;
+  initConnectionStore: (connections: Connection[]) => Promise<void>;
   getConnection: (id: string) => Connection | undefined;
   createConnection: (connection: Connection) => Connection;
   updateConnection: (connection: Connection) => Connection;
@@ -19,7 +19,10 @@ interface ConnectionStore {
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
   connections: [],
-  setConnections: (connections) => set({ connections }),
+  initConnectionStore: async (connections: Connection[]) =>
+    set(() => {
+      return { connections: connections };
+    }),
   getConnection: (id: string) => {
     return get().connections.find((c) => c.id === id)!;
   },

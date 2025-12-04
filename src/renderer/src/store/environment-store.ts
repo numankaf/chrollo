@@ -8,7 +8,7 @@ import type { Environment } from '@/types/environment';
 
 interface EnvironmentStore {
   environments: Environment[];
-  setEnvironments: (connections: Environment[]) => void;
+  initEnvironmentStore: (connections: Environment[]) => Promise<void>;
   getEnvironment: (id: string) => Environment | undefined;
   createEnvironment: (environment: Environment) => Environment;
   updateEnvironment: (environment: Environment) => Environment;
@@ -19,7 +19,10 @@ interface EnvironmentStore {
 
 const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   environments: [],
-  setEnvironments: (environments) => set({ environments }),
+  initEnvironmentStore: async (environments: Environment[]) =>
+    set(() => {
+      return { environments: environments };
+    }),
   getEnvironment: (id: string) => {
     return get().environments.find((e) => e.id === id)!;
   },

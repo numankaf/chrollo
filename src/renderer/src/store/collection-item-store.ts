@@ -6,7 +6,7 @@ import { type Collection, type CollectionItem, type Folder } from '@/types/colle
 
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
-  setCollectionItemMap: (items: CollectionItem[]) => void;
+  initCollectionStore: (items: CollectionItem[]) => Promise<void>;
   createCollectionItem: (collection: CollectionItem) => CollectionItem;
   updateCollectionItem: (collection: CollectionItem) => CollectionItem;
   deleteCollectionItem: (id: string) => void;
@@ -16,7 +16,7 @@ interface CollectionItemStore {
 
 const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
   collectionItemMap: new Map(),
-  setCollectionItemMap: (items: CollectionItem[]) =>
+  initCollectionStore: async (items: CollectionItem[]) =>
     set(() => {
       const map = new Map<string, CollectionItem>();
 
@@ -110,6 +110,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
           if (index !== -1) {
             parent.children!.splice(index + 1, 0, clonedRootId);
           }
+          window.api.collection.save(parent);
         }
       }
 
