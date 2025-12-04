@@ -4,7 +4,7 @@ import type { CollectionItem } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
-import type { WorkspaceFile } from '@/types/workspace';
+import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 declare global {
   interface Window {
@@ -24,21 +24,25 @@ declare global {
         send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) => void;
       };
       workspace: {
+        save: (workspace: Workspace) => Promise<void>;
+        get: (id: string) => Promise<Workspace | undefined>;
+        delete: (id: string) => Promise<void>;
         load: () => Promise<WorkspaceFile>;
-        save: (workspaceFile: WorkspaceFile) => Promise<void>;
+        setActive: (workspaceId: string) => Promise<void>;
+        getActive: () => Promise<string | undefined>;
       };
       connection: {
         save: (connection: Connection) => Promise<void>;
         get: (id: string) => Promise<Connection | undefined>;
         delete: (id: string) => Promise<void>;
-        list: () => Promise<Connection[]>;
+        load: () => Promise<Connection[]>;
         clear: () => Promise<void>;
       };
       collection: {
         save: (collectionItem: CollectionItem) => Promise<void>;
         get: (id: string) => Promise<CollectionItem | undefined>;
         delete: (id: string) => Promise<void>;
-        list: () => Promise<CollectionItem[]>;
+        load: () => Promise<CollectionItem[]>;
         clear: () => Promise<void>;
       };
       tab: {
@@ -49,7 +53,7 @@ declare global {
         save: (environment: Environment) => Promise<void>;
         get: (id: string) => Promise<Environment | undefined>;
         delete: (id: string) => Promise<void>;
-        list: () => Promise<Environment[]>;
+        load: () => Promise<Environment[]>;
         clear: () => Promise<void>;
       };
     };

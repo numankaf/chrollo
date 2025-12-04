@@ -33,7 +33,7 @@ async function deleteConnection(id: string): Promise<void> {
   }
 }
 
-async function listAllConnections(): Promise<Connection[]> {
+async function loadConnections(): Promise<Connection[]> {
   const results: Connection[] = [];
 
   for await (const [, value] of connectionDb.iterator()) {
@@ -64,8 +64,8 @@ export function initConnectionIpc() {
     return await deleteConnection(id);
   });
 
-  ipcMain.handle('connections:list', async () => {
-    return await listAllConnections();
+  ipcMain.handle('connections:load', async () => {
+    return await loadConnections();
   });
 
   ipcMain.handle('connections:clear', async () => {

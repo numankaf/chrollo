@@ -33,15 +33,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
 
         setLoadingText('Loading connections...');
-        const connections = await window.api.connection.list();
+        const connections = await window.api.connection.load();
         await useConnectionStore.getState().initConnectionStore(connections);
 
         setLoadingText('Loading collections...');
-        const collectionItems = await window.api.collection.list();
+        const collectionItems = await window.api.collection.load();
         await useCollectionItemStore.getState().initCollectionStore(collectionItems);
 
         setLoadingText('Loading environments...');
-        const environments = await window.api.environment.list();
+        const environments = await window.api.environment.load();
         await useEnvironmentStore.getState().initEnvironmentStore(environments);
 
         setAppLoaded(true);

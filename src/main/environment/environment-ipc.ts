@@ -33,7 +33,7 @@ async function deleteEnvironment(id: string): Promise<void> {
   }
 }
 
-async function listAllEnvironments(): Promise<Environment[]> {
+async function loadEnvironments(): Promise<Environment[]> {
   const results: Environment[] = [];
 
   for await (const [, value] of environmentDb.iterator()) {
@@ -63,8 +63,8 @@ export function initEnvironmentIpc() {
     return await deleteEnvironment(id);
   });
 
-  ipcMain.handle('environments:list', async () => {
-    return await listAllEnvironments();
+  ipcMain.handle('environments:load', async () => {
+    return await loadEnvironments();
   });
 
   ipcMain.handle('environments:clear', async () => {

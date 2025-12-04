@@ -52,10 +52,9 @@ const useWorkspaceStore = create<WorkspaceStore>((set) => ({
 
   initWorkspaceStore: async (workspaceFile) => {
     return new Promise((resolve) => {
-      const { activeWorkspaceId, workspaceSelection, workspaces } = workspaceFile;
+      const { activeWorkspaceId, workspaces } = workspaceFile;
       set(() => ({
         activeWorkspaceId: activeWorkspaceId,
-        workspaceSelection: workspaceSelection,
         workspaces: workspaces,
       }));
       resolve();

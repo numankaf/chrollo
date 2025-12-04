@@ -1,6 +1,7 @@
 import { type BaseAuditModel } from '@/types/base';
 
-export const DEFAULT_WORKSPACE_ID = 'default-workspace-id';
+export const DEFAULT_WORKSPACE_ID = '__defaultWorkspaceId__';
+export const ACTIVE_KEY = '__activeWorkspaceId__';
 
 export const WORKSPACE_TYPE = {
   PUBLIC: 'PUBLIC',
@@ -34,6 +35,5 @@ export type WorkspaceSelection = Record<string, WorkspaceSelectionValue>;
 
 export type WorkspaceFile = {
   workspaces: Workspace[];
-  workspaceSelection: WorkspaceSelection;
   activeWorkspaceId: string | undefined;
 };

@@ -6,7 +6,7 @@ import type { CollectionItem } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
-import type { WorkspaceFile } from '@/types/workspace';
+import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 interface Window {
   electron: ElectronAPI;
@@ -39,15 +39,19 @@ const api = {
   },
 
   workspace: {
+    save: (workspace: Workspace) => ipcRenderer.invoke('workspaces:save', workspace) as Promise<void>,
+    get: (id: string) => ipcRenderer.invoke('workspaces:get', id) as Promise<Workspace | undefined>,
+    delete: (id: string) => ipcRenderer.invoke('workspaces:delete', id) as Promise<void>,
     load: () => ipcRenderer.invoke('workspaces:load') as Promise<WorkspaceFile>,
-    save: (workspaceFile: WorkspaceFile) => ipcRenderer.invoke('workspaces:save', workspaceFile),
+    setActive: (workspaceId: string) => ipcRenderer.invoke('workspaces:setActive', workspaceId) as Promise<void>,
+    getActive: () => ipcRenderer.invoke('workspaces:getActive') as Promise<string | undefined>,
   },
 
   connection: {
     save: (connection: Connection) => ipcRenderer.invoke('connections:save', connection) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('connections:get', id) as Promise<Connection | undefined>,
     delete: (id: string) => ipcRenderer.invoke('connections:delete', id) as Promise<void>,
-    list: () => ipcRenderer.invoke('connections:list') as Promise<Connection[]>,
+    load: () => ipcRenderer.invoke('connections:load') as Promise<Connection[]>,
     clear: () => ipcRenderer.invoke('connections:clear') as Promise<void>,
   },
 
@@ -55,7 +59,7 @@ const api = {
     save: (collectionItem: CollectionItem) => ipcRenderer.invoke('collections:save', collectionItem) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('collections:get', id) as Promise<CollectionItem | undefined>,
     delete: (id: string) => ipcRenderer.invoke('collections:delete', id) as Promise<void>,
-    list: () => ipcRenderer.invoke('collections:list') as Promise<CollectionItem[]>,
+    load: () => ipcRenderer.invoke('collections:load') as Promise<CollectionItem[]>,
     clear: () => ipcRenderer.invoke('collections:clear') as Promise<void>,
   },
 
@@ -68,7 +72,7 @@ const api = {
     save: (environment: Environment) => ipcRenderer.invoke('environments:save', environment) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('environments:get', id) as Promise<Environment | undefined>,
     delete: (id: string) => ipcRenderer.invoke('environments:delete', id) as Promise<void>,
-    list: () => ipcRenderer.invoke('environments:list') as Promise<Environment[]>,
+    load: () => ipcRenderer.invoke('environments:load') as Promise<Environment[]>,
     clear: () => ipcRenderer.invoke('environments:clear') as Promise<void>,
   },
 };

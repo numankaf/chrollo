@@ -12,12 +12,12 @@ export function useAppSubscriptions() {
     const tabs = useTabsStore.getState().tabs;
     window.api.tab.save({ tabs });
 
-    const { workspaces, activeWorkspaceId, workspaceSelection } = useWorkspaceStore.getState();
-    window.api.workspace.save({
-      workspaces: workspaces,
-      activeWorkspaceId: activeWorkspaceId,
-      workspaceSelection: workspaceSelection,
-    });
+    // const { workspaces, activeWorkspaceId, workspaceSelection } = useWorkspaceStore.getState();
+    // window.api.workspace.save({
+    //   workspaces: workspaces,
+    //   activeWorkspaceId: activeWorkspaceId,
+    //   workspaceSelection: workspaceSelection,
+    // });
   }
 
   useEffect(() => {
