@@ -1,7 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
 import type { CollectionFile } from '@/types/collection';
-import type { ConnectionFile } from '@/types/connection';
 import type { EnvironmentFile } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
 import type { WorkspaceFile } from '@/types/workspace';
@@ -28,8 +27,11 @@ declare global {
         save: (workspaceFile: WorkspaceFile) => Promise<void>;
       };
       connection: {
-        load: () => Promise<ConnectionFile>;
-        save: (connectionFile: ConnectionFile) => Promise<void>;
+        save: (connection: Connection) => Promise<void>;
+        get: (id: string) => Promise<Connection | undefined>;
+        delete: (id: string) => Promise<void>;
+        list: () => Promise<Connection[]>;
+        clear: () => Promise<void>;
       };
       collection: {
         load: () => Promise<CollectionFile>;

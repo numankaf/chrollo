@@ -64,7 +64,7 @@ function AddConnectionPanel() {
             ...STOMP_DEFAULT_VALUES,
           };
 
-          const newConnection = await saveConnection(connectionPayload);
+          const newConnection = saveConnection(connectionPayload);
           openTab(newConnection);
           closeDialog();
           break;

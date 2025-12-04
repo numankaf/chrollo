@@ -33,8 +33,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
 
         setLoadingText('Loading connections...');
-        const connectionData = await window.api.connection.load();
-        await useConnectionStore.getState().initConnectionStore(connectionData);
+        const connections = await window.api.connection.list();
+        useConnectionStore.getState().setConnections(connections);
 
         setLoadingText('Loading collections...');
         const collectionData = await window.api.collection.load();

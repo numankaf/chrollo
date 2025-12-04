@@ -54,7 +54,7 @@ function ConnectionSidebar() {
         content: 'Rename',
         props: {
           className: 'text-sm',
-          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             setEditingItemId(item.id);
           },
@@ -65,10 +65,10 @@ function ConnectionSidebar() {
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              await cloneConnection(item.id);
+              cloneConnection(item.id);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -88,8 +88,8 @@ function ConnectionSidebar() {
               header: `Delete "${item.name}"`,
               message: `Are you sure you want to delete "${item.name}"?`,
               actionLabel: 'Delete',
-              accept: async () => {
-                await deleteConnection(item.id);
+              accept: () => {
+                deleteConnection(item.id);
               },
             });
           },

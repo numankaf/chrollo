@@ -1,44 +1,70 @@
-import fs from 'fs';
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
 import { ipcMain } from 'electron';
+import { Level } from 'level';
 
-import type { ConnectionFile } from '@/types/connection';
+import type { Connection } from '@/types/connection';
 
-const connectionFilePath = path.join(BASE_STORAGE_DIR, 'connections.json');
+const connectionDatabasePath = path.join(BASE_STORAGE_DIR, 'connection');
+const connectionDb = new Level<string, Connection>(connectionDatabasePath, { valueEncoding: 'json' });
 
-function loadConnections(): ConnectionFile {
-  if (fs.existsSync(connectionFilePath)) {
-    const data = fs.readFileSync(connectionFilePath, 'utf-8');
-    return JSON.parse(data) as ConnectionFile;
-  } else {
-    const fileData: ConnectionFile = {
-      connections: [],
-    };
+async function saveConnection(connection: Connection) {
+  await connectionDb.put(connection.id, connection);
+}
 
-    fs.writeFileSync(connectionFilePath, JSON.stringify(fileData, null, 2), 'utf-8');
-    return fileData;
+async function getConnection(id: string): Promise<Connection | undefined> {
+  try {
+    return await connectionDb.get(id);
+  } catch (error: unknown) {
+    console.error(error);
+    return undefined;
   }
 }
 
-function saveConnections(connectionFile: ConnectionFile) {
+async function deleteConnection(id: string): Promise<void> {
   try {
-    fs.writeFileSync(connectionFilePath, JSON.stringify(connectionFile, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to save connections:', err);
+    await connectionDb.del(id);
+  } catch (error: unknown) {
+    console.error(error);
+    return;
   }
+}
+
+async function listAllConnections(): Promise<Connection[]> {
+  const results: Connection[] = [];
+
+  for await (const [, value] of connectionDb.iterator()) {
+    results.push(value);
+  }
+  return results;
+}
+
+async function clearConnections(): Promise<void> {
+  await connectionDb.clear();
 }
 
 export function initConnectionIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
 
-  ipcMain.handle('connections:load', () => {
-    return loadConnections();
+  ipcMain.handle('connections:save', async (_, connection) => {
+    return await saveConnection(connection);
   });
 
-  ipcMain.handle('connections:save', (_, connectionFile) => {
-    saveConnections(connectionFile);
+  ipcMain.handle('connections:get', async (_, id) => {
+    return await getConnection(id);
+  });
+
+  ipcMain.handle('connections:delete', async (_, id) => {
+    return await deleteConnection(id);
+  });
+
+  ipcMain.handle('connections:list', async () => {
+    return await listAllConnections();
+  });
+
+  ipcMain.handle('connections:clear', async () => {
+    return await clearConnections();
   });
 }

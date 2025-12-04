@@ -4,7 +4,7 @@ import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
-import { CONNECTION_TYPE, type Connection, type ConnectionFile } from '@/types/connection';
+import { CONNECTION_TYPE, type Connection } from '@/types/connection';
 
 interface ConnectionStore {
   connections: Connection[];
@@ -12,11 +12,9 @@ interface ConnectionStore {
   getConnection: (id: string) => Connection | undefined;
   createConnection: (connection: Connection) => Connection;
   updateConnection: (connection: Connection) => Connection;
-  deleteConnection: (id: string) => Promise<void>;
-  cloneConnection: (id: string) => Promise<Connection>;
-  saveConnection: (connection: Connection) => Promise<Connection>;
-  initConnectionStore: (connectionFile: ConnectionFile) => Promise<void>;
-  saveConnectionStore: () => Promise<void>;
+  deleteConnection: (id: string) => void;
+  cloneConnection: (id: string) => Connection;
+  saveConnection: (connection: Connection) => Connection;
 }
 
 const useConnectionStore = create<ConnectionStore>((set, get) => ({
@@ -31,6 +29,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       connections: [...state.connections, newConnection],
     }));
 
+    window.api.connection.save(newConnection);
     return newConnection;
   },
 
@@ -49,10 +48,11 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       };
     });
 
+    window.api.connection.save(updatedConnection);
     return updatedConnection;
   },
 
-  deleteConnection: async (id) => {
+  deleteConnection: (id) => {
     const newConnections = get().connections.filter((c) => c.id !== id);
     const currentActiveConnectionId = getActiveWorkspaceSelection('activeConnectionId');
 
@@ -75,12 +75,11 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       }
     }
 
-    //Save to file system
-    await window.api.connection.save({ connections: newConnections });
+    window.api.connection.delete(id);
     set({ connections: newConnections });
   },
 
-  cloneConnection: async (id: string) => {
+  cloneConnection: (id: string) => {
     const state = get();
     const connections = state.connections;
     const index = connections.findIndex((c) => c.id === id);
@@ -98,34 +97,18 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     const newConnections = [...connections.slice(0, index + 1), newConnection, ...connections.slice(index + 1)];
 
-    await get().saveConnectionStore();
-
     set({ connections: newConnections });
+
+    window.api.connection.save(newConnection);
 
     useTabsStore.getState().openTab(newConnection);
     return newConnection;
   },
 
-  saveConnection: async (connection) => {
+  saveConnection: (connection) => {
     const exists = get().connections.some((c) => c.id === connection.id);
     const updatedConnection = exists ? get().updateConnection(connection) : get().createConnection(connection);
-
-    await window.api.connection.save({ connections: get().connections });
-
     return updatedConnection;
-  },
-
-  initConnectionStore: (connectionFile) => {
-    return new Promise((resolve) => {
-      set(() => ({
-        connections: connectionFile.connections,
-      }));
-      resolve();
-    });
-  },
-
-  saveConnectionStore: async () => {
-    await window.api.connection.save({ connections: get().connections });
   },
 }));
 
