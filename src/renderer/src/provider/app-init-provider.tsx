@@ -41,8 +41,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await useCollectionItemStore.getState().initCollectionItemStore(collectionData);
 
         setLoadingText('Loading environments...');
-        const environmentData = await window.api.environment.load();
-        await useEnvironmentStore.getState().initEnvironmentStore(environmentData);
+        const environments = await window.api.environment.list();
+        useEnvironmentStore.getState().setEnvironments(environments);
 
         setAppLoaded(true);
       } catch (err) {

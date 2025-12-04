@@ -15,10 +15,6 @@ export interface Environment extends BaseAuditModel {
   variables: EnvironmentVariable[];
 }
 
-export type EnvironmentFile = {
-  environments: Environment[];
-};
-
 export const ENVIRONMENT_DEFAULT_VALUES: Omit<Environment, 'id' | 'name' | 'workspaceId'> = {
   modelType: BASE_MODEL_TYPE.ENVIRONMENT,
   variables: [],

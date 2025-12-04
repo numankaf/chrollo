@@ -1,44 +1,73 @@
-import fs from 'fs';
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
+import { applyAuditFields } from '@/main/utils/audit-util';
+import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
+import { Level } from 'level';
 
-import type { EnvironmentFile } from '@/types/environment';
+import type { Environment } from '@/types/environment';
 
-const environmentFilePath = path.join(BASE_STORAGE_DIR, 'environments.json');
+const environmentDatabasePath = path.join(BASE_STORAGE_DIR, 'environment');
+const environmentDb = new Level<string, Environment>(environmentDatabasePath, { valueEncoding: 'json' });
 
-function loadEnvironments(): EnvironmentFile {
-  if (fs.existsSync(environmentFilePath)) {
-    const data = fs.readFileSync(environmentFilePath, 'utf-8');
-    return JSON.parse(data) as EnvironmentFile;
-  } else {
-    const environmentFile: EnvironmentFile = {
-      environments: [],
-    };
+async function saveEnvironment(environment: Environment) {
+  await environmentDb.put(environment.id, environment);
+}
 
-    fs.writeFileSync(environmentFilePath, JSON.stringify(environmentFile, null, 2), 'utf-8');
-    return environmentFile;
+async function getEnvironment(id: string): Promise<Environment | undefined> {
+  try {
+    return await environmentDb.get(id);
+  } catch (error: unknown) {
+    console.error(error);
+    return undefined;
   }
 }
 
-function saveEnvironments(environmentFile: EnvironmentFile) {
+async function deleteEnvironment(id: string): Promise<void> {
   try {
-    fs.writeFileSync(environmentFilePath, JSON.stringify(environmentFile, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to save environments:', err);
+    await environmentDb.del(id);
+  } catch (error: unknown) {
+    console.error(error);
+    return;
   }
+}
+
+async function listAllEnvironments(): Promise<Environment[]> {
+  const results: Environment[] = [];
+
+  for await (const [, value] of environmentDb.iterator()) {
+    results.push(value);
+  }
+  return sortByDate(results, 'createdDate');
+}
+
+async function clearEnvironments(): Promise<void> {
+  await environmentDb.clear();
 }
 
 export function initEnvironmentIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
 
-  ipcMain.handle('environments:load', () => {
-    return loadEnvironments();
+  ipcMain.handle('environments:save', async (_, environment) => {
+    const auditedEnvironment = applyAuditFields(environment);
+    return await saveEnvironment(auditedEnvironment);
   });
 
-  ipcMain.handle('environments:save', (_, environmentFile) => {
-    saveEnvironments(environmentFile);
+  ipcMain.handle('environments:get', async (_, id) => {
+    return await getEnvironment(id);
+  });
+
+  ipcMain.handle('environments:delete', async (_, id) => {
+    return await deleteEnvironment(id);
+  });
+
+  ipcMain.handle('environments:list', async () => {
+    return await listAllEnvironments();
+  });
+
+  ipcMain.handle('environments:clear', async () => {
+    return await clearEnvironments();
   });
 }

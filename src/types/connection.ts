@@ -51,10 +51,6 @@ export interface StompConnection extends Connection {
   subscriptions: StompSubscription[];
 }
 
-export type ConnectionFile = {
-  connections: Connection[];
-};
-
 export const CONNECTION_STATUS = {
   CONNECTED: 'connected',
   DISCONNECTED: 'disconnected',

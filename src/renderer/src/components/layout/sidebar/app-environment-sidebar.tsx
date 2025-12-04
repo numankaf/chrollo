@@ -90,10 +90,10 @@ function EnvironmentsSidebar() {
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              await cloneEnvironment(item.id);
+              cloneEnvironment(item.id);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -113,8 +113,8 @@ function EnvironmentsSidebar() {
               header: `Delete "${item.name}"`,
               message: `Are you sure you want to delete "${item.name}"?`,
               actionLabel: 'Delete',
-              accept: async () => {
-                await deleteEnvironment(item.id);
+              accept: () => {
+                deleteEnvironment(item.id);
               },
             });
           },

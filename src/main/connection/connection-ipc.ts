@@ -1,6 +1,8 @@
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
+import { applyAuditFields } from '@/main/utils/audit-util';
+import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
 import { Level } from 'level';
 
@@ -37,7 +39,8 @@ async function listAllConnections(): Promise<Connection[]> {
   for await (const [, value] of connectionDb.iterator()) {
     results.push(value);
   }
-  return results;
+
+  return sortByDate(results, 'createdDate');
 }
 
 async function clearConnections(): Promise<void> {
@@ -49,7 +52,8 @@ export function initConnectionIpc() {
   if (!mainWindow) return;
 
   ipcMain.handle('connections:save', async (_, connection) => {
-    return await saveConnection(connection);
+    const auditedConnection = applyAuditFields(connection);
+    return await saveConnection(auditedConnection);
   });
 
   ipcMain.handle('connections:get', async (_, id) => {

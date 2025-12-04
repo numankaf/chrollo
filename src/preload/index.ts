@@ -4,7 +4,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 import type { CollectionFile } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
-import type { EnvironmentFile } from '@/types/environment';
+import type { Environment } from '@/types/environment';
 import type { TabsFile } from '@/types/layout';
 import type { WorkspaceFile } from '@/types/workspace';
 
@@ -57,8 +57,11 @@ const api = {
     save: (tabsFile: TabsFile) => ipcRenderer.invoke('tabs:save', tabsFile),
   },
   environment: {
-    load: () => ipcRenderer.invoke('environments:load') as Promise<EnvironmentFile>,
-    save: (environmentFile: EnvironmentFile) => ipcRenderer.invoke('environments:save', environmentFile),
+    save: (environment: Environment) => ipcRenderer.invoke('environments:save', environment) as Promise<void>,
+    get: (id: string) => ipcRenderer.invoke('environments:get', id) as Promise<Environment | undefined>,
+    delete: (id: string) => ipcRenderer.invoke('environments:delete', id) as Promise<void>,
+    list: () => ipcRenderer.invoke('environments:list') as Promise<Environment[]>,
+    clear: () => ipcRenderer.invoke('environments:clear') as Promise<void>,
   },
 };
 

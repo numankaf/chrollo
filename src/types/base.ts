@@ -14,14 +14,14 @@ export type BaseModelType = (typeof BASE_MODEL_TYPE)[keyof typeof BASE_MODEL_TYP
 
 export interface BaseModel {
   id: string;
-  modelType: BaseModelType;
+  readonly modelType: BaseModelType;
 }
 
 export interface BaseAuditModel extends BaseModel {
-  createdBy?: string;
-  createdDate?: string;
-  updatedBy?: string;
-  updatedDate?: string;
+  readonly createdBy?: string;
+  readonly createdDate?: string;
+  readonly updatedBy?: string;
+  readonly updatedDate?: string;
 }
 
 export type BaseItem = Connection | CollectionItem | Environment;
