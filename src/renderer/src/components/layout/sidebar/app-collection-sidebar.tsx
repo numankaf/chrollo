@@ -4,7 +4,7 @@ import { confirmDialog } from '@/store/confirm-dialog-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasChildren } from '@/utils/collection-util';
-import { ChevronRight, FolderOpen, GalleryVerticalEnd, Plus, Zap } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { Tree, type NodeRendererProps, type RowRendererProps } from 'react-arborist';
 import { toast } from 'sonner';
@@ -17,7 +17,6 @@ import {
   REQUEST_DEFAULT_VALUES,
   type Collection,
   type CollectionItem,
-  type CollectionType,
   type Folder,
   type Request,
 } from '@/types/collection';
@@ -25,6 +24,7 @@ import { useActiveItem } from '@/hooks/use-active-item';
 import { useResizeObserver } from '@/hooks/use-resize-observer';
 import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-collection-item-map';
 import { Button } from '@/components/common/button';
+import InlineEditText from '@/components/common/inline-edit-text';
 import { SearchBar } from '@/components/common/search-input';
 import {
   Sidebar,
@@ -36,19 +36,7 @@ import {
 } from '@/components/common/sidebar';
 import { AddItemDialog } from '@/components/app/add-item-dialog';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
-
-function CollectionItemIcon({ type }: { type: CollectionType }) {
-  switch (type) {
-    case COLLECTION_TYPE.COLLECTION:
-      return <GalleryVerticalEnd size={14} />;
-    case COLLECTION_TYPE.FOLDER:
-      return <FolderOpen size={14} />;
-    case COLLECTION_TYPE.REQUEST:
-      return <Zap size={14} color="var(--color-green-500)" />;
-    default:
-      return '';
-  }
-}
+import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 
 function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<CollectionItem>) {
   const item = node.data;
@@ -57,13 +45,15 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       openTab: state.openTab,
     }))
   );
-  const { saveCollectionItem, deleteCollectionItem, cloneCollectionItem } = useCollectionItemStore(
-    useShallow((state) => ({
-      deleteCollectionItem: state.deleteCollectionItem,
-      saveCollectionItem: state.saveCollectionItem,
-      cloneCollectionItem: state.cloneCollectionItem,
-    }))
-  );
+  const { saveCollectionItem, deleteCollectionItem, cloneCollectionItem, updateCollectionItem } =
+    useCollectionItemStore(
+      useShallow((state) => ({
+        deleteCollectionItem: state.deleteCollectionItem,
+        saveCollectionItem: state.saveCollectionItem,
+        cloneCollectionItem: state.cloneCollectionItem,
+        updateCollectionItem: state.updateCollectionItem,
+      }))
+    );
 
   const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
@@ -120,7 +110,13 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       {
         id: 'rename',
         content: 'Rename',
-        props: { className: 'text-sm' },
+        props: {
+          className: 'text-sm',
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            e.stopPropagation();
+            node.edit();
+          },
+        },
       },
       {
         id: 'duplicate',
@@ -231,28 +227,25 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
               }}
             />
           )}
-          {node.isEditing ? (
-            <input
-              autoFocus
-              defaultValue={item.name}
-              className="w-full bg-transparent border-none outline-none"
-              onBlur={() => node.reset()}
-              // onKeyDown={(e) => {
-              //   if (e.key === 'Escape') node.reset();
-              //   if (e.key === 'Enter') node.submit((e.currentTarget as HTMLInputElement).value);
-              // }}
+
+          <div
+            className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block focus-visible:outline-none focus-visible:ring-0"
+            key={item.id}
+            onClick={() => {
+              openTab(item);
+            }}
+          >
+            <CollectionItemIcon size={14} collectionType={item.collectionItemType} />
+            <InlineEditText
+              value={item.name}
+              editing={node.isEditing}
+              onComplete={(value) => {
+                updateCollectionItem({ ...item, name: value });
+                node.reset();
+              }}
             />
-          ) : (
-            <div
-              className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
-              key={item.id}
-              onClick={() => openTab(item)}
-            >
-              <CollectionItemIcon type={item.collectionItemType} />
-              <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
-              <OperationsButton items={getOperationItems(item)} />
-            </div>
-          )}
+            <OperationsButton items={getOperationItems(item)} />
+          </div>
         </div>
       </div>
     </>
@@ -273,7 +266,7 @@ function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
       }}
       {...attrs}
       ref={innerRef}
-      className={`${activeTab?.id === node.data.id && 'gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent`}
+      className={`${activeTab?.id === node.data.id && 'gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-0`}
     >
       {children}
     </div>

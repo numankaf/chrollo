@@ -1,10 +1,10 @@
 import type { JSX } from 'react';
-import { Container, FolderOpen, GalleryVerticalEnd, LayoutDashboard, Zap } from 'lucide-react';
+import { Container, LayoutDashboard } from 'lucide-react';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { COLLECTION_TYPE } from '@/types/collection';
 import type { Tab } from '@/types/layout';
 import { useTabItem } from '@/hooks/use-tab-item';
+import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function TabItemContent({ tab }: { tab: Tab }) {
@@ -17,37 +17,29 @@ function TabItemContent({ tab }: { tab: Tab }) {
 
   switch (item.modelType) {
     case BASE_MODEL_TYPE.CONNECTION:
-      Icon = <ConnectionIcon connectionType={item.connectionType} size={16} className="shrink-0" />;
+      Icon = <ConnectionIcon connectionType={item.connectionType} size={14} className="shrink-0" />;
       name = item.name;
       break;
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
-      Icon = <Container size={16} className="shrink-0" />;
+      Icon = <Container size={14} className="shrink-0" />;
       name = item.name;
       break;
 
     case BASE_MODEL_TYPE.WORKSPACE:
-      Icon = <LayoutDashboard size={16} className="shrink-0" />;
+      Icon = <LayoutDashboard size={14} className="shrink-0" />;
       name = item.name;
       break;
 
     case BASE_MODEL_TYPE.COLLECTION:
+      Icon = <CollectionItemIcon collectionType={item.collectionItemType} size={14} className="shrink-0" />;
+
       name = item.name;
-      switch (item.collectionItemType) {
-        case COLLECTION_TYPE.COLLECTION:
-          Icon = <GalleryVerticalEnd size={16} />;
-          break;
-        case COLLECTION_TYPE.FOLDER:
-          Icon = <FolderOpen size={16} />;
-          break;
-        case COLLECTION_TYPE.REQUEST:
-          Icon = <Zap size={16} color="var(--color-green-500)" className="shrink-0" />;
-          break;
-      }
+
       break;
 
     // case BASE_MODEL_TYPE.REQUEST_HISTORY:
-    //   Icon = <History size={16} color="var(--color-amber-500)" className="shrink-0" />;
+    //   Icon = <History size={14} color="var(--color-amber-500)" className="shrink-0" />;
     //   name = item.request?.name ?? 'Unnamed Request';
     //   break;
   }

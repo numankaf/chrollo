@@ -44,7 +44,9 @@ function InlineEditText({ value, editing, onComplete, textProps, inputProps }: I
         if (e.key === 'Enter') complete();
       }}
       onClick={(e) => e.stopPropagation()}
-      onChange={(e) => setInlineValue(e.target.value)}
+      onChange={(e) => {
+        setInlineValue(e.target.value);
+      }}
       className={cn(
         'text-sm! bg-background! hover:border-primary! h-6 focus-visible:ring-[0.5px]! px-1!',
         inputProps?.className

@@ -14,6 +14,7 @@ import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
 import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
+import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import {
@@ -30,6 +31,7 @@ import { AddItemDialog } from '@/components/app/add-item-dialog';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
 
 function EnvironmentsSidebar() {
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -50,11 +52,12 @@ function EnvironmentsSidebar() {
     }))
   );
 
-  const { saveEnvironment, deleteEnvironment, cloneEnvironment } = useEnvironmentStore(
+  const { saveEnvironment, deleteEnvironment, cloneEnvironment, updateEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       saveEnvironment: state.saveEnvironment,
       deleteEnvironment: state.deleteEnvironment,
       cloneEnvironment: state.cloneEnvironment,
+      updateEnvironment: state.updateEnvironment,
     }))
   );
 
@@ -83,7 +86,13 @@ function EnvironmentsSidebar() {
       {
         id: 'rename',
         content: 'Rename',
-        props: { className: 'text-sm' },
+        props: {
+          className: 'text-sm',
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            e.stopPropagation();
+            setEditingItemId(item.id);
+          },
+        },
       },
       {
         id: 'duplicate',
@@ -163,7 +172,14 @@ function EnvironmentsSidebar() {
                     size="sm"
                   >
                     <Container size={16} />
-                    <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{item.name}</span>
+                    <InlineEditText
+                      value={item.name}
+                      editing={item.id === editingItemId}
+                      onComplete={(value) => {
+                        updateEnvironment({ ...item, name: value });
+                        setEditingItemId(null);
+                      }}
+                    />
                     <OperationsButton items={getOperationItems(item)} />
                   </SidebarMenuButton>
                 ))}
