@@ -8,7 +8,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { CONNECTION_STATUS } from '@/types/connection';
 import { cn } from '@/lib/utils';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import { Button } from '@/components/common/button';
 import {

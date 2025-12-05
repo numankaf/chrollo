@@ -24,8 +24,7 @@ export function useWorkspaceTabs() {
       if (tab.modelType === BASE_MODEL_TYPE.WORKSPACE) {
         return tab.id === activeWorkspaceId;
       }
-
-      return tab.workspaceId === activeWorkspaceId;
+      return tab.workspaceId === activeWorkspaceId || !tab.workspaceId;
     });
   }, [tabs, activeWorkspaceId]);
 }

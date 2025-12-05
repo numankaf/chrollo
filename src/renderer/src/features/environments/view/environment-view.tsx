@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { EnvironmentVariable } from '@/types/environment';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
 import { EditableTextCell } from '@/components/common/table';

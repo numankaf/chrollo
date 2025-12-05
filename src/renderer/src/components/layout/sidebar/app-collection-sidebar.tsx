@@ -21,8 +21,8 @@ import {
   type Folder,
   type Request,
 } from '@/types/collection';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { useResizeObserver } from '@/hooks/use-resize-observer';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
 import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-collection-item-map';
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';

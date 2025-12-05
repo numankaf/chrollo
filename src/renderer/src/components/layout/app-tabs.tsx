@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { getTabItem } from '@/utils/tab-utils';
+import { getTabItem } from '@/utils/tab-util';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
 import { Separator } from '@/components/common/separator';
@@ -107,7 +107,7 @@ function AppTabs() {
                     }
                   }}
                 >
-                  <TabItemContent {...getTabItem(tab)!} />
+                  <TabItemContent tab={tab} />
                   <Button
                     id="tabs-close"
                     variant="ghost"

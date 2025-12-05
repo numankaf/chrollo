@@ -3,7 +3,7 @@ import useTabsStore from '@/store/tab-store';
 import { Download, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { Button } from '@/components/common/button';
 import { useSidebar } from '@/components/common/sidebar';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';

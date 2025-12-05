@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { saveHandlers } from '@/utils/save-registry-utils';
-import { getTabItem } from '@/utils/tab-utils';
+import { saveHandlers } from '@/utils/save-registry-util';
+import { getTabItem } from '@/utils/tab-util';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { Button } from '@/components/common/button';
 
 function SaveItemButton() {

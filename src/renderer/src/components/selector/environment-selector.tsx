@@ -5,7 +5,7 @@ import { Check, ChevronDown, CircleOff, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Environment } from '@/types/environment';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';

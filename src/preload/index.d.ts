@@ -3,7 +3,6 @@ import { ElectronAPI } from '@electron-toolkit/preload';
 import type { CollectionItem } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
-import type { TabsFile } from '@/types/layout';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 declare global {

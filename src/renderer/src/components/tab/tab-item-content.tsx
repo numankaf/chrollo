@@ -3,12 +3,17 @@ import { Container, FolderOpen, GalleryVerticalEnd, LayoutDashboard, Zap } from 
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
-import type { TabItem } from '@/types/layout';
+import type { Tab } from '@/types/layout';
+import { useTabItem } from '@/hooks/use-tab-item';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
-function TabItemContent(item: TabItem) {
+function TabItemContent({ tab }: { tab: Tab }) {
   let Icon: JSX.Element | null = null;
   let name = '';
+
+  const item = useTabItem(tab);
+
+  if (!item) return <span> Not Found</span>;
 
   switch (item.modelType) {
     case BASE_MODEL_TYPE.CONNECTION:

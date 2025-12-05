@@ -11,7 +11,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import type { Environment } from '@/types/environment';
 import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import { ScrollArea } from '@/components/common/scroll-area';

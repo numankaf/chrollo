@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Connection } from '@/types/connection';
-import { useActiveItem } from '@/hooks/workspace/use-active-item';
+import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea } from '@/components/common/scroll-area';

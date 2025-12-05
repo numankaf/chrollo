@@ -1,6 +1,6 @@
 import { default as useWorkspaceStore } from '@/store/workspace-store';
-import { scrollToTab } from '@/utils/tab-utils';
-import { getActiveWorkspaceSelection } from '@/utils/workspace-utils';
+import { scrollToTab } from '@/utils/tab-util';
+import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
