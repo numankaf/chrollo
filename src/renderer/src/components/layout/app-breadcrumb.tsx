@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { APP_BREADCRUMB_OFFSET } from '@/constants/layout-constants';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { hasParent } from '@/utils/collection-util';
+import { getTabItem } from '@/utils/tab-utils';
 import { useShallow } from 'zustand/react/shallow';
 
 import { type CollectionItem } from '@/types/collection';
@@ -30,10 +31,10 @@ function AppBreadcrumb() {
     return [item];
   };
 
-  if (!activeTab) return null;
+  const tabItem = activeTab ? getTabItem(activeTab) : null;
+  if (!activeTab || !tabItem) return null;
 
-  const item = activeTab.item as CollectionItem;
-  const breadcrumbItems = getParentChain(item);
+  const breadcrumbItems = getParentChain(tabItem as CollectionItem);
 
   return (
     <div className="flex items-center justify-between pr-2">

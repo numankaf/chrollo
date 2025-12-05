@@ -45,10 +45,6 @@ declare global {
         load: () => Promise<CollectionItem[]>;
         clear: () => Promise<void>;
       };
-      tab: {
-        load: () => Promise<TabsFile>;
-        save: (tabsFile: TabsFile) => Promise<void>;
-      };
       environment: {
         save: (environment: Environment) => Promise<void>;
         get: (id: string) => Promise<Environment | undefined>;

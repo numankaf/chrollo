@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { getTabItem } from '@/utils/tab-utils';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
@@ -97,7 +98,7 @@ function AppTabs() {
                   className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
-                    openTab(tab.item);
+                    openTab(getTabItem(tab)!);
                   }}
                   onMouseDown={(e) => {
                     if (e.button === 1) {
@@ -106,7 +107,7 @@ function AppTabs() {
                     }
                   }}
                 >
-                  <TabItemContent {...tab.item} />
+                  <TabItemContent {...getTabItem(tab)!} />
                   <Button
                     id="tabs-close"
                     variant="ghost"

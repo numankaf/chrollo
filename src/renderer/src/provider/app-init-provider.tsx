@@ -2,7 +2,6 @@ import { createContext, useEffect, useState, type ReactNode } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 
 interface AppContextValue {
@@ -24,10 +23,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function init() {
       try {
-        setLoadingText('Loading tabs...');
-        const tabsData = await window.api.tab.load();
-        await useTabsStore.getState().initTabsStore(tabsData);
-
         setLoadingText('Loading workspaces...');
         const workspaceData = await window.api.workspace.load();
         await useWorkspaceStore.getState().initWorkspaceStore(workspaceData);

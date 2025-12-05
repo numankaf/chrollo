@@ -13,7 +13,7 @@ export const BASE_MODEL_TYPE = {
 export type BaseModelType = (typeof BASE_MODEL_TYPE)[keyof typeof BASE_MODEL_TYPE];
 
 export interface BaseModel {
-  id: string;
+  readonly id: string;
   readonly modelType: BaseModelType;
 }
 

@@ -5,7 +5,6 @@ import { initConnectionIpc } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
-import { initTabsIpc } from '@/main/tabs/tabs-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
@@ -97,7 +96,6 @@ app.whenReady().then(() => {
   });
 
   initStompIpc();
-  initTabsIpc();
   initWorkspaceIpc();
   initConnectionIpc();
   initCollectionIpc();

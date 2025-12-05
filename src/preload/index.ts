@@ -5,7 +5,6 @@ import { contextBridge, ipcRenderer } from 'electron';
 import type { CollectionItem } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
-import type { TabsFile } from '@/types/layout';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 interface Window {
@@ -61,11 +60,6 @@ const api = {
     delete: (id: string) => ipcRenderer.invoke('collections:delete', id) as Promise<void>,
     load: () => ipcRenderer.invoke('collections:load') as Promise<CollectionItem[]>,
     clear: () => ipcRenderer.invoke('collections:clear') as Promise<void>,
-  },
-
-  tab: {
-    load: () => ipcRenderer.invoke('tabs:load') as Promise<TabsFile>,
-    save: (tabsFile: TabsFile) => ipcRenderer.invoke('tabs:save', tabsFile),
   },
 
   environment: {

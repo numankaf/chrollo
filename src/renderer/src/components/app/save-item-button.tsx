@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { saveHandlers } from '@/utils/save-registry-utils';
+import { getTabItem } from '@/utils/tab-utils';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -11,12 +12,13 @@ function SaveItemButton() {
 
   const [loading, setLoading] = useState(false);
 
-  const handler = activeTab ? (saveHandlers[activeTab.item.modelType] ?? null) : null;
+  const tabItem = activeTab ? getTabItem(activeTab) : null;
+  const handler = tabItem ? (saveHandlers[tabItem.modelType] ?? null) : null;
 
   async function save() {
-    if (!activeTab || !handler) return;
+    if (!tabItem || !handler) return;
 
-    const id = activeTab.item.id;
+    const id = tabItem.id;
     const item = handler.get(id);
     if (!item) return;
 

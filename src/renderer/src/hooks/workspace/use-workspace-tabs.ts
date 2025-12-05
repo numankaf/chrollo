@@ -21,11 +21,11 @@ export function useWorkspaceTabs() {
     if (!activeWorkspaceId) return [];
 
     return tabs.filter((tab) => {
-      if (tab.item.modelType === BASE_MODEL_TYPE.WORKSPACE) {
+      if (tab.modelType === BASE_MODEL_TYPE.WORKSPACE) {
         return tab.id === activeWorkspaceId;
       }
 
-      return tab.item.workspaceId === activeWorkspaceId;
+      return tab.workspaceId === activeWorkspaceId;
     });
   }, [tabs, activeWorkspaceId]);
 }

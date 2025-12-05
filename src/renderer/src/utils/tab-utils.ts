@@ -1,9 +1,22 @@
+import useCollectionItemStore from '@/store/collection-item-store';
+import useConnectionStore from '@/store/connection-store';
+import useEnvironmentStore from '@/store/environment-store';
+import useWorkspaceStore from '@/store/workspace-store';
+
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE } from '@/types/collection';
 import { CONNECTION_TYPE } from '@/types/connection';
-import type { TabItem } from '@/types/layout';
+import type { Tab, TabItem } from '@/types/layout';
 
-export function getTabRoute(item: TabItem): string {
+export const scrollToTab = (tabId: string | null) => {
+  if (!tabId) return;
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`[data-tab-id="${tabId}"]`);
+    el?.scrollIntoView({ behavior: 'smooth', inline: 'nearest' });
+  });
+};
+
+export function getTabItemRoute(item: TabItem): string {
   switch (item.modelType) {
     case BASE_MODEL_TYPE.COLLECTION: {
       switch (item.collectionItemType) {
@@ -42,5 +55,20 @@ export function getTabRoute(item: TabItem): string {
 
     default:
       return '/';
+  }
+}
+
+export function getTabItem(tab: Tab): TabItem | undefined {
+  switch (tab.modelType) {
+    case BASE_MODEL_TYPE.WORKSPACE:
+      return useWorkspaceStore.getState().workspaces.find((w) => w.id === tab.id);
+    case BASE_MODEL_TYPE.CONNECTION:
+      return useConnectionStore.getState().connections.find((c) => c.id === tab.id);
+    case BASE_MODEL_TYPE.COLLECTION:
+      return useCollectionItemStore.getState().collectionItemMap.get(tab.id);
+    case BASE_MODEL_TYPE.ENVIRONMENT:
+      return useEnvironmentStore.getState().environments.find((e) => e.id === tab.id);
+    default:
+      return undefined;
   }
 }

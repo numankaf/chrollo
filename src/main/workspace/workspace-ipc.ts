@@ -17,19 +17,23 @@ import {
 
 const workspaceDatabasePath = path.join(BASE_STORAGE_DIR, 'workspace');
 
-const workspaceDb = new Level<string, Workspace>(workspaceDatabasePath, { valueEncoding: 'json' });
+const workspaceDb = new Level(workspaceDatabasePath);
+
+const workspaceDataDb = workspaceDb.sublevel<string, Workspace>('data', {
+  valueEncoding: 'json',
+});
 
 const workspaceMetaDb = workspaceDb.sublevel<string, string>('meta', {
   valueEncoding: 'utf8',
 });
 
 async function saveWorkspace(workspace: Workspace) {
-  await workspaceDb.put(workspace.id, workspace);
+  await workspaceDataDb.put(workspace.id, workspace);
 }
 
 async function getWorkspace(id: string): Promise<Workspace | undefined> {
   try {
-    return await workspaceDb.get(id);
+    return await workspaceDataDb.get(id);
   } catch (error: unknown) {
     console.error(error);
     return undefined;
@@ -49,7 +53,7 @@ async function loadWorkspaces(): Promise<WorkspaceFile> {
   const now = new Date().toISOString();
   const results: Workspace[] = [];
 
-  for await (const [, value] of workspaceDb.iterator()) {
+  for await (const [, value] of workspaceDataDb.iterator()) {
     results.push(value);
   }
 

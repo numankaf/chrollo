@@ -2,6 +2,7 @@ import { useState } from 'react';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
+import { getTabItem } from '@/utils/tab-utils';
 import { ChevronDown, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -15,7 +16,7 @@ import TabItemContent from '@/components/tab/tab-item-content';
 function TabSelector() {
   const tabs = useWorkspaceTabs();
   const [search, setSearch] = useState('');
-  const filteredTabs = applyTextSearch(tabs, search, (tab) => tab.item.name);
+  const filteredTabs = applyTextSearch(tabs, search, (tab) => getTabItem(tab)!.name);
   const { updateWorkspaceSelection } = useWorkspaceStore(
     useShallow((state) => ({
       updateWorkspaceSelection: state.updateWorkspaceSelection,
@@ -54,7 +55,7 @@ function TabSelector() {
                   size="sm"
                   onClick={() => updateWorkspaceSelection({ activeTabId: tab.id })}
                 >
-                  <TabItemContent {...tab.item} />
+                  <TabItemContent {...getTabItem(tab)!} />
                   <span
                     className="opacity-0 p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
                     onClick={(e) => {
