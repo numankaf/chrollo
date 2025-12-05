@@ -8,7 +8,7 @@ import { Level } from 'level';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import {
-  ACTIVE_KEY,
+  ACTIVE_WORKSPACE_ID_KEY,
   DEFAULT_WORKSPACE_ID,
   WORKSPACE_TYPE,
   type Workspace,
@@ -74,12 +74,12 @@ async function loadWorkspaces(): Promise<WorkspaceFile> {
 }
 
 async function setActiveWorkspace(id: string) {
-  await workspaceMetaDb.put(ACTIVE_KEY, id);
+  await workspaceMetaDb.put(ACTIVE_WORKSPACE_ID_KEY, id);
 }
 
 async function getActiveWorkspace(): Promise<string | undefined> {
   try {
-    return await workspaceMetaDb.get(ACTIVE_KEY);
+    return await workspaceMetaDb.get(ACTIVE_WORKSPACE_ID_KEY);
   } catch {
     return undefined;
   }
