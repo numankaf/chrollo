@@ -5,13 +5,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import type { Tab, TabItem } from '@/types/layout';
+import type { Tab } from '@/types/layout';
 
 interface TabsStore {
   tabs: Tab[];
   setTabs: (tabs: Tab[]) => void;
-  addTab: (item: TabItem) => Tab;
-  openTab: (item: TabItem) => Tab;
+  addTab: (item: Tab) => Tab;
+  openTab: (item: Tab) => Tab;
   closeTab: (id: string) => Tab | null;
 }
 
@@ -20,9 +20,9 @@ const useTabsStore = create<TabsStore>()(
     (set, get) => ({
       tabs: [],
       setTabs: (tabs) => set({ tabs }),
-      addTab: (item) => {
+      addTab: (tab) => {
         const activeWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId!;
-        const newTab: Tab = { id: item.id, modelType: item.modelType, workspaceId: activeWorkspaceId };
+        const newTab: Tab = { id: tab.id, modelType: tab.modelType, workspaceId: activeWorkspaceId };
         set((state) => {
           const tabs = [...state.tabs, newTab];
           return { tabs, activeTab: newTab };
@@ -32,17 +32,17 @@ const useTabsStore = create<TabsStore>()(
         return newTab;
       },
 
-      openTab: (item) => {
+      openTab: (tab) => {
         let targetTab: Tab;
         const state = get();
 
-        const existingTab = state.tabs.find((t) => t.id === item.id);
+        const existingTab = state.tabs.find((t) => t.id === tab.id);
         if (existingTab) {
           targetTab = existingTab;
           useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: existingTab.id });
         } else {
           const activeWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId!;
-          const newTab: Tab = { id: item.id, modelType: item.modelType, workspaceId: activeWorkspaceId };
+          const newTab: Tab = { id: tab.id, modelType: tab.modelType, workspaceId: activeWorkspaceId };
           targetTab = newTab;
           set({ tabs: [...state.tabs, newTab] });
           useWorkspaceStore.getState().updateWorkspaceSelection({ activeTabId: newTab.id });

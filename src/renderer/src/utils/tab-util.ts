@@ -16,8 +16,9 @@ export const scrollToTab = (tabId: string | null) => {
   });
 };
 
-export function getTabItemRoute(item: TabItem): string {
-  switch (item.modelType) {
+export function getTabRoute(tab: Tab): string {
+  const item = getTabItem(tab);
+  switch (item?.modelType) {
     case BASE_MODEL_TYPE.COLLECTION: {
       switch (item.collectionItemType) {
         case COLLECTION_TYPE.COLLECTION:

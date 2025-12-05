@@ -9,5 +9,5 @@ export type TabItem = Workspace | Connection | CollectionItem | Environment;
 export interface Tab {
   readonly id: string;
   readonly modelType: BaseModelType;
-  readonly workspaceId: string;
+  readonly workspaceId?: string;
 }

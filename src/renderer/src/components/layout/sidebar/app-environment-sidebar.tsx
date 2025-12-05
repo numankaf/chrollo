@@ -69,7 +69,7 @@ function EnvironmentsSidebar() {
         workspaceId: activeWorkspaceId,
         ...ENVIRONMENT_DEFAULT_VALUES,
       };
-      const newEnvironment = await saveEnvironment(environmentPayload);
+      const newEnvironment = saveEnvironment(environmentPayload);
       openTab(newEnvironment);
       setAddDialogOpen(false);
     } catch (error) {

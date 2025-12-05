@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import useStompStatusStore from '@/store/stomp-status-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { getTabItem, getTabItemRoute } from '@/utils/tab-util';
+import { getTabRoute } from '@/utils/tab-util';
 import { useNavigate } from 'react-router';
 
 export function useAppSubscriptions() {
@@ -22,8 +22,7 @@ export function useAppSubscriptions() {
       const activeTabId = state.workspaceSelection[state.activeWorkspaceId ?? '']?.activeTabId;
       const tab = useTabsStore.getState().tabs.find((t) => t.id === activeTabId) ?? null;
       if (tab) {
-        const tabItem = getTabItem(tab);
-        if (tabItem) navigate(getTabItemRoute(tabItem));
+        navigate(getTabRoute(tab));
       } else {
         navigate('/');
       }

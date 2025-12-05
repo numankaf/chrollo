@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { getTabItem } from '@/utils/tab-util';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { COLLECTION_TYPE } from '@/types/collection';
 import { useActiveItem } from '@/hooks/use-active-item';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
@@ -75,9 +73,7 @@ function AppTabs() {
       addTab({
         id: nanoid(8),
         workspaceId: activeWorkspaceId,
-        name: 'New Request',
         modelType: BASE_MODEL_TYPE.COLLECTION,
-        collectionItemType: COLLECTION_TYPE.REQUEST,
       });
     }
   };
@@ -98,7 +94,7 @@ function AppTabs() {
                   className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
-                    openTab(getTabItem(tab)!);
+                    openTab(tab);
                   }}
                   onMouseDown={(e) => {
                     if (e.button === 1) {
