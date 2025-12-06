@@ -1,3 +1,6 @@
+import type { ComponentType } from 'react';
+import { type LucideProps } from 'lucide-react';
+
 import type { BaseModelType } from '@/types/base';
 import type { CollectionItem } from '@/types/collection';
 import type { Connection } from '@/types/connection';
@@ -11,3 +14,11 @@ export interface Tab {
   readonly modelType: BaseModelType;
   readonly workspaceId?: string;
 }
+
+export type SidebarItem = {
+  modelType: BaseModelType;
+  title: string;
+  url: string;
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
+  component: ComponentType;
+};

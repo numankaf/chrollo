@@ -108,7 +108,7 @@ function RequestBody() {
             />
           </ScrollArea>
         </ResizablePanel>
-        <ResizableHandle className="hover:bg-primary" />
+        <ResizableHandle />
         <ResizablePanel minSize={25}>Response</ResizablePanel>
       </ResizablePanelGroup>
     </>

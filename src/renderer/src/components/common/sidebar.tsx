@@ -15,6 +15,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { useLayout } from '@/hooks/use-layout';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
@@ -240,7 +241,7 @@ function Sidebar({
 }
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar } = useLayout();
 
   return (
     <Button

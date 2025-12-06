@@ -26,14 +26,7 @@ import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-c
 import { Button } from '@/components/common/button';
 import InlineEditText from '@/components/common/inline-edit-text';
 import { SearchBar } from '@/components/common/search-input';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarRail,
-} from '@/components/common/sidebar';
+import { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
@@ -337,59 +330,53 @@ export default function CollectionSidebar() {
   const { ref, height } = useResizeObserver();
 
   return (
-    <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-      <SidebarContent className="w-(--sidebar-width-content)!">
-        <SidebarHeader className="m-0! p-0!">
-          <div className="flex items-center justify-between p-1 gap-1">
-            {addDialogOpen && (
-              <AddItemDialog
-                title="Create Collection"
-                inputLabel="Collection Name"
-                inputRequiredLabel="Collection name is required."
-                inputPlaceholder="Enter a collection name"
-                defaultValue="New Collection"
-                open={addDialogOpen}
-                onOpenChange={(open) => setAddDialogOpen(open)}
-                onSubmit={onAddSubmit}
-              />
-            )}
-            <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
-              <Plus size={16} />
-            </Button>
-            <SearchBar
-              placeholder="Search collections"
-              className="flex-1"
-              onSearchChange={(e) => {
-                setSearch(e.target.value);
-              }}
+    <SidebarContent className="h-full">
+      <SidebarHeader className="m-0! p-0!">
+        <div className="flex items-center justify-between p-1 gap-1">
+          {addDialogOpen && (
+            <AddItemDialog
+              title="Create Collection"
+              inputLabel="Collection Name"
+              inputRequiredLabel="Collection name is required."
+              inputPlaceholder="Enter a collection name"
+              defaultValue="New Collection"
+              open={addDialogOpen}
+              onOpenChange={(open) => setAddDialogOpen(open)}
+              onSubmit={onAddSubmit}
             />
-          </div>
-        </SidebarHeader>
-        <SidebarGroup
-          className="p-1! h-[calc(100%-3rem)] scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent"
-          ref={ref}
-        >
-          <SidebarGroupContent>
-            <Tree<CollectionItem>
-              data={roots}
-              width="100%"
-              height={height}
-              childrenAccessor={childrenAccessor}
-              rowHeight={30}
-              searchTerm={search}
-              searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
-              disableDrag
-              disableDrop
-              rowClassName="hover:bg-sidebar-accent rounded-lg"
-              className="app-scroll"
-              renderRow={CollectionSidebarItem}
-            >
-              {CollectionItemNode}
-            </Tree>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarRail />
-    </Sidebar>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
+            <Plus size={16} />
+          </Button>
+          <SearchBar
+            placeholder="Search collections"
+            className="flex-1"
+            onSearchChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
+      </SidebarHeader>
+      <SidebarGroup className="p-1! h-[calc(100%-3rem)]" ref={ref}>
+        <SidebarGroupContent>
+          <Tree<CollectionItem>
+            data={roots}
+            width="100%"
+            height={height}
+            childrenAccessor={childrenAccessor}
+            rowHeight={30}
+            searchTerm={search}
+            searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
+            disableDrag
+            disableDrop
+            rowClassName="hover:bg-sidebar-accent rounded-lg"
+            className="app-scroll"
+            renderRow={CollectionSidebarItem}
+          >
+            {CollectionItemNode}
+          </Tree>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
   );
 }

@@ -203,7 +203,7 @@
 }
 
 .app-scroll::-webkit-scrollbar {
-  @apply w-1.5 h-1.5;
+  @apply w-1.25 h-1.25;
 }
 
 .app-scroll::-webkit-scrollbar-track {
@@ -215,5 +215,5 @@
 }
 
 .app-scroll::-webkit-scrollbar-thumb:hover {
-  @apply bg-transparent;
+  @apply bg-border;
 }

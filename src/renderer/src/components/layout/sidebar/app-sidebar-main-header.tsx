@@ -4,13 +4,14 @@ import { Download, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useActiveItem } from '@/hooks/use-active-item';
+import { useLayout } from '@/hooks/use-layout';
 import { Button } from '@/components/common/button';
 import { useSidebar } from '@/components/common/sidebar';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 function SidebarWorkspaceMainHeader() {
   const { activeWorkspace } = useActiveItem();
-
+  const { sidebarRef } = useLayout();
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -19,8 +20,11 @@ function SidebarWorkspaceMainHeader() {
   const { state } = useSidebar();
   return state === 'expanded' ? (
     <div
-      style={{ width: 'var(--sidebar-width)' }}
-      className="fixed top-(--sidebar-top-offset) h-10 border-b border-x bg-sidebar flex items-center  duration-300 justify-between p-1"
+      onClick={() => {
+        console.log(sidebarRef.current?.getSize());
+      }}
+      style={{ width: '20rem' }}
+      className="fixed left-0 top-(--sidebar-top-offset) h-10 border-b border-x bg-sidebar flex items-center  duration-300 justify-between p-1"
     >
       {activeWorkspace && (
         <div

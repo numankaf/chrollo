@@ -18,14 +18,12 @@ import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import {
-  Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarRail,
 } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
@@ -132,64 +130,61 @@ function EnvironmentsSidebar() {
     ];
   }
   return (
-    <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-      <SidebarContent className="w-(--sidebar-width-content)!">
-        <SidebarHeader className="m-0! p-0!">
-          <div className="flex items-center justify-between p-1 gap-1">
-            {addDialogOpen && (
-              <AddItemDialog
-                title="Create Environment"
-                inputLabel="Environment Name"
-                inputRequiredLabel="Environment name is required."
-                inputPlaceholder="Enter a environment name"
-                defaultValue="New Environment"
-                open={addDialogOpen}
-                onOpenChange={(open) => setAddDialogOpen(open)}
-                onSubmit={onAddSubmit}
-              />
-            )}
-            <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
-              <Plus size={16} />
-            </Button>
-            <SearchBar
-              placeholder="Search environments"
-              className="flex-1"
-              onSearchChange={(e) => {
-                setSearch(e.target.value);
-              }}
+    <SidebarContent className="h-full">
+      <SidebarHeader className="m-0! p-0!">
+        <div className="flex items-center justify-between p-1 gap-1">
+          {addDialogOpen && (
+            <AddItemDialog
+              title="Create Environment"
+              inputLabel="Environment Name"
+              inputRequiredLabel="Environment name is required."
+              inputPlaceholder="Enter a environment name"
+              defaultValue="New Environment"
+              open={addDialogOpen}
+              onOpenChange={(open) => setAddDialogOpen(open)}
+              onSubmit={onAddSubmit}
             />
-          </div>
-        </SidebarHeader>
-        <ScrollArea style={{ height: 'calc(100% - 3.5rem)' }}>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {filteredEnvironments.map((item) => (
-                  <SidebarMenuButton
-                    onClick={() => openTab(item)}
-                    className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
-                    key={item.id}
-                    size="sm"
-                  >
-                    <Container size={16} />
-                    <InlineEditText
-                      value={item.name}
-                      editing={item.id === editingItemId}
-                      onComplete={(value) => {
-                        updateEnvironment({ ...item, name: value }, { persist: true });
-                        setEditingItemId(null);
-                      }}
-                    />
-                    <OperationsButton items={getOperationItems(item)} />
-                  </SidebarMenuButton>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </ScrollArea>
-      </SidebarContent>
-      <SidebarRail />
-    </Sidebar>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
+            <Plus size={16} />
+          </Button>
+          <SearchBar
+            placeholder="Search environments"
+            className="flex-1"
+            onSearchChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
+      </SidebarHeader>
+      <ScrollArea style={{ height: 'calc(100% - 3.5rem)' }}>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredEnvironments.map((item) => (
+                <SidebarMenuButton
+                  onClick={() => openTab(item)}
+                  className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
+                  key={item.id}
+                  size="sm"
+                >
+                  <Container size={16} />
+                  <InlineEditText
+                    value={item.name}
+                    editing={item.id === editingItemId}
+                    onComplete={(value) => {
+                      updateEnvironment({ ...item, name: value }, { persist: true });
+                      setEditingItemId(null);
+                    }}
+                  />
+                  <OperationsButton items={getOperationItems(item)} />
+                </SidebarMenuButton>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </ScrollArea>
+    </SidebarContent>
   );
 }
 
