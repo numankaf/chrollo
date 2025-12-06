@@ -8,7 +8,12 @@ interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
   initCollectionStore: (items: CollectionItem[]) => Promise<void>;
   createCollectionItem: (collection: CollectionItem) => CollectionItem;
-  updateCollectionItem: (collection: CollectionItem) => CollectionItem;
+  updateCollectionItem: (
+    collection: CollectionItem,
+    options?: {
+      persist?: boolean;
+    }
+  ) => CollectionItem;
   deleteCollectionItem: (id: string) => void;
   cloneCollectionItem: (id: string) => void;
   saveCollectionItem: (collection: CollectionItem) => CollectionItem;
@@ -40,11 +45,11 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
           const children = parent.children ? [...parent.children] : [];
           if (!children.includes(collection.id)) {
             children.push(collection.id);
-          }
-          if (hasChildren(parent)) {
-            const updatedParent = { ...parent, children };
-            newMap.set(parent.id, updatedParent);
-            window.api.collection.save(updatedParent);
+            if (hasChildren(parent)) {
+              const updatedParent = { ...parent, children };
+              newMap.set(parent.id, updatedParent);
+              window.api.collection.save(updatedParent);
+            }
           }
         }
       }
@@ -55,13 +60,13 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
     return collection;
   },
 
-  updateCollectionItem: (collection: CollectionItem) => {
+  updateCollectionItem: (collection: CollectionItem, options = { persist: false }) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
       if (newMap.has(collection.id)) {
         newMap.set(collection.id, collection);
-        window.api.collection.save(collection);
+        if (options.persist) window.api.collection.save(collection);
 
         if (hasParent(collection)) {
           const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
@@ -69,11 +74,12 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
             const children = parent.children ? [...parent.children] : [];
             if (!children.includes(collection.id)) {
               children.push(collection.id);
-            }
-            if (hasChildren(parent)) {
-              const updatedParent = { ...parent, children };
-              newMap.set(parent.id, updatedParent);
-              window.api.collection.save(updatedParent);
+              if (hasChildren(parent)) {
+                const updatedParent = { ...parent, children };
+                newMap.set(parent.id, updatedParent);
+                // always persist if child added
+                window.api.collection.save(updatedParent);
+              }
             }
           }
         }
@@ -123,7 +129,9 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
 
   saveCollectionItem: (collection) => {
     const exists = get().collectionItemMap.has(collection.id);
-    const updatedCollection = exists ? get().updateCollectionItem(collection) : get().createCollectionItem(collection);
+    const updatedCollection = exists
+      ? get().updateCollectionItem(collection, { persist: true })
+      : get().createCollectionItem(collection);
 
     return updatedCollection;
   },

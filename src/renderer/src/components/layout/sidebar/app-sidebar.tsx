@@ -2,6 +2,8 @@ import * as React from 'react';
 import { SIDEBAR_WIDTH_ICON } from '@/constants/layout-constants';
 import { Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
 
+import { BASE_MODEL_TYPE } from '@/types/base';
+import { useActiveItem } from '@/hooks/use-active-item';
 import {
   Sidebar,
   SidebarContent,
@@ -19,24 +21,28 @@ import HistorySidebar from '@/components/layout/sidebar/history/app-history-side
 
 const SIDEBAR_DATA = [
   {
+    modelType: BASE_MODEL_TYPE.CONNECTION,
     title: 'Connections',
     url: '/connections',
     icon: Waypoints,
     subSidebarComponent: ConnectionSidebar,
   },
   {
+    modelType: BASE_MODEL_TYPE.COLLECTION,
     title: 'Collections',
     url: '/collections',
     icon: LibraryBig,
     subSidebarComponent: CollectionSidebar,
   },
   {
+    modelType: BASE_MODEL_TYPE.ENVIRONMENT,
     title: 'Environments',
     url: '/environments',
     icon: Columns3Cog,
     subSidebarComponent: EnvironmentsSidebar,
   },
   {
+    modelType: BASE_MODEL_TYPE.REQUEST_HISTORY,
     title: 'History',
     url: '/history',
     icon: History,
@@ -45,7 +51,19 @@ const SIDEBAR_DATA = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { activeTab } = useActiveItem();
   const [activeItem, setActiveItem] = React.useState(SIDEBAR_DATA[0]);
+
+  React.useEffect(() => {
+    if (!activeTab) return;
+
+    const match = SIDEBAR_DATA.find((item) => item.modelType === activeTab.modelType);
+
+    if (match) {
+      setActiveItem(match);
+    }
+  }, [activeTab]);
+
   return (
     <>
       <SidebarWorkspaceMainHeader />

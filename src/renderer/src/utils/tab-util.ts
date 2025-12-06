@@ -90,6 +90,7 @@ export function getTabBreadcrumbs(tab: Tab) {
   switch (tab.modelType) {
     case BASE_MODEL_TYPE.COLLECTION: {
       const tabItem = getTabItem(tab);
+      if (!tabItem) return [];
       return getCollectionItemChain(tabItem as CollectionItem);
     }
     default:

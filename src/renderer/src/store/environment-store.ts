@@ -11,7 +11,12 @@ interface EnvironmentStore {
   initEnvironmentStore: (connections: Environment[]) => Promise<void>;
   getEnvironment: (id: string) => Environment | undefined;
   createEnvironment: (environment: Environment) => Environment;
-  updateEnvironment: (environment: Environment) => Environment;
+  updateEnvironment: (
+    environment: Environment,
+    options?: {
+      persist?: boolean;
+    }
+  ) => Environment;
   deleteEnvironment: (id: string) => void;
   cloneEnvironment: (id: string) => Environment;
   saveEnvironment: (environment: Environment) => Environment;
@@ -37,7 +42,7 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
 
     return newEnvironment;
   },
-  updateEnvironment: (environment) => {
+  updateEnvironment: (environment, options = { persist: false }) => {
     let updatedEnvironment = environment;
 
     set((state) => {
@@ -52,7 +57,7 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
       };
     });
 
-    window.api.environment.save(updatedEnvironment);
+    if (options.persist) window.api.environment.save(updatedEnvironment);
 
     return updatedEnvironment;
   },
@@ -98,7 +103,9 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
 
   saveEnvironment: (environment) => {
     const exists = get().environments.some((e) => e.id === environment.id);
-    const updatedEnvironment = exists ? get().updateEnvironment(environment) : get().createEnvironment(environment);
+    const updatedEnvironment = exists
+      ? get().updateEnvironment(environment, { persist: true })
+      : get().createEnvironment(environment);
     return updatedEnvironment;
   },
 }));

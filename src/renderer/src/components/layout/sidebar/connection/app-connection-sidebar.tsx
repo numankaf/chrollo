@@ -130,7 +130,7 @@ function ConnectionSidebar() {
                       value={item.name}
                       editing={item.id === editingItemId}
                       onComplete={(value) => {
-                        updateConnection({ ...item, name: value });
+                        updateConnection({ ...item, name: value }, { persist: true });
                         setEditingItemId(null);
                       }}
                     />

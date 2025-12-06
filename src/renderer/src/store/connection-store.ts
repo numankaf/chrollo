@@ -11,7 +11,13 @@ interface ConnectionStore {
   initConnectionStore: (connections: Connection[]) => Promise<void>;
   getConnection: (id: string) => Connection | undefined;
   createConnection: (connection: Connection) => Connection;
-  updateConnection: (connection: Connection) => Connection;
+  // persist will be optional  since this will called many times in the app
+  updateConnection: (
+    connection: Connection,
+    options?: {
+      persist?: boolean;
+    }
+  ) => Connection;
   deleteConnection: (id: string) => void;
   cloneConnection: (id: string) => Connection;
   saveConnection: (connection: Connection) => Connection;
@@ -26,6 +32,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
   getConnection: (id: string) => {
     return get().connections.find((c) => c.id === id)!;
   },
+
   createConnection: (connection) => {
     const newConnection = { ...connection, id: nanoid(8) };
     set((state) => ({
@@ -36,7 +43,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
     return newConnection;
   },
 
-  updateConnection: (connection) => {
+  updateConnection: (connection, options = { persist: false }) => {
     let updatedConnection = connection;
 
     set((state) => {
@@ -51,7 +58,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
       };
     });
 
-    window.api.connection.save(updatedConnection);
+    if (options.persist) window.api.connection.save(updatedConnection);
     return updatedConnection;
   },
 
@@ -110,7 +117,9 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
   saveConnection: (connection) => {
     const exists = get().connections.some((c) => c.id === connection.id);
-    const updatedConnection = exists ? get().updateConnection(connection) : get().createConnection(connection);
+    const updatedConnection = exists
+      ? get().updateConnection(connection, { persist: true })
+      : get().createConnection(connection);
     return updatedConnection;
   },
 }));

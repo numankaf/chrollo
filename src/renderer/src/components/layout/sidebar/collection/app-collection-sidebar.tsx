@@ -240,7 +240,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
               value={item.name}
               editing={node.isEditing}
               onComplete={(value) => {
-                updateCollectionItem({ ...item, name: value });
+                updateCollectionItem({ ...item, name: value }, { persist: true });
                 node.reset();
               }}
             />

@@ -176,7 +176,7 @@ function EnvironmentsSidebar() {
                       value={item.name}
                       editing={item.id === editingItemId}
                       onComplete={(value) => {
-                        updateEnvironment({ ...item, name: value });
+                        updateEnvironment({ ...item, name: value }, { persist: true });
                         setEditingItemId(null);
                       }}
                     />
