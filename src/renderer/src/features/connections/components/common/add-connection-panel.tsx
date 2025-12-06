@@ -11,7 +11,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
-import { AddItemDialog } from '@/components/app/add-item-dialog';
+import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
 import { SocketIoIcon } from '@/components/icon/socket-io-icon';
 import { StompIcon } from '@/components/icon/stomp-icon';
 import { WebSocketIcon } from '@/components/icon/websocket-icon';

@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
+import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {

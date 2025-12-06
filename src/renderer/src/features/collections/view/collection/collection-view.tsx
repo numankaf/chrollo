@@ -1,5 +1,7 @@
+import ComingSoon from '@/components/app/empty/coming-soon';
+
 function CollectionView() {
-  return <div>Collection Vierw</div>;
+  return <ComingSoon />;
 }
 
 export default CollectionView;

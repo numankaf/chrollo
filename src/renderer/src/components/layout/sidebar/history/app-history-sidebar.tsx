@@ -2,15 +2,8 @@ import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
 import { SearchBar } from '@/components/common/search-input';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarRail,
-} from '@/components/common/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from '@/components/common/sidebar';
+import ComingSoon from '@/components/app/empty/coming-soon';
 
 function HistorySidebar() {
   return (
@@ -24,13 +17,9 @@ function HistorySidebar() {
             <SearchBar placeholder="Search history" className="flex-1" onSearchChange={() => {}} />
           </div>
         </SidebarHeader>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <div>History Tab</div>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <div>
+          <ComingSoon />
+        </div>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

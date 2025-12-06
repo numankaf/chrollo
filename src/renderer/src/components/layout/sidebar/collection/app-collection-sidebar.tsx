@@ -34,8 +34,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { AddItemDialog } from '@/components/app/add-item-dialog';
-import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
+import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
+import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 
 function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<CollectionItem>) {

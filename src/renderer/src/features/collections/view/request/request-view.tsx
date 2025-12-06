@@ -12,6 +12,7 @@ import { useShallow } from 'zustand/react/shallow';
 import type { Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/use-active-item';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
+import ComingSoon from '@/components/app/empty/coming-soon';
 
 function RequestView() {
   const { activeTab } = useActiveItem();
@@ -61,14 +62,18 @@ function RequestView() {
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
-            <TabsContent value="docs">Docs</TabsContent>
+            <TabsContent value="docs">
+              <ComingSoon />
+            </TabsContent>
             <TabsContent value="headers">
               <RequestHeaders headers={request.headers} />
             </TabsContent>
             <TabsContent value="body">
               <RequestBody />
             </TabsContent>
-            <TabsContent value="scripts">scripts</TabsContent>
+            <TabsContent value="scripts">
+              <ComingSoon />
+            </TabsContent>
           </Tabs>
         </form>
       </FormProvider>

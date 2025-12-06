@@ -5,7 +5,7 @@ import AppLogo from '@/resources/app-logo.svg';
 import { Maximize, Minus, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
-import ThemeSwitcher from '@/components/app/theme-switch';
+import ThemeSwitcher from '@/components/app/theme/theme-switch';
 import ConnectionSelector from '@/components/selector/connection-selector';
 import WorkspaceSelector from '@/components/selector/workspace-selector';
 

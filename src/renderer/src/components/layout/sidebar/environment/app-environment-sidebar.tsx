@@ -27,8 +27,8 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/common/sidebar';
-import { AddItemDialog } from '@/components/app/add-item-dialog';
-import OperationsButton, { type OperationButtonItem } from '@/components/app/operations-button';
+import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
+import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
 
 function EnvironmentsSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);

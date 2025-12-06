@@ -1,5 +1,7 @@
+import ComingSoon from '@/components/app/empty/coming-soon';
+
 function FolderView() {
-  return <div />;
+  return <ComingSoon />;
 }
 
 export default FolderView;
