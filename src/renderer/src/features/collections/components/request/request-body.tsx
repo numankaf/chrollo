@@ -92,7 +92,12 @@ function RequestBody() {
                 bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [],
                 lintGutter(),
               ]}
-              onChange={(value) => form.setValue(BODY_DATA_PROPERTY_KEY, value)}
+              onChange={(value) => {
+                form.setValue(BODY_DATA_PROPERTY_KEY, value, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                });
+              }}
               onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                 // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
                 if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {

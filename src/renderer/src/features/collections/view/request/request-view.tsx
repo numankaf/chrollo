@@ -5,7 +5,7 @@ import RequestHeaders from '@/features/collections/components/request/request-he
 import RequestViewHeader from '@/features/collections/components/request/request-view-header';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -30,16 +30,23 @@ function RequestView() {
   const watchedValues = useWatch({
     control: form.control,
   });
-
+  const { dirtyFields } = useFormState({
+    control: form.control,
+  });
   useEffect(() => {
-    if (!watchedValues) return;
-
-    const handler = setTimeout(() => {
+    const dirtyKeys = Object.keys(dirtyFields);
+    if (!watchedValues || dirtyKeys.length === 0) return;
+    const shouldDebounce = dirtyKeys.some((key) => ['destination', 'body'].includes(key));
+    if (shouldDebounce) {
+      const t = setTimeout(() => {
+        updateCollectionItem(watchedValues as Request);
+      }, 500);
+      return () => clearTimeout(t);
+    } else {
       updateCollectionItem(watchedValues as Request);
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [watchedValues, updateCollectionItem]);
+      return () => {};
+    }
+  }, [watchedValues, updateCollectionItem, dirtyFields]);
 
   if (!request) return <div>Request not found</div>;
   return (

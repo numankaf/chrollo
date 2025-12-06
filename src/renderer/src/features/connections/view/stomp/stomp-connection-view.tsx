@@ -8,7 +8,7 @@ import StompSubsciptions from '@/features/connections/components/stomp/stomp-sub
 import useConnectionStore from '@/store/connection-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDownIcon } from 'lucide-react';
-import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -41,16 +41,23 @@ function StompConnectionView() {
   const watchedValues = useWatch({
     control: form.control,
   });
-
+  const { dirtyFields } = useFormState({
+    control: form.control,
+  });
   useEffect(() => {
-    if (!watchedValues) return;
-
-    const handler = setTimeout(() => {
+    const dirtyKeys = Object.keys(dirtyFields);
+    if (!watchedValues || dirtyKeys.length === 0) return;
+    const shouldDebounce = dirtyKeys.some((key) => ['url', 'settings'].includes(key));
+    if (shouldDebounce) {
+      const t = setTimeout(() => {
+        updateConnection(watchedValues as unknown as StompConnection);
+      }, 500);
+      return () => clearTimeout(t);
+    } else {
       updateConnection(watchedValues as unknown as StompConnection);
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [updateConnection, watchedValues]);
+      return () => {};
+    }
+  }, [updateConnection, watchedValues, dirtyFields]);
 
   if (!connection) return <div>Connection not found</div>;
 
