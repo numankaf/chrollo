@@ -4,19 +4,20 @@ import { useLayout } from '@/hooks/use-layout';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/common/sidebar';
+import WorkspaceButton from '@/components/layout/sidebar/app-sidebar-main-header';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { sidebarItems, activeItem, setActiveItem } = useLayout();
-
   return (
     <>
-      <Sidebar collapsible="icon" className="select-none overflow-hidden *:data-[sidebar=sidebar]:flex-row" {...props}>
+      <Sidebar collapsible="icon" className="select-none overflow-hidden" {...props}>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent className="px-1.5 md:px-0">
@@ -39,6 +40,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+          <WorkspaceButton />
+        </SidebarFooter>
       </Sidebar>
     </>
   );

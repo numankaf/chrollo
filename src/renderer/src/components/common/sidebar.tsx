@@ -8,7 +8,6 @@ import {
   SIDEBAR_WIDTH,
   SIDEBAR_WIDTH_ICON,
   SIDEBAR_WIDTH_MOBILE,
-  SIDEBAR_WORKSPACE_OFFSET,
 } from '@/constants/layout-constants';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -123,7 +122,6 @@ function SidebarProvider({
           style={
             {
               '--sidebar-top-offset': SIDEBAR_TOP_OFFSET,
-              '--sidebar-workspace-offset': SIDEBAR_WORKSPACE_OFFSET,
               '--sidebar-width': SIDEBAR_WIDTH,
               '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
               '--sidebar-width-content': `calc( ${SIDEBAR_WIDTH} - ${SIDEBAR_WIDTH_ICON} )`,
@@ -216,7 +214,7 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          'fixed bottom-(--footer-bottom-offset) top-[calc(var(--sidebar-top-offset)+var(--sidebar-workspace-offset))] z-10 hidden w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
+          'fixed bottom-(--footer-bottom-offset) top-[var(--sidebar-top-offset)] z-10 hidden w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',

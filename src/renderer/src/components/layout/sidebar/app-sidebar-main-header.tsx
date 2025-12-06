@@ -1,64 +1,71 @@
-import { SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
-import { Download, Plus } from 'lucide-react';
+import { ArrowRight, Download, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useActiveItem } from '@/hooks/use-active-item';
-import { useLayout } from '@/hooks/use-layout';
-import { Button } from '@/components/common/button';
-import { useSidebar } from '@/components/common/sidebar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/common/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from '@/components/common/sidebar';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
-function SidebarWorkspaceMainHeader() {
+function WorkspaceButton() {
   const { activeWorkspace } = useActiveItem();
-  const { sidebarRef } = useLayout();
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
     }))
   );
-  const { state } = useSidebar();
-  return state === 'expanded' ? (
-    <div
-      onClick={() => {
-        console.log(sidebarRef.current?.getSize());
-      }}
-      style={{ width: '20rem' }}
-      className="fixed left-0 top-(--sidebar-top-offset) h-10 border-b border-x bg-sidebar flex items-center  duration-300 justify-between p-1"
-    >
-      {activeWorkspace && (
-        <div
-          onClick={() => openTab(activeWorkspace)}
-          className="hover:text-primary cursor-pointer flex items-center justify-center gap-2 text-sm flex-1 min-w-0 [data-side=right][data-state=collapsed]&:hidden"
-        >
-          <WorkspaceTypeIcon workspaceType={activeWorkspace.type} size={16} />
-          <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">{activeWorkspace.name}</span>
-        </div>
-      )}
-      <div className="flex items-center gap-1">
-        <Button variant="outline" size="xs">
-          <Plus />
-          New
-        </Button>
-        <Button variant="outline" size="xs">
-          <Download />
-          Import
-        </Button>
-      </div>
-    </div>
-  ) : (
+
+  return (
     <>
-      {activeWorkspace && (
-        <div
-          onClick={() => openTab(activeWorkspace)}
-          style={{ width: `${SIDEBAR_WIDTH_ICON}`, height: `${SIDEBAR_WORKSPACE_OFFSET}` }}
-          className="hover:text-primary cursor-pointer fixed top-(--sidebar-top-offset) border-b border-x bg-sidebar flex items-center duration-300 justify-center p-1"
-        >
-          <WorkspaceTypeIcon workspaceType={activeWorkspace.type} size={16} />
-        </div>
-      )}
+      <SidebarSeparator className="mx-0" />
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuItem>
+                <SidebarMenuButton className="flex flex-col items-center h-auto">
+                  <WorkspaceTypeIcon workspaceType={activeWorkspace?.type} size={16} />
+                  <span className="text-xs truncate">{activeWorkspace?.name || 'No Workspace Selected'}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-30 rounded-lg"
+              align="end"
+              side="right"
+              sideOffset={10}
+            >
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="text-sm"
+                  onClick={() => {
+                    if (activeWorkspace) openTab(activeWorkspace);
+                  }}
+                >
+                  <ArrowRight />
+                  Open
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-sm">
+                  <Plus />
+                  New
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-sm">
+                  <Download />
+                  Import
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </>
   );
 }
 
-export default SidebarWorkspaceMainHeader;
+export default WorkspaceButton;

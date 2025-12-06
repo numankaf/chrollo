@@ -1,10 +1,10 @@
-import { Lock, Users } from 'lucide-react';
+import { LayoutDashboard, Lock, Users } from 'lucide-react';
 
 import type { IconProps } from '@/types/common';
 import { WORKSPACE_TYPE, type WorkspaceType } from '@/types/workspace';
 
 interface WorkspaceTypeIconProps extends IconProps {
-  workspaceType: WorkspaceType;
+  workspaceType: WorkspaceType | undefined;
 }
 
 export function WorkspaceTypeIcon({ workspaceType, ...props }: WorkspaceTypeIconProps) {
@@ -16,6 +16,6 @@ export function WorkspaceTypeIcon({ workspaceType, ...props }: WorkspaceTypeIcon
       return <Lock {...props} />;
 
     default:
-      return <></>;
+      return <LayoutDashboard {...props} />;
   }
 }
