@@ -1,9 +1,10 @@
-import { FOOTER_BOTTOM_OFFSET, SIDEBAR_TOP_OFFSET, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
+import { SIDEBAR_TOP_OFFSET, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { Outlet } from 'react-router';
 
 import { useAppSubscriptions } from '@/hooks/use-app-subscriptions';
 import { useLayout } from '@/hooks/use-layout';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
+import { SidebarInset } from '@/components/common/sidebar';
 import AppBreadcrumb from '@/components/layout/app-breadcrumb';
 import AppTabs from '@/components/layout/app-tabs';
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
@@ -14,14 +15,8 @@ function AppMainContent() {
 
   return (
     <>
-      <main
-        style={{
-          width: `calc(100%)`,
-          height: `calc(100vh - ${SIDEBAR_TOP_OFFSET} - ${FOOTER_BOTTOM_OFFSET})`,
-        }}
-        className="flex flex-row bg-background relative  w-full flex-1 top-(--sidebar-top-offset)"
-      >
-        <AppSidebar />
+      <AppSidebar />
+      <SidebarInset>
         <ResizablePanelGroup direction="horizontal" autoSaveId="main-content-group">
           <ResizablePanel
             ref={sidebarRef}
@@ -47,7 +42,7 @@ function AppMainContent() {
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
-      </main>
+      </SidebarInset>
     </>
   );
 }

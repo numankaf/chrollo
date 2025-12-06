@@ -50,8 +50,6 @@ export type LayoutProviderState = {
   activeItem: SidebarItem;
   setActiveItem: (item: SidebarItem) => void;
   sidebarRef: RefObject<ImperativePanelHandle | null>;
-  sidebarExpanded: boolean;
-  setSidebarExpanded: (val: boolean) => void;
   toggleSidebar: () => void;
 };
 

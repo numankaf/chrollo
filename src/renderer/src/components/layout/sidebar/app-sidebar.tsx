@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/common/sidebar';
-import WorkspaceButton from '@/components/layout/sidebar/app-sidebar-main-header';
+import WorkspaceButton from '@/components/app/button/workspace-button';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { sidebarItems, activeItem, setActiveItem } = useLayout();

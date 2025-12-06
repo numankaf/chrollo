@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/incompatible-library */
 import { useMemo } from 'react';
 import useEnvironmentStore from '@/store/environment-store';
 import { Plus, Trash2 } from 'lucide-react';
