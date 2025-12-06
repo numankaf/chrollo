@@ -30,7 +30,7 @@ function InlineEditText({ value, editing, onComplete, textProps, inputProps }: I
 
   if (!editing) {
     return (
-      <span className={cn('flex-1 overflow-hidden text-nowrap text-ellipsis w-0', textProps?.className)} {...textProps}>
+      <span className={cn('flex-1 truncate w-0', textProps?.className)} {...textProps}>
         {value}
       </span>
     );

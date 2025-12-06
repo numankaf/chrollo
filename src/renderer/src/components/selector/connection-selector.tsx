@@ -70,7 +70,7 @@ function ConnectionSelector() {
         <Button variant={variant} role="combobox" aria-expanded={open} className="w-[200px] justify-between">
           <div className="flex items-center gap-2 overflow-hidden">
             {activeConnection && <ConnectionStatusBadge connectionId={activeConnection.id} />}
-            <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">
+            <span className="flex-1 truncate">
               {activeConnection
                 ? connections.find((connection) => connection.id === activeConnection.id)?.name
                 : 'Select connection...'}
@@ -96,7 +96,7 @@ function ConnectionSelector() {
                   }}
                 >
                   <ConnectionStatusBadge connectionId={connection.id} />
-                  <span className="flex-1 overflow-hidden text-nowrap text-ellipsis">{connection.name}</span>
+                  <span className="flex-1 truncate">{connection.name}</span>
                   <Check
                     className={cn('ml-auto', activeConnection?.id === connection.id ? 'opacity-100' : 'opacity-0')}
                   />

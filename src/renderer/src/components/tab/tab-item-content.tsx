@@ -3,11 +3,16 @@ import { Container, LayoutDashboard } from 'lucide-react';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Tab } from '@/types/layout';
+import { cn } from '@/lib/utils';
 import { useTabItem } from '@/hooks/use-tab-item';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
-function TabItemContent({ tab }: { tab: Tab }) {
+export type TabItemContentProps = React.ComponentProps<'span'> & {
+  tab: Tab;
+};
+
+function TabItemContent({ className, tab }: TabItemContentProps) {
   let Icon: JSX.Element | null = null;
   let name = '';
 
@@ -45,9 +50,9 @@ function TabItemContent({ tab }: { tab: Tab }) {
   }
 
   return (
-    <span className="flex items-center gap-2 text-sm overflow-hidden no-scrollbar">
+    <span className={cn('flex items-center gap-2 text-sm overflow-hidden no-scrollbar transition-all', className)}>
       {Icon}
-      <span title={name} className="truncate max-w-40">
+      <span title={name} className="truncate">
         {name}
       </span>
     </span>

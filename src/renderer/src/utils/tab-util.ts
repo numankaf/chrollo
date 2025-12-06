@@ -2,9 +2,10 @@ import useCollectionItemStore from '@/store/collection-item-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { hasParent } from '@/utils/collection-util';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { COLLECTION_TYPE } from '@/types/collection';
+import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
 import { CONNECTION_TYPE } from '@/types/connection';
 import type { Tab, TabItem } from '@/types/layout';
 
@@ -71,5 +72,27 @@ export function getTabItem(tab: Tab): TabItem | undefined {
       return useEnvironmentStore.getState().environments.find((e) => e.id === tab.id);
     default:
       return undefined;
+  }
+}
+
+export function getTabBreadcrumbs(tab: Tab) {
+  const getCollectionItemChain = (item: CollectionItem): CollectionItem[] => {
+    if (!hasParent(item) || (hasParent(item) && !item.parentId)) return [item];
+
+    const parent = useCollectionItemStore.getState().collectionItemMap.get(item.parentId);
+    if (parent) {
+      return [...getCollectionItemChain(parent), item];
+    }
+
+    return [item];
+  };
+
+  switch (tab.modelType) {
+    case BASE_MODEL_TYPE.COLLECTION: {
+      const tabItem = getTabItem(tab);
+      return getCollectionItemChain(tabItem as CollectionItem);
+    }
+    default:
+      return [tab];
   }
 }
