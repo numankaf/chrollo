@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
+import ComingSoon from '@/components/app/empty/coming-soon';
 
 function WorkspaceView() {
   return (
@@ -8,8 +9,12 @@ function WorkspaceView() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
-        <TabsContent value="overview">Overview</TabsContent>
-        <TabsContent value="settings">Settings</TabsContent>
+        <TabsContent value="overview">
+          <ComingSoon />
+        </TabsContent>
+        <TabsContent value="settings">
+          <ComingSoon />
+        </TabsContent>
       </Tabs>
     </div>
   );
