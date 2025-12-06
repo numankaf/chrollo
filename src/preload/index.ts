@@ -24,15 +24,10 @@ const api = {
 
   stomp: {
     connect: (connection: StompConnection) => ipcRenderer.send('stomp:connect', connection),
-
     disconnect: (id: string) => ipcRenderer.send('stomp:disconnect', id),
-
     disconnectAll: () => ipcRenderer.send('stomp:disconnectAll'),
-
     subscribe: (id: string, topic: string) => ipcRenderer.send('stomp:subscribe', { id, topic }),
-
     unsubscribe: (id: string, topic: string) => ipcRenderer.send('stomp:unsubscribe', { id, topic }),
-
     send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) =>
       ipcRenderer.send('stomp:send', data),
   },
@@ -75,9 +70,7 @@ const listener = {
   stomp: {
     onStatus: (callback: (data: ConnectionStatusData) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);
-
       ipcRenderer.on('stomp:status', handler);
-
       return () => ipcRenderer.removeListener('stomp:status', handler);
     },
   },
@@ -86,7 +79,6 @@ const listener = {
     log: (callback: (data: unknown) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);
       ipcRenderer.on('console:log', handler);
-
       return () => ipcRenderer.removeListener('console:log', handler);
     },
   },

@@ -4,8 +4,8 @@ import { Outlet } from 'react-router';
 import { useAppSubscriptions } from '@/hooks/use-app-subscriptions';
 import { SidebarInset } from '@/components/common/sidebar';
 import AppBreadcrumb from '@/components/layout/app-breadcrumb';
-import { AppSidebar } from '@/components/layout/app-sidebar';
 import AppTabs from '@/components/layout/app-tabs';
+import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 
 function AppMainContent() {
   useAppSubscriptions();

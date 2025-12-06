@@ -4,8 +4,8 @@ import AppMainContent from '@/layout/app-main-content';
 import { AppContext } from '@/provider/app-init-provider';
 
 import { SidebarProvider } from '@/components/common/sidebar';
-import AppLoader from '@/components/app/app-loader';
 import Footer from '@/components/layout/app-footer';
+import AppLoader from '@/components/layout/app-loader';
 import Topbar from '@/components/layout/app-topbar';
 
 function AppLayout() {
