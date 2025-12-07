@@ -9,8 +9,9 @@ import { FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
-import type { Request } from '@/types/collection';
+import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/use-active-item';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import ComingSoon from '@/components/app/empty/coming-soon';
 
@@ -55,25 +56,39 @@ function RequestView() {
       <FormProvider {...form}>
         <form className="h-full" noValidate>
           <RequestViewHeader />
-          <Tabs defaultValue="body" className="w-full mt-3" variant="link" style={{ height: 'calc(100% - 6.5rem)' }}>
+
+          <Tabs
+            defaultValue="body"
+            className="w-full mt-3 gap-0"
+            variant="link"
+            style={{ height: 'calc(100% - 4rem)' }}
+          >
             <TabsList className="mx-2">
               <TabsTrigger value="docs">Docs</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
-            <TabsContent value="docs">
-              <ComingSoon />
-            </TabsContent>
-            <TabsContent value="headers">
-              <RequestHeaders headers={request.headers} />
-            </TabsContent>
-            <TabsContent value="body">
-              <RequestBody />
-            </TabsContent>
-            <TabsContent value="scripts">
-              <ComingSoon />
-            </TabsContent>
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel collapsible minSize={10}>
+                <TabsContent value="docs">
+                  <ComingSoon />
+                </TabsContent>
+                <TabsContent value="headers">
+                  <RequestHeaders headers={request.headers} />
+                </TabsContent>
+                <TabsContent className="h-full " value="body">
+                  <RequestBody />
+                </TabsContent>
+                <TabsContent value="scripts">
+                  <ComingSoon />
+                </TabsContent>
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel collapsible collapsedSize={5} minSize={25}>
+                Response
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </Tabs>
         </form>
       </FormProvider>

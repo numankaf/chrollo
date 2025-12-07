@@ -8,7 +8,6 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { REQUEST_BODY_TYPE } from '@/types/collection';
 import { Button } from '@/components/common/button';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
 
@@ -75,42 +74,34 @@ function RequestBody() {
 
   return (
     <>
-      <div className="flex items-center justify-end gap-2 mx-2 mb-1 -mt-5">
+      <div className="flex items-center justify-end gap-2 mx-2 mb-1 ">
+        <p className="text-muted-foreground my-1 flex-1">Body</p>
         <BodyTypeSelector />
         <Button size="sm" className="h-6" variant="outline" type="button" onClick={formatCode}>
           Beautify
         </Button>
       </div>
-      <ResizablePanelGroup direction="vertical">
-        <ResizablePanel minSize={25} className="border rounded-lg mx-2 mb-2">
-          <ScrollArea className="h-full">
-            <CodeMirror
-              value={bodyData}
-              height="auto"
-              theme={editorTheme}
-              extensions={[
-                bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [],
-                lintGutter(),
-              ]}
-              onChange={(value) => {
-                form.setValue(BODY_DATA_PROPERTY_KEY, value, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                });
-              }}
-              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-                // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-                  e.preventDefault();
-                  formatCode();
-                }
-              }}
-            />
-          </ScrollArea>
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel minSize={25}>Response</ResizablePanel>
-      </ResizablePanelGroup>
+      <ScrollArea className="mx-2 mb-2 border rounded-lg" style={{ height: 'calc(100% - 2.5rem)' }}>
+        <CodeMirror
+          value={bodyData}
+          height="auto"
+          theme={editorTheme}
+          extensions={[bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [], lintGutter()]}
+          onChange={(value) => {
+            form.setValue(BODY_DATA_PROPERTY_KEY, value, {
+              shouldDirty: true,
+              shouldTouch: true,
+            });
+          }}
+          onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+            // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+              e.preventDefault();
+              formatCode();
+            }
+          }}
+        />
+      </ScrollArea>
     </>
   );
 }

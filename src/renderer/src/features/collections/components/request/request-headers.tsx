@@ -123,7 +123,7 @@ function RequestHeaders({ headers }: { headers: Header[] }) {
   };
 
   return (
-    <div className="mx-4">
+    <div className="mx-3">
       <p className="text-muted-foreground my-1">Headers</p>
       <TanstackDataTable<Header> data={headers} columns={columns} meta={{ updateData, deleteRow, addRow }} />
     </div>
