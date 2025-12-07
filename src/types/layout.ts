@@ -22,3 +22,10 @@ export type SidebarItem = {
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
   component: ComponentType;
 };
+
+export type SettingsItem = {
+  id: string;
+  name: string;
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
+  component: ComponentType;
+};

@@ -164,7 +164,8 @@ function EnvironmentsSidebar() {
               {filteredEnvironments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
-                  className={`${activeTab?.id === item.id && 'border-l-primary! bg-sidebar-accent'} border-l border-l-transparent data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block`}
+                  className="[&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
+                  isActive={item.id === activeTab?.id}
                   key={item.id}
                   size="sm"
                 >

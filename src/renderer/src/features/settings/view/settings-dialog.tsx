@@ -1,6 +1,6 @@
 import { SettingsPanel } from '@/features/settings/components/settings-panel';
 
-import { Dialog, DialogContent } from '@/components/common/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/common/dialog';
 
 interface SettingsDialogProps {
   visible: boolean;
@@ -10,6 +10,8 @@ function SettingsDialog({ visible, onVisibleChange }: SettingsDialogProps) {
   return (
     <Dialog open={visible} onOpenChange={onVisibleChange}>
       <DialogContent className="flex flex-col items-start p-0 h-[75vh] min-w-[75vw]">
+        <DialogTitle className="sr-only">Settings</DialogTitle>
+        <DialogDescription className="sr-only">Customize your settings here.</DialogDescription>
         <SettingsPanel />
       </DialogContent>
     </Dialog>

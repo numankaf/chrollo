@@ -259,7 +259,7 @@ function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
       }}
       {...attrs}
       ref={innerRef}
-      className={`${activeTab?.id === node.data.id && 'gap-1 border-l-primary! bg-sidebar-accent'} h-7! cursor-pointer border-l border-l-transparent rounded-md hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-0`}
+      className={`${activeTab?.id === node.data.id && 'bg-sidebar-accent'} h-7! cursor-pointer rounded-md hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-0`}
     >
       {children}
     </div>

@@ -172,6 +172,7 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 
+  --text-lg: 0.95rem;
   --text-base: 0.825rem;
   --text-sm: 0.75rem;
   --text-xs: 0.625rem;

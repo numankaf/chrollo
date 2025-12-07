@@ -1,15 +1,7 @@
-'use client';
+import { useState } from 'react';
+import { SETTINGS_NAV_ITEMS } from '@/constants/settings-constants';
 
-import { Blocks, BrickWallShield, Info, Keyboard, Palette, Settings } from 'lucide-react';
-
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/common/breadcrumb';
+import type { SettingsItem } from '@/types/layout';
 import {
   Sidebar,
   SidebarContent,
@@ -19,20 +11,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/common/sidebar';
-import ComingSoon from '@/components/app/empty/coming-soon';
-
-const data = {
-  nav: [
-    { name: 'General', icon: Settings },
-    { name: 'Shortcuts', icon: Keyboard },
-    { name: 'Themes', icon: Palette },
-    { name: 'Plugins', icon: Blocks },
-    { name: 'Certificates', icon: BrickWallShield },
-    { name: 'About', icon: Info },
-  ],
-};
 
 export function SettingsPanel() {
+  const [settingsItem, setSettingsItem] = useState<SettingsItem>(SETTINGS_NAV_ITEMS[0]);
+
   return (
     <div className="flex w-full h-[75vh]">
       <Sidebar collapsible="none" className="w-54 ">
@@ -40,9 +22,16 @@ export function SettingsPanel() {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                {data.nav.map((item) => (
+                {SETTINGS_NAV_ITEMS.map((item) => (
                   <SidebarMenuItem key={item.name}>
-                    <SidebarMenuButton asChild isActive={item.name === 'Messages & media'}>
+                    <SidebarMenuButton
+                      size="sm"
+                      asChild
+                      isActive={item.id === settingsItem.id}
+                      onClick={() => {
+                        setSettingsItem(item);
+                      }}
+                    >
                       <item.icon size={16} />
                       <span>{item.name}</span>
                     </SidebarMenuButton>
@@ -53,25 +42,11 @@ export function SettingsPanel() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <main className="flex h-[70vh] flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Settings</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Messages & media</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
+      <main className="flex h-full flex-1 flex-col overflow-hidden p-3">
+        <header className="flex text-lg h-8 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+          {settingsItem.name}
         </header>
-        <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 pt-0">
-          <ComingSoon />
-        </div>
+        {settingsItem.component && <settingsItem.component />}
       </main>
     </div>
   );
