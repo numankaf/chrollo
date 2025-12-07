@@ -1,4 +1,4 @@
-import useStompStatusStore from '@/store/stomp-status-store';
+import useConnectionStatusStore from '@/store/connection-status-store';
 import { CircleAlert, CircleCheck, Loader2Icon, RotateCcw, Send } from 'lucide-react';
 
 import { CONNECTION_STATUS, type Connection } from '@/types/connection';
@@ -21,7 +21,7 @@ function ConnectionButton({
   className,
   ...props
 }: ConnectionButtonProps) {
-  const status = useStompStatusStore((s) => s.statuses[connection.id]);
+  const status = useConnectionStatusStore((s) => s.statuses[connection.id]);
 
   function getButtonProps(): {
     disabled: boolean;

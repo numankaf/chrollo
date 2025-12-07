@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import useStompStatusStore from '@/store/stomp-status-store';
+import useConnectionStatusStore from '@/store/connection-status-store';
 import { getTabRoute } from '@/utils/tab-util';
 import { useNavigate } from 'react-router';
 
@@ -24,7 +24,7 @@ export function useAppSubscriptions() {
 
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
       const { connectionId, status } = data;
-      useStompStatusStore.getState().setStatus(connectionId, status);
+      useConnectionStatusStore.getState().setStatus(connectionId, status);
     });
 
     return () => {

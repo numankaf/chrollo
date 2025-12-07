@@ -1,6 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
-import type { CollectionItem } from '@/types/collection';
+import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
@@ -20,7 +20,7 @@ declare global {
         disconnectAll: () => void;
         subscribe: (id: string, topic: string) => void;
         unsubscribe: (id: string, topic: string) => void;
-        send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) => void;
+        send: (id: string, data: Request) => void;
       };
       workspace: {
         save: (workspace: Workspace) => Promise<void>;

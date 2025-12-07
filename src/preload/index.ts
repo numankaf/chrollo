@@ -1,8 +1,7 @@
 import { electronAPI, type ElectronAPI } from '@electron-toolkit/preload';
-import type { StompHeaders } from '@stomp/stompjs';
 import { contextBridge, ipcRenderer } from 'electron';
 
-import type { CollectionItem } from '@/types/collection';
+import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
@@ -28,8 +27,7 @@ const api = {
     disconnectAll: () => ipcRenderer.send('stomp:disconnectAll'),
     subscribe: (id: string, topic: string) => ipcRenderer.send('stomp:subscribe', { id, topic }),
     unsubscribe: (id: string, topic: string) => ipcRenderer.send('stomp:unsubscribe', { id, topic }),
-    send: (data: { id: string; destination: string; body: string; headers?: StompHeaders }) =>
-      ipcRenderer.send('stomp:send', data),
+    send: (id: string, data: Request) => ipcRenderer.send('stomp:send', id, data),
   },
 
   workspace: {

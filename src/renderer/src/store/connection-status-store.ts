@@ -2,13 +2,13 @@ import { create } from 'zustand';
 
 import type { ConnectionStatus } from '@/types/connection';
 
-interface StompStatusStore {
+interface ConnectionStatusStore {
   statuses: Record<string, ConnectionStatus>;
   setStatus: (id: string, status: ConnectionStatus) => void;
   getStatus: (id: string) => ConnectionStatus | undefined;
 }
 
-const useStompStatusStore = create<StompStatusStore>((set, get) => ({
+const useConnectionStatusStore = create<ConnectionStatusStore>((set, get) => ({
   statuses: {},
 
   setStatus: (id, status) =>
@@ -19,4 +19,4 @@ const useStompStatusStore = create<StompStatusStore>((set, get) => ({
   getStatus: (id) => get().statuses[id],
 }));
 
-export default useStompStatusStore;
+export default useConnectionStatusStore;

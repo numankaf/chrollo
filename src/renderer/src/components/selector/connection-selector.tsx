@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
-import useStompStatusStore from '@/store/stomp-status-store';
+import useConnectionStatusStore from '@/store/connection-status-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { Check, ChevronsUpDown } from 'lucide-react';
@@ -32,7 +32,7 @@ function ConnectionSelector() {
   const [open, setOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
 
-  const status = useStompStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
+  const status = useConnectionStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
   const filteredConnections = applyTextSearch(connections, search, (c) => c.name);
 
   function getButtonVariant(): {

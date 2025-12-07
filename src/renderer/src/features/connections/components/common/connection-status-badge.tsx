@@ -1,4 +1,4 @@
-import useStompStatusStore from '@/store/stomp-status-store';
+import useConnectionStatusStore from '@/store/connection-status-store';
 
 import { CONNECTION_STATUS } from '@/types/connection';
 import { Badge } from '@/components/common/badge';
@@ -8,7 +8,7 @@ type ConnectionStatusBadgeProps = React.ComponentProps<'span'> & { asChild?: boo
 };
 
 function ConnectionStatusBadge({ connectionId, ...props }: ConnectionStatusBadgeProps) {
-  const status = useStompStatusStore((s) => s.statuses[connectionId]);
+  const status = useConnectionStatusStore((s) => s.statuses[connectionId]);
   function getBadgeProps(): {
     variant: 'error-bordered-ghost' | 'success-bordered-ghost' | 'warn-bordered-ghost' | 'secondary-bordered-ghost';
     icon: React.ReactNode;

@@ -1,10 +1,13 @@
 import { Controller, useFormContext } from 'react-hook-form';
 
+import type { Request } from '@/types/collection';
+import { useConnection } from '@/hooks/use-connection';
 import { Button } from '@/components/common/button';
 import { InputGroup, InputGroupInput } from '@/components/common/input-group';
 
 function RequestViewHeader() {
   const form = useFormContext();
+  const { sendRequest } = useConnection();
 
   return (
     <div className="p-2 w-full flex items-center justify-between gap-2">
@@ -30,7 +33,7 @@ function RequestViewHeader() {
         variant="primary-bordered-ghost"
         onClick={() =>
           form.handleSubmit((data) => {
-            console.log(data);
+            sendRequest(data as Request);
           })()
         }
       >

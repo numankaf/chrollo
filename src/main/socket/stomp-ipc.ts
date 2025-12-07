@@ -1,8 +1,9 @@
 import { getMainWindow } from '@/main/index';
-import { Client, StompHeaders, type Message } from '@stomp/stompjs';
+import { Client, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
+import { REQUEST_BODY_TYPE, type Request } from '@/types/collection';
 import {
   CONNECTION_STATUS,
   WS_URL_SCHEME,
@@ -162,17 +163,25 @@ export function initStompIpc() {
   // ------------------------------
   // SEND
   // ------------------------------
-  ipcMain.on('stomp:send', (_, data: { id: string; destination: string; body: string; headers?: StompHeaders }) => {
-    const client = stompClients[data.id];
+  ipcMain.on('stomp:send', (_, id: string, request: Request) => {
+    const client = stompClients[id];
+    const { body, destination, headers } = request;
+    let payload = body.data;
+
+    if (body.type === REQUEST_BODY_TYPE.JSON) {
+      payload = JSON.stringify(payload);
+    }
+    const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+
     if (client && client.connected) {
       client.publish({
-        destination: data.destination,
-        body: data.body,
-        headers: data.headers,
+        destination: destination,
+        body: payload,
+        headers: requestHeaders,
       });
-      mainWindow.webContents.send('console:log', ` [${data.id}] Message sent: ${data.body}`);
+      mainWindow.webContents.send('console:log', ` [${id}] Message sent: ${body}`);
     } else {
-      mainWindow.webContents.send('console:log', ` STOMP (${data.id}) not connected`);
+      mainWindow.webContents.send('console:log', ` STOMP (${id}) not connected`);
     }
   });
 
