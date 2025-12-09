@@ -22,6 +22,10 @@ export function useAppSubscriptions() {
       console.log(data);
     });
 
+    const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
+      console.log(data);
+    });
+
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
       const { connectionId, status } = data;
       useConnectionStatusStore.getState().setStatus(connectionId, status);
@@ -30,6 +34,7 @@ export function useAppSubscriptions() {
     return () => {
       unsubscribeConsoleLog();
       unsubscribeStompStatus();
+      unsubscribeStompMessage();
     };
   }, []);
 }

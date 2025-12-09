@@ -4,6 +4,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { SocketMessage } from '@/types/socket';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 interface Window {
@@ -70,6 +71,11 @@ const listener = {
       const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);
       ipcRenderer.on('stomp:status', handler);
       return () => ipcRenderer.removeListener('stomp:status', handler);
+    },
+    onMessage: (callback: (data: SocketMessage) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: SocketMessage) => callback(data);
+      ipcRenderer.on('stomp:message', handler);
+      return () => ipcRenderer.removeListener('stomp:message', handler);
     },
   },
 

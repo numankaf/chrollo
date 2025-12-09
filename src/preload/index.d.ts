@@ -3,6 +3,7 @@ import { ElectronAPI } from '@electron-toolkit/preload';
 import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { SocketMessage } from '@/types/socket';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
 declare global {
@@ -55,6 +56,7 @@ declare global {
     listener: {
       stomp: {
         onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
+        onMessage: (callback: (data: SocketMessage) => void) => () => void;
       };
       console: {
         log: (callback: (data: unknown) => void) => () => void;
