@@ -82,24 +82,33 @@ function RequestBody() {
         </Button>
       </div>
       <ScrollArea className="mx-2 mb-2 border rounded-lg" style={{ height: 'calc(100% - 2.5rem)' }}>
-        <CodeMirror
-          value={bodyData}
-          height="auto"
-          theme={editorTheme}
-          extensions={[bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [], lintGutter()]}
-          onChange={(value) => {
-            form.setValue(BODY_DATA_PROPERTY_KEY, value, {
-              shouldDirty: true,
-              shouldTouch: true,
-            });
-          }}
-          onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-            // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-              e.preventDefault();
-              formatCode();
-            }
-          }}
+        <Controller
+          name={BODY_DATA_PROPERTY_KEY}
+          control={form.control}
+          render={({ field }) => (
+            <CodeMirror
+              value={field.value}
+              height="auto"
+              theme={editorTheme}
+              extensions={[
+                bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [],
+                lintGutter(),
+              ]}
+              onChange={(value) => {
+                form.setValue(BODY_DATA_PROPERTY_KEY, value, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                });
+              }}
+              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                  e.preventDefault();
+                  formatCode();
+                }
+              }}
+            />
+          )}
         />
       </ScrollArea>
     </>

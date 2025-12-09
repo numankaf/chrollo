@@ -138,10 +138,18 @@ function StompConnectionView() {
                 <StompSettings />
               </TabsContent>
               <TabsContent value="headers">
-                <StompHeaders />
+                <Controller
+                  name="connectHeaders"
+                  control={form.control}
+                  render={({ field }) => <StompHeaders headers={field.value} />}
+                />
               </TabsContent>
               <TabsContent value="subscriptions">
-                <StompSubsciptions />
+                <Controller
+                  name="subscriptions"
+                  control={form.control}
+                  render={({ field }) => <StompSubsciptions subscriptions={field.value} />}
+                />
               </TabsContent>
             </ScrollArea>
           </Tabs>

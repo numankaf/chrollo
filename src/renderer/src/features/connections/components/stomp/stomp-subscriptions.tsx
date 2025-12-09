@@ -12,10 +12,9 @@ import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
 const PROPERTY_KEY = 'subscriptions';
 
-function StompSubsciptions() {
+function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription[] }) {
   const { activeTab } = useActiveItem();
   const form = useFormContext();
-  const subscriptions = form.getValues(PROPERTY_KEY);
 
   const columns = useMemo(
     () => [

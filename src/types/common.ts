@@ -2,7 +2,7 @@ export interface Header {
   id: string;
   key: string;
   value: string;
-  description: string;
+  description?: string;
   enabled: boolean;
 }
 

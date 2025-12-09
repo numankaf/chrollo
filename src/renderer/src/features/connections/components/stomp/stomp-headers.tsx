@@ -11,9 +11,8 @@ import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
 const PROPERTY_KEY = 'connectHeaders';
 
-function StompHeaders() {
+function StompHeaders({ headers }: { headers: Header[] }) {
   const form = useFormContext();
-  const headers = form.getValues(PROPERTY_KEY);
   const columns = useMemo(
     () => [
       {

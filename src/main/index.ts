@@ -1,4 +1,5 @@
 import fs from 'fs';
+import https from 'https';
 import { join } from 'path';
 import { initCollectionIpc } from '@/main/collection/collection-ipc';
 import { initConnectionIpc } from '@/main/connection/connection-ipc';
@@ -10,6 +11,9 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 
 import icon from '../../resources/app-logo.png?asset';
+
+//Disable https certificate validation
+https.globalAgent.options.rejectUnauthorized = false;
 
 if (!fs.existsSync(BASE_STORAGE_DIR)) {
   fs.mkdirSync(BASE_STORAGE_DIR, { recursive: true });
