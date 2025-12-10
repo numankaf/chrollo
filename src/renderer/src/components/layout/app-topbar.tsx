@@ -1,7 +1,7 @@
 import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
+import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
 import { AppContext } from '@/provider/app-init-provider';
-import { ActiveThemeProviderContext } from '@/provider/theme-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import { Maximize, Minus, Search, X } from 'lucide-react';
 

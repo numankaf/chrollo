@@ -1,0 +1,20 @@
+@font-face {
+  font-family: 'Oxanium';
+  src: url('../../../resources/fonts/Oxanium-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oxanium-Bold';
+  src: url('../../../resources/fonts/Oxanium-Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../../../resources/fonts/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}

@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 
-export type Theme = string;
+import type { Theme } from '@/types/layout';
 
 export type AcviteThemeProviderProps = {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ export type ActiveThemeProviderState = {
 };
 
 const initialState: ActiveThemeProviderState = {
-  activeTheme: 'system',
+  activeTheme: 'default',
   setActiveTheme: () => null,
 };
 

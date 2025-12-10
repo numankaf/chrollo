@@ -29,3 +29,17 @@ export type SettingsItem = {
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
   component: ComponentType;
 };
+
+export const THEMES = {
+  DEFAULT: 'default',
+  SPOTIFY: 'theme-spotify',
+  CLAUDE: 'theme-claude',
+  TWITTER: 'theme-twitter',
+} as const;
+
+export type Theme = (typeof THEMES)[keyof typeof THEMES];
+
+export type ThemePreset = {
+  name: string;
+  theme: Theme;
+};

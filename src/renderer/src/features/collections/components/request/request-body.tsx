@@ -1,5 +1,5 @@
 import { use, useLayoutEffect, useState } from 'react';
-import { ActiveThemeProviderContext } from '@/provider/theme-provider';
+import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
 import { formatJson, getEditorTheme } from '@/utils/editor-util';
 import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { linter, lintGutter } from '@codemirror/lint';
