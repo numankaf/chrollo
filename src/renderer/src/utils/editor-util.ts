@@ -1,9 +1,8 @@
-import type { Theme } from '@/provider/theme-provider';
 import { cssVar } from '@/utils/css-util';
 import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
 import { js as beautify } from 'js-beautify';
 
-export function getEditorTheme(theme: Theme) {
+export function getEditorTheme(theme: string | undefined) {
   const settings = {
     background: cssVar('--background', theme === 'dark' ? '#1e1e1e' : '#ffffff'),
     foreground: cssVar('--foreground', theme === 'dark' ? '#d4d4d4' : '#000000'),
@@ -16,6 +15,7 @@ export function getEditorTheme(theme: Theme) {
     gutterBorder: cssVar('--border', theme === 'dark' ? '#2a2d2e' : '#e0e0e0'),
     gutterActiveForeground: cssVar('--foreground', theme === 'dark' ? '#cccccc' : '#e0e0e0'),
   };
+  console.log(settings);
 
   return theme === 'dark' ? vscodeDarkInit({ settings }) : vscodeLightInit({ settings });
 }

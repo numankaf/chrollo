@@ -1,56 +1,57 @@
 import { createContext, useEffect, useState } from 'react';
 
-export type Theme = 'dark' | 'light' | 'system';
+export type Theme = string;
 
-export type ThemeProviderProps = {
+export type AcviteThemeProviderProps = {
   children: React.ReactNode;
   defaultTheme?: Theme;
   storageKey?: string;
 };
 
-export type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+export type ActiveThemeProviderState = {
+  activeTheme: Theme;
+  setActiveTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeProviderState = {
-  theme: 'system',
-  setTheme: () => null,
+const initialState: ActiveThemeProviderState = {
+  activeTheme: 'system',
+  setActiveTheme: () => null,
 };
 
-export const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+export const ActiveThemeProviderContext = createContext<ActiveThemeProviderState>(initialState);
 
-export function ThemeProvider({
+export function ActiveThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultTheme = 'default',
   storageKey = 'theme',
   ...props
-}: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
+}: AcviteThemeProviderProps) {
+  const [activeTheme, setActiveTheme] = useState<Theme>(() => {
     const storedTheme = localStorage.getItem(storageKey) as Theme;
-    if (storedTheme === 'system' || (!storedTheme && defaultTheme === 'system')) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
     return storedTheme || defaultTheme;
   });
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-  }, [theme]);
+    Array.from(document.body.classList)
+      .filter((className) => className.startsWith('theme-'))
+      .forEach((className) => {
+        document.body.classList.remove(className);
+      });
+
+    document.body.classList.add(`theme-${activeTheme}`);
+  }, [activeTheme]);
 
   const value = {
-    theme,
-    setTheme: (theme: Theme) => {
+    activeTheme,
+    setActiveTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+      setActiveTheme(theme);
     },
   };
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ActiveThemeProviderContext.Provider {...props} value={value}>
       {children}
-    </ThemeProviderContext.Provider>
+    </ActiveThemeProviderContext.Provider>
   );
 }

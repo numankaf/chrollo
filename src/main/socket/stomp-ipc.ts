@@ -4,7 +4,7 @@ import { Client, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
-import { REQUEST_BODY_TYPE, type Request } from '@/types/collection';
+import { type Request } from '@/types/collection';
 import {
   CONNECTION_STATUS,
   CONNECTION_TYPE,
@@ -225,11 +225,8 @@ export function initStompIpc() {
   ipcMain.on('stomp:send', (_, id: string, request: Request) => {
     const client = stompClients[id];
     const { body, destination, headers } = request;
-    let payload = body.data;
+    const payload = body.data;
 
-    if (body.type === REQUEST_BODY_TYPE.JSON) {
-      payload = JSON.stringify(payload);
-    }
     const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
 
     if (client && client.connected) {

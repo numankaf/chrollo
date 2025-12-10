@@ -1,9 +1,10 @@
-import { use, useEffect, useState } from 'react';
-import { ThemeProviderContext } from '@/provider/theme-provider';
+import { use, useLayoutEffect, useState } from 'react';
+import { ActiveThemeProviderContext } from '@/provider/theme-provider';
 import { formatJson, getEditorTheme } from '@/utils/editor-util';
 import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { linter, lintGutter } from '@codemirror/lint';
 import CodeMirror from '@uiw/react-codemirror';
+import { useTheme } from 'next-themes';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { REQUEST_BODY_TYPE } from '@/types/collection';
@@ -39,31 +40,22 @@ function BodyTypeSelector() {
 }
 
 function RequestBody() {
-  const { theme } = use(ThemeProviderContext);
-  const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(theme));
   const form = useFormContext();
   const bodyType = form.getValues(BODY_TYPE_PROPERTY_KEY);
-  const bodyData = form.getValues(BODY_DATA_PROPERTY_KEY);
 
-  useEffect(() => {
-    const html = document.documentElement;
+  const { activeTheme } = use(ActiveThemeProviderContext);
+  const { resolvedTheme } = useTheme();
 
-    const updateTheme = () => {
-      setEditorTheme(getEditorTheme(theme));
-    };
+  const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
 
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        if (m.type === 'attributes' && m.attributeName === 'class') {
-          updateTheme();
-        }
-      }
+  useLayoutEffect(() => {
+    if (!resolvedTheme) return;
+
+    // wait for DOM + CSS to flush
+    requestAnimationFrame(() => {
+      setEditorTheme(getEditorTheme(resolvedTheme));
     });
-
-    observer.observe(html, { attributes: true });
-
-    return () => observer.disconnect();
-  }, [theme]);
+  }, [resolvedTheme, activeTheme]);
 
   const formatCode = () => {
     const text = form.getValues(BODY_DATA_PROPERTY_KEY);

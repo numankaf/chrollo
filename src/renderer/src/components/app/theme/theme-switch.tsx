@@ -1,11 +1,10 @@
-import { use } from 'react';
-import { ThemeProviderContext } from '@/provider/theme-provider';
 import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/common/button';
 
 function ThemeSwitcher() {
-  const { theme, setTheme } = use(ThemeProviderContext);
+  const { setTheme, resolvedTheme: theme } = useTheme();
 
   const handleChangeTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');

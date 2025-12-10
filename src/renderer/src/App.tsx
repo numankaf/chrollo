@@ -26,7 +26,6 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-
   const router = createHashRouter([
     {
       element: <AppLayout />,

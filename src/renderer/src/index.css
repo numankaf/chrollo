@@ -3,6 +3,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@import './themes.css';
+
 @font-face {
   font-family: 'Oxanium';
   src: url('../../../resources/fonts/Oxanium-Regular.ttf') format('truetype');

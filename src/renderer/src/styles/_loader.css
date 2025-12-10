@@ -2,7 +2,7 @@
 .loader-icon {
   width: 30px;
   aspect-ratio: 0.75;
-  --c: no-repeat linear-gradient(var(--color-primary) 0 0);
+  --c: no-repeat linear-gradient(var(--color-secondary) 0 0);
   background:
     var(--c) 0% 50%,
     var(--c) 50% 50%,
