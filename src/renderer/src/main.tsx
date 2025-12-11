@@ -15,7 +15,7 @@ import App from './app.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider attribute="class" storageKey="theme-mode" enableSystem>
+    <ThemeProvider attribute="class" storageKey="theme-mode" enableSystem disableTransitionOnChange>
       <ActiveThemeProvider>
         <Toaster position="top-right" richColors />
         <ConfirmDialog />

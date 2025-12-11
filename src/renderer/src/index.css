@@ -73,6 +73,7 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-size: var(--text-base);
+    font-family: var(--font-sans);
     width: 100vw;
     height: 100vh;
     padding: 0;

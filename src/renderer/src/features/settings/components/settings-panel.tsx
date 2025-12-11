@@ -16,8 +16,8 @@ export function SettingsPanel() {
   const [settingsItem, setSettingsItem] = useState<SettingsItem>(SETTINGS_NAV_ITEMS[0]);
 
   return (
-    <div className="flex w-full h-[75vh] items-center justify-center">
-      <Sidebar collapsible="none" className="w-54 rounded-tl-xl rounded-bl-xl">
+    <div style={{ height: 'calc(75vh - 1px)' }} className="flex w-full items-center justify-center">
+      <Sidebar collapsible="none" className="w-54 rounded-tl-lg rounded-bl-lg border-r border-b">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
@@ -43,7 +43,7 @@ export function SettingsPanel() {
         </SidebarContent>
       </Sidebar>
       <main className="flex h-full flex-1 flex-col overflow-hidden p-3">
-        <header className="flex text-lg h-8 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="flex text-lg font-semibold h-8 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           {settingsItem.name}
         </header>
         {settingsItem.component && <settingsItem.component />}

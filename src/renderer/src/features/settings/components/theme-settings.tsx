@@ -1,11 +1,14 @@
 import { use } from 'react';
 import { THEMES_LIST } from '@/constants/theme-constants';
 import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 import type { ThemePreset } from '@/types/layout';
+import { Button } from '@/components/common/button';
 import { Label } from '@/components/common/label';
 import { RadioGroup, RadioGroupItem } from '@/components/common/radio-group';
-import { ScrollArea, ScrollBar } from '@/components/common/scroll-area';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { ThemePreviewSvg } from '@/components/app/theme/theme-preview-svg';
 
 function ThemePresetItem({ themePreset }: { themePreset: ThemePreset }) {
@@ -31,15 +34,43 @@ function ThemePresetItem({ themePreset }: { themePreset: ThemePreset }) {
 }
 
 function ThemeSettings() {
+  const { setTheme, resolvedTheme: theme } = useTheme();
+
   const { activeTheme } = use(ActiveThemeProviderContext);
   return (
     <ScrollArea style={{ height: 'calc(100% - 2rem)' }}>
-      <RadioGroup className="m-3 flex items-center justify-evenly gap-4 flex-wrap" defaultValue={activeTheme}>
-        {THEMES_LIST.map((themePreset) => (
-          <ThemePresetItem themePreset={themePreset} />
-        ))}
-      </RadioGroup>
-      <ScrollBar orientation="vertical" />
+      <div className="space-y-2 m-4">
+        <p>Theme Mode</p>
+        <div className="flex gap-4">
+          <Button
+            variant={theme === 'light' ? 'primary-bordered-ghost' : 'outline'}
+            onClick={() => {
+              setTheme('light');
+            }}
+          >
+            <Sun />
+            <span>Day Theme</span>
+          </Button>
+          <Button
+            variant={theme === 'dark' ? 'primary-bordered-ghost' : 'outline'}
+            onClick={() => {
+              setTheme('dark');
+            }}
+          >
+            <Moon />
+            <span>Night Theme</span>
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2 m-4">
+        <p>Theme Selection</p>
+        <RadioGroup className="flex items-center justify-between gap-4 flex-wrap" defaultValue={activeTheme}>
+          {THEMES_LIST.map((themePreset) => (
+            <ThemePresetItem key={themePreset.theme} themePreset={themePreset} />
+          ))}
+        </RadioGroup>
+      </div>
     </ScrollArea>
   );
 }
