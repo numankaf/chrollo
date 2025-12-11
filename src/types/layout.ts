@@ -31,10 +31,22 @@ export type SettingsItem = {
 };
 
 export const THEMES = {
-  DEFAULT: 'default',
-  SPOTIFY: 'theme-spotify',
+  AMETHYST_HAZE: 'theme-amethyst-haze',
+  CAFFEINE: 'theme-caffeine',
   CLAUDE: 'theme-claude',
+  DARKMATTER: 'theme-darkmatter',
+  DEFAULT: 'theme-default',
+  GHIBLI_STUDIO: 'theme-ghibli-studio',
+  GRAPHITE: 'theme-graphite',
+  KODAMA_GROVE: 'theme-kodama-grove',
+  MATERIAL_DESIGN: 'theme-material-design',
+  NATURE: 'theme-nature',
+  NOTEBOOK: 'theme-notebook',
+  PERPETUITY: 'theme-perpetuity',
+  SLACK: 'theme-slack',
+  SPOTIFY: 'theme-spotify',
   TWITTER: 'theme-twitter',
+  VS_CODE: 'theme-vs-code',
 } as const;
 
 export type Theme = (typeof THEMES)[keyof typeof THEMES];

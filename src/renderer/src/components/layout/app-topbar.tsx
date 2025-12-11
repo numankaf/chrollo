@@ -1,6 +1,5 @@
 import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
-import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import { Maximize, Minus, Search, X } from 'lucide-react';
@@ -13,7 +12,6 @@ import WorkspaceSelector from '@/components/selector/workspace-selector';
 
 function Topbar() {
   const { appLoaded } = use(AppContext);
-  const { setActiveTheme: setTheme } = use(ActiveThemeProviderContext);
 
   return (
     <nav
@@ -48,10 +46,6 @@ function Topbar() {
 
       <div className="flex items-center justify-end flex-1 draggable">
         <SettingsButton />
-        <Button onClick={() => setTheme('default')}>Default</Button>
-        <Button onClick={() => setTheme('spotify')}>Spotify</Button>
-        <Button onClick={() => setTheme('claude')}>Claude</Button>
-        <Button onClick={() => setTheme('twitter')}>Twitter</Button>
         <ThemeSwitcher />
         <Button variant="ghost" size="icon" onClick={() => window.api.view.minimize()} aria-label="Minimize">
           <Minus />

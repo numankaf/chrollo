@@ -14,7 +14,7 @@ export type ActiveThemeProviderState = {
 };
 
 const initialState: ActiveThemeProviderState = {
-  activeTheme: 'default',
+  activeTheme: 'theme-default',
   setActiveTheme: () => null,
 };
 
@@ -22,7 +22,7 @@ export const ActiveThemeProviderContext = createContext<ActiveThemeProviderState
 
 export function ActiveThemeProvider({
   children,
-  defaultTheme = 'default',
+  defaultTheme = 'theme-default',
   storageKey = 'theme',
   ...props
 }: AcviteThemeProviderProps) {
@@ -38,7 +38,7 @@ export function ActiveThemeProvider({
         document.body.classList.remove(className);
       });
 
-    document.body.classList.add(`theme-${activeTheme}`);
+    document.body.classList.add(activeTheme);
   }, [activeTheme]);
 
   const value = {

@@ -16,8 +16,8 @@ export function SettingsPanel() {
   const [settingsItem, setSettingsItem] = useState<SettingsItem>(SETTINGS_NAV_ITEMS[0]);
 
   return (
-    <div className="flex w-full h-[75vh]">
-      <Sidebar collapsible="none" className="w-54 ">
+    <div className="flex w-full h-[75vh] items-center justify-center">
+      <Sidebar collapsible="none" className="w-54 rounded-tl-xl rounded-bl-xl">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>

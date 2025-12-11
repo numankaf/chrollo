@@ -1,3 +1,16 @@
-@import './themes/twitter.css';
+@import './themes/amethyst-haze.css';
+@import './themes/caffeine.css';
 @import './themes/claude.css';
+@import './themes/darkmatter.css';
+@import './themes/default.css';
+@import './themes/ghibli-studio.css';
+@import './themes/graphite.css';
+@import './themes/kodama-grove.css';
+@import './themes/material-design.css';
+@import './themes/nature.css';
+@import './themes/notebook.css';
+@import './themes/perpetuity.css';
+@import './themes/slack.css';
+@import './themes/twitter.css';
 @import './themes/spotify.css';
+@import './themes/vs-code.css';
