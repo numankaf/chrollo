@@ -1,6 +1,6 @@
+import { use } from 'react';
 import { FOOTER_BOTTOM_OFFSET, SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
-import { use } from 'react';
 
 function AppLoader() {
   const { loadingText } = use(AppContext);

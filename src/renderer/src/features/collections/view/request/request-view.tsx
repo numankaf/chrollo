@@ -11,9 +11,9 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/use-active-item';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import ComingSoon from '@/components/app/empty/coming-soon';
+import ResizeableConsoleArea from '@/components/app/resizeable/resizeable-console-area';
 
 function RequestView() {
   const { activeTab } = useActiveItem();
@@ -69,26 +69,20 @@ function RequestView() {
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel collapsible minSize={10}>
-                <TabsContent value="docs">
-                  <ComingSoon />
-                </TabsContent>
-                <TabsContent value="headers">
-                  <RequestHeaders headers={request.headers} />
-                </TabsContent>
-                <TabsContent className="h-full " value="body">
-                  <RequestBody />
-                </TabsContent>
-                <TabsContent value="scripts">
-                  <ComingSoon />
-                </TabsContent>
-              </ResizablePanel>
-              <ResizableHandle />
-              <ResizablePanel collapsible collapsedSize={5} minSize={25}>
-                Response
-              </ResizablePanel>
-            </ResizablePanelGroup>
+            <ResizeableConsoleArea>
+              <TabsContent value="docs">
+                <ComingSoon />
+              </TabsContent>
+              <TabsContent value="headers">
+                <RequestHeaders headers={request.headers} />
+              </TabsContent>
+              <TabsContent className="h-full " value="body">
+                <RequestBody />
+              </TabsContent>
+              <TabsContent value="scripts">
+                <ComingSoon />
+              </TabsContent>
+            </ResizeableConsoleArea>
           </Tabs>
         </form>
       </FormProvider>

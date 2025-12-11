@@ -23,6 +23,7 @@ import {
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/common/input-group';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
+import ResizeableConsoleArea from '@/components/app/resizeable/resizeable-console-area';
 
 function StompConnectionView() {
   const { activeTab } = useActiveItem();
@@ -126,32 +127,34 @@ function StompConnectionView() {
             defaultValue="settings"
             className="w-full mt-3"
             variant="link"
-            style={{ height: 'calc(100% - 6.5rem)' }}
+            style={{ height: 'calc(100% - 3.5rem)' }}
           >
             <TabsList className="mx-2">
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             </TabsList>
-            <ScrollArea className="h-full">
-              <TabsContent className="mx-2" value="settings">
-                <StompSettings />
-              </TabsContent>
-              <TabsContent value="headers">
-                <Controller
-                  name="connectHeaders"
-                  control={form.control}
-                  render={({ field }) => <StompHeaders headers={field.value} />}
-                />
-              </TabsContent>
-              <TabsContent value="subscriptions">
-                <Controller
-                  name="subscriptions"
-                  control={form.control}
-                  render={({ field }) => <StompSubsciptions subscriptions={field.value} />}
-                />
-              </TabsContent>
-            </ScrollArea>
+            <ResizeableConsoleArea>
+              <ScrollArea className="h-full">
+                <TabsContent className="mx-2" value="settings">
+                  <StompSettings />
+                </TabsContent>
+                <TabsContent value="headers">
+                  <Controller
+                    name="connectHeaders"
+                    control={form.control}
+                    render={({ field }) => <StompHeaders headers={field.value} />}
+                  />
+                </TabsContent>
+                <TabsContent value="subscriptions">
+                  <Controller
+                    name="subscriptions"
+                    control={form.control}
+                    render={({ field }) => <StompSubsciptions subscriptions={field.value} />}
+                  />
+                </TabsContent>
+              </ScrollArea>
+            </ResizeableConsoleArea>
           </Tabs>
         </form>
       </FormProvider>

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import useConnectionStatusStore from '@/store/connection-status-store';
+import useSocketMessageStatusStore from '@/store/socket-message-store';
 import { getTabRoute } from '@/utils/tab-util';
 import { useNavigate } from 'react-router';
 
@@ -23,7 +24,7 @@ export function useAppSubscriptions() {
     });
 
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
-      console.log(data);
+      useSocketMessageStatusStore.getState().addMessage(data);
     });
 
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
