@@ -13,7 +13,6 @@ import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/use-active-item';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import ComingSoon from '@/components/app/empty/coming-soon';
-import ResizeableConsoleArea from '@/components/app/resizeable/resizeable-console-area';
 
 function RequestView() {
   const { activeTab } = useActiveItem();
@@ -56,7 +55,6 @@ function RequestView() {
       <FormProvider {...form}>
         <form className="h-full" noValidate>
           <RequestViewHeader />
-
           <Tabs
             defaultValue="body"
             className="w-full mt-3 gap-0"
@@ -69,20 +67,18 @@ function RequestView() {
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
-            <ResizeableConsoleArea>
-              <TabsContent value="docs">
-                <ComingSoon />
-              </TabsContent>
-              <TabsContent value="headers">
-                <RequestHeaders headers={request.headers} />
-              </TabsContent>
-              <TabsContent className="h-full " value="body">
-                <RequestBody />
-              </TabsContent>
-              <TabsContent value="scripts">
-                <ComingSoon />
-              </TabsContent>
-            </ResizeableConsoleArea>
+            <TabsContent value="docs">
+              <ComingSoon />
+            </TabsContent>
+            <TabsContent value="headers">
+              <RequestHeaders headers={request.headers} />
+            </TabsContent>
+            <TabsContent className="h-full " value="body">
+              <RequestBody />
+            </TabsContent>
+            <TabsContent value="scripts">
+              <ComingSoon />
+            </TabsContent>
           </Tabs>
         </form>
       </FormProvider>

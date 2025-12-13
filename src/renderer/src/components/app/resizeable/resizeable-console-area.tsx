@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
-import SocketMessageConsole from '@/components/app/socket/socket-message-console';
 
 function ResizeableConsoleArea({ children }: { children: ReactNode }) {
   return (
@@ -12,7 +11,7 @@ function ResizeableConsoleArea({ children }: { children: ReactNode }) {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel collapsible className="min-h-8">
-          <SocketMessageConsole />
+          {/* <SocketMessageConsole /> */}
         </ResizablePanel>
       </ResizablePanelGroup>
     </>

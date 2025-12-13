@@ -5,6 +5,7 @@ import { useAppSubscriptions } from '@/hooks/use-app-subscriptions';
 import { useLayout } from '@/hooks/use-layout';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { SidebarInset } from '@/components/common/sidebar';
+import SocketMessageConsole from '@/components/app/socket/socket-message-console';
 import AppBreadcrumb from '@/components/layout/app-breadcrumb';
 import AppTabs from '@/components/layout/app-tabs';
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
@@ -12,7 +13,6 @@ import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 function AppMainContent() {
   useAppSubscriptions();
   const { activeItem, sidebarRef } = useLayout();
-
   return (
     <>
       <AppSidebar />
@@ -38,7 +38,15 @@ function AppMainContent() {
               }}
               className="flex flex-col overflow-hidden"
             >
-              <Outlet />
+              <ResizablePanelGroup direction="vertical" autoSaveId="resizeable-console-group">
+                <ResizablePanel collapsible minSize={10}>
+                  <Outlet />
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel collapsible className="min-h-8">
+                  <SocketMessageConsole />
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

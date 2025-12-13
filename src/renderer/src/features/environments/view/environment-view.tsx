@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import useEnvironmentStore from '@/store/environment-store';
 import { Plus, Trash2 } from 'lucide-react';
+import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { EnvironmentVariable } from '@/types/environment';
 import { useActiveItem } from '@/hooks/use-active-item';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { EditableTextCell } from '@/components/common/table';
 import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
@@ -122,13 +124,13 @@ function EnvironmentView() {
   };
 
   return (
-    <div className="mx-4 my-2">
+    <ScrollArea className="px-4 py-2 h-full">
       <TanstackDataTable<EnvironmentVariable>
         data={environment ? environment.variables : []}
         columns={columns}
         meta={{ updateData, deleteRow, addRow }}
       />
-    </div>
+    </ScrollArea>
   );
 }
 
