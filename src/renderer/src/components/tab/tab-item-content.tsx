@@ -4,7 +4,7 @@ import { Container, LayoutDashboard } from 'lucide-react';
 import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Tab } from '@/types/layout';
 import { cn } from '@/lib/utils';
-import { useTabItem } from '@/hooks/use-tab-item';
+import { useTabItem } from '@/hooks/app/use-tab-item';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 

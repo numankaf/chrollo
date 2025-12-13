@@ -4,7 +4,7 @@ import useSocketMessageStatusStore from '@/store/socket-message-store';
 import { getTabRoute } from '@/utils/tab-util';
 import { useNavigate } from 'react-router';
 
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 
 export function useAppSubscriptions() {
   const navigate = useNavigate();

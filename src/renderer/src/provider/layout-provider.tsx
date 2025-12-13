@@ -4,7 +4,7 @@ import type { ImperativePanelHandle } from 'react-resizable-panels';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import type { SidebarItem } from '@/types/layout';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import CollectionSidebar from '@/components/layout/sidebar/collection/app-collection-sidebar';
 import ConnectionSidebar from '@/components/layout/sidebar/connection/app-connection-sidebar';
 import EnvironmentsSidebar from '@/components/layout/sidebar/environment/app-environment-sidebar';

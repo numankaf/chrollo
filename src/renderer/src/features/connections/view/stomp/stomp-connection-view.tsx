@@ -13,7 +13,7 @@ import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { WS_URL_SCHEME, type StompConnection } from '@/types/connection';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import {
   DropdownMenu,
   DropdownMenuContent,

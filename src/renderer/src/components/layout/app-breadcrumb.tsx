@@ -4,7 +4,7 @@ import useTabsStore from '@/store/tab-store';
 import { getTabBreadcrumbs } from '@/utils/tab-util';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/common/breadcrumb';
 import { ScrollArea, ScrollBar } from '@/components/common/scroll-area';
 import SaveItemButton from '@/components/app/button/save-item-button';

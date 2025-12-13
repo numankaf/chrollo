@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+import { nanoid } from 'nanoid';
 import { useFormContext } from 'react-hook-form';
 
 import type { Header } from '@/types/common';

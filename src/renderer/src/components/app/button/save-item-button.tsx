@@ -4,7 +4,7 @@ import { getTabItem } from '@/utils/tab-util';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 
 function SaveItemButton() {

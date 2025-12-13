@@ -45,7 +45,7 @@ function ConnectionStatusBadge({ connectionId, showLabel = false, className, ...
           icon: (
             <span className="size-2 rounded-full bg-accent-foreground dark:bg-accent-foreground" aria-hidden="true" />
           ),
-          label: 'Connect',
+          label: 'Not Active',
         };
     }
   }

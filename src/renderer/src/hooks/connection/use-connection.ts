@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import type { Request } from '@/types/collection';
 import { CONNECTION_STATUS, CONNECTION_TYPE } from '@/types/connection';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 
 export function useConnection() {
   const { activeConnection } = useActiveItem();

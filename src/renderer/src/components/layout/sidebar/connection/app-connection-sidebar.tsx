@@ -9,7 +9,8 @@ import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Connection } from '@/types/connection';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
+import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea } from '@/components/common/scroll-area';
@@ -23,6 +24,7 @@ import {
   SidebarMenuButton,
 } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
+import NoResultsFound from '@/components/app/empty/no-results-found';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
@@ -34,8 +36,10 @@ function ConnectionSidebar() {
   );
   const { activeTab } = useActiveItem();
   const connections = useWorkspaceConnections();
+
   const [search, setSearch] = useState('');
-  const filteredConnections = applyTextSearch(connections, search, (connection) => connection.name);
+  const debouncedSearch = useDebouncedValue<string>(search, 300);
+  const filteredConnections = applyTextSearch(connections, debouncedSearch, (connection) => connection.name);
 
   const { deleteConnection, cloneConnection, updateConnection } = useConnectionStore(
     useShallow((state) => ({
@@ -114,6 +118,7 @@ function ConnectionSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              {filteredConnections.length === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
               {filteredConnections.map((item) => (
                 <SidebarMenuButton
                   size="sm"

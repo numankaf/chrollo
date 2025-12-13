@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { useFormContext } from 'react-hook-form';
 
 import type { StompSubscription } from '@/types/connection';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 import { Switch } from '@/components/common/switch';
 import { EditableTextCell } from '@/components/common/table';

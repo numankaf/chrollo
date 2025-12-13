@@ -1,8 +1,8 @@
 import { SIDEBAR_TOP_OFFSET, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { Outlet } from 'react-router';
 
-import { useAppSubscriptions } from '@/hooks/use-app-subscriptions';
-import { useLayout } from '@/hooks/use-layout';
+import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
+import { useLayout } from '@/hooks/layout/use-layout';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { SidebarInset } from '@/components/common/sidebar';
 import SocketMessageConsole from '@/components/app/socket/socket-message-console';

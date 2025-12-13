@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { EnvironmentVariable } from '@/types/environment';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
 import { ScrollArea } from '@/components/common/scroll-area';

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useMemo, useState } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useTabsStore from '@/store/tab-store';
@@ -6,7 +6,7 @@ import useWorkspaceStore from '@/store/workspace-store';
 import { hasChildren } from '@/utils/collection-util';
 import { ChevronRight, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { Tree, type NodeRendererProps, type RowRendererProps } from 'react-arborist';
+import { Tree, TreeApi, type NodeRendererProps, type RowRendererProps } from 'react-arborist';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -20,8 +20,9 @@ import {
   type Folder,
   type Request,
 } from '@/types/collection';
-import { useActiveItem } from '@/hooks/use-active-item';
-import { useResizeObserver } from '@/hooks/use-resize-observer';
+import { useActiveItem } from '@/hooks/app/use-active-item';
+import useDebouncedValue from '@/hooks/common/use-debounced-value';
+import { useResizeObserver } from '@/hooks/common/use-resize-observer';
 import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-collection-item-map';
 import { Button } from '@/components/common/button';
 import InlineEditText from '@/components/common/inline-edit-text';
@@ -29,6 +30,7 @@ import { SearchBar } from '@/components/common/search-input';
 import { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
+import NoResultsFound from '@/components/app/empty/no-results-found';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 
 function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<CollectionItem>) {
@@ -267,7 +269,19 @@ function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
 }
 
 export default function CollectionSidebar() {
-  const [search, setSearch] = useState<string>('');
+  const [tree, setTree] = useState<TreeApi<CollectionItem> | null | undefined>(null);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const [count, setCount] = useState(0);
+
+  const updateCount = useEffectEvent((c: number) => {
+    setCount(c);
+  });
+
+  useEffect(() => {
+    updateCount(tree?.visibleNodes.length ?? 0);
+  }, [tree, debouncedSearch]);
+
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
   const collectionItemMap = useWorkspaceCollectionItemMap();
@@ -359,13 +373,15 @@ export default function CollectionSidebar() {
       </SidebarHeader>
       <SidebarGroup className="p-1! h-[calc(100%-3rem)]" ref={ref}>
         <SidebarGroupContent>
+          {count === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
           <Tree<CollectionItem>
+            ref={(t) => setTree(t)}
             data={roots}
             width="100%"
-            height={height}
+            height={count === 0 ? 0 : height}
             childrenAccessor={childrenAccessor}
             rowHeight={30}
-            searchTerm={search}
+            searchTerm={debouncedSearch}
             searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
             disableDrag
             disableDrop

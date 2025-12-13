@@ -2,7 +2,7 @@ import useTabsStore from '@/store/tab-store';
 import { ArrowRight, Download, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import {
   DropdownMenu,
   DropdownMenuContent,

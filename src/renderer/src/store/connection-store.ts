@@ -1,6 +1,7 @@
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
+import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
 import { CONNECTION_TYPE, type Connection } from '@/types/connection';

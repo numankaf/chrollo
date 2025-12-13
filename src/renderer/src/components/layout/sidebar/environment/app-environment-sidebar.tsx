@@ -5,12 +5,14 @@ import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { Container, Plus } from 'lucide-react';
+import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { Environment } from '@/types/environment';
 import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
+import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
 import InlineEditText from '@/components/common/inline-edit-text';
@@ -26,6 +28,7 @@ import {
 } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
+import NoResultsFound from '@/components/app/empty/no-results-found';
 
 function EnvironmentsSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -37,9 +40,10 @@ function EnvironmentsSidebar() {
   const { activeTab } = useActiveItem();
 
   const environments = useWorkspaceEnvironments();
-  const [search, setSearch] = useState('');
 
-  const filteredEnvironments = applyTextSearch(environments, search, (environment) => environment.name);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue<string>(search, 300);
+  const filteredEnvironments = applyTextSearch(environments, debouncedSearch, (environment) => environment.name);
 
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
@@ -160,6 +164,7 @@ function EnvironmentsSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              {filteredEnvironments.length === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
               {filteredEnvironments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}

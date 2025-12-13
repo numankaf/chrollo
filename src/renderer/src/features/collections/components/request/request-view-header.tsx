@@ -1,7 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { Request } from '@/types/collection';
-import { useConnection } from '@/hooks/use-connection';
+import { useConnection } from '@/hooks/connection/use-connection';
 import { Button } from '@/components/common/button';
 import { InputGroup, InputGroupInput } from '@/components/common/input-group';
 

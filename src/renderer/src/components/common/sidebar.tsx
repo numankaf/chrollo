@@ -15,8 +15,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { useLayout } from '@/hooks/use-layout';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/common/use-mobile';
+import { useLayout } from '@/hooks/layout/use-layout';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Separator } from '@/components/common/separator';

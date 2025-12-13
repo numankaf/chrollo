@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useLayout } from '@/hooks/use-layout';
+import { useLayout } from '@/hooks/layout/use-layout';
 import {
   Sidebar,
   SidebarContent,

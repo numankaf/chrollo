@@ -42,7 +42,7 @@ function WorkspaceSelector() {
           />
         </div>
         <div className="mt-3 space-y-1">
-          <Label className="text-secondary text-sm m-1"> Recently Visited</Label>
+          <Label className="text-muted-foreground text-sm m-1"> Recently Visited</Label>
           {filteredWorkspaces.map((workspace) => (
             <Button
               onClick={() => setActiveWorkspace(workspace.id)}

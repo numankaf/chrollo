@@ -10,7 +10,7 @@ import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { type Request } from '@/types/collection';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import ComingSoon from '@/components/app/empty/coming-soon';
 

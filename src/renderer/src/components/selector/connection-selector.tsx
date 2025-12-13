@@ -2,13 +2,13 @@ import { useState } from 'react';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { getConnectionButtonVariant } from '@/utils/connection-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { CONNECTION_STATUS } from '@/types/connection';
 import { cn } from '@/lib/utils';
-import { useActiveItem } from '@/hooks/use-active-item';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import { Button } from '@/components/common/button';
 import {
@@ -35,34 +35,7 @@ function ConnectionSelector() {
   const status = useConnectionStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
   const filteredConnections = applyTextSearch(connections, search, (c) => c.name);
 
-  function getButtonVariant(): {
-    variant: 'error-bordered-ghost' | 'success-bordered-ghost' | 'warn-bordered-ghost' | 'outline';
-  } {
-    switch (status) {
-      case CONNECTION_STATUS.CONNECTED:
-        return {
-          variant: 'success-bordered-ghost',
-        };
-      case CONNECTION_STATUS.CLOSED:
-      case CONNECTION_STATUS.DISCONNECTED: {
-        return {
-          variant: 'error-bordered-ghost',
-        };
-      }
-      case CONNECTION_STATUS.ERROR:
-        return {
-          variant: 'warn-bordered-ghost',
-        };
-
-      case CONNECTION_STATUS.DEACTIVATED:
-      default:
-        return {
-          variant: 'outline',
-        };
-    }
-  }
-
-  const { variant } = getButtonVariant();
+  const { variant } = getConnectionButtonVariant(status);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

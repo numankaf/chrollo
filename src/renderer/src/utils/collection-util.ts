@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 import {
   COLLECTION_TYPE,
   type Collection,
