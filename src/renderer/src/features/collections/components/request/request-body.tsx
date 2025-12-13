@@ -1,16 +1,11 @@
-import { use, useLayoutEffect, useState } from 'react';
-import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
-import { formatJson, getEditorTheme } from '@/utils/editor-util';
-import { json, jsonParseLinter } from '@codemirror/lang-json';
-import { linter, lintGutter } from '@codemirror/lint';
-import CodeMirror from '@uiw/react-codemirror';
-import { useTheme } from 'next-themes';
+import { formatCode } from '@/utils/editor-util';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { REQUEST_BODY_TYPE } from '@/types/collection';
 import { Button } from '@/components/common/button';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
+import CodeEditor from '@/components/app/editor/code-editor';
 
 const BODY_TYPE_PROPERTY_KEY = 'body.type';
 const BODY_DATA_PROPERTY_KEY = 'body.data';
@@ -43,25 +38,10 @@ function RequestBody() {
   const form = useFormContext();
   const bodyType = form.getValues(BODY_TYPE_PROPERTY_KEY);
 
-  const { activeTheme } = use(ActiveThemeProviderContext);
-  const { resolvedTheme } = useTheme();
-
-  const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
-
-  useLayoutEffect(() => {
-    if (!resolvedTheme) return;
-
-    // wait for DOM + CSS to flush
-    requestAnimationFrame(() => {
-      setEditorTheme(getEditorTheme(resolvedTheme));
-    });
-  }, [resolvedTheme, activeTheme]);
-
-  const formatCode = () => {
-    const text = form.getValues(BODY_DATA_PROPERTY_KEY);
-    const formatted = bodyType === REQUEST_BODY_TYPE.JSON ? formatJson(text) : text;
+  const formatRequestData = () => {
+    const data = form.getValues(BODY_DATA_PROPERTY_KEY);
+    const formatted = formatCode(bodyType, data);
     form.setValue(BODY_DATA_PROPERTY_KEY, formatted);
-    return true;
   };
 
   return (
@@ -69,7 +49,7 @@ function RequestBody() {
       <div className="flex items-center justify-end gap-2 mx-2 mb-1 ">
         <p className="text-muted-foreground my-1 flex-1">Body</p>
         <BodyTypeSelector />
-        <Button size="sm" className="h-6" variant="outline" type="button" onClick={formatCode}>
+        <Button size="sm" className="h-6" variant="outline" type="button" onClick={formatRequestData}>
           Beautify
         </Button>
       </div>
@@ -78,14 +58,9 @@ function RequestBody() {
           name={BODY_DATA_PROPERTY_KEY}
           control={form.control}
           render={({ field }) => (
-            <CodeMirror
+            <CodeEditor
               value={field.value}
-              height="auto"
-              theme={editorTheme}
-              extensions={[
-                bodyType === REQUEST_BODY_TYPE.JSON ? [json(), linter(jsonParseLinter())] : [],
-                lintGutter(),
-              ]}
+              bodyType={bodyType}
               onChange={(value) => {
                 form.setValue(BODY_DATA_PROPERTY_KEY, value, {
                   shouldDirty: true,
@@ -96,7 +71,7 @@ function RequestBody() {
                 // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
                 if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
                   e.preventDefault();
-                  formatCode();
+                  formatRequestData();
                 }
               }}
             />

@@ -1,5 +1,5 @@
 import { getMainWindow } from '@/main/index';
-import { isJsonContentType } from '@/main/utils/message-util';
+import { CONTENT_TYPE_MAP, isJsonContentType } from '@/main/utils/message-util';
 import { Client, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
@@ -120,6 +120,9 @@ export function initStompIpc() {
             type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
             timestamp: Date.now(),
             data: `Subscribed to ${subscription.topic}`,
+            meta: {
+              headers: { id: subscription.id, destination: subscription.topic },
+            },
           };
 
           mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
@@ -224,6 +227,9 @@ export function initStompIpc() {
         type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
         timestamp: Date.now(),
         data: `Subscribed to ${topic}`,
+        meta: {
+          headers: { id: subscriptionId, destination: topic },
+        },
       };
 
       mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
@@ -245,6 +251,9 @@ export function initStompIpc() {
         type: SOCKET_MESSAGE_TYPE.UNSUBSCRIBED,
         timestamp: Date.now(),
         data: `Unsubscribed from ${topic}`,
+        meta: {
+          headers: { id: subscriptionId },
+        },
       };
 
       mainWindow.webContents.send('stomp:message', socketUnsubscribedMessage);
@@ -281,6 +290,7 @@ export function initStompIpc() {
             destination,
             ...requestHeaders,
             'content-length': String(payload.length),
+            'content-type': CONTENT_TYPE_MAP[request.body.type],
           },
         },
       };

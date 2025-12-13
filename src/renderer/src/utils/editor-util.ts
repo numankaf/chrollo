@@ -1,6 +1,7 @@
 import { cssVar } from '@/utils/css-util';
 import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
-import { js as beautify } from 'js-beautify';
+
+import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
 
 export function getEditorTheme(theme: string | undefined) {
   const settings = {
@@ -19,15 +20,30 @@ export function getEditorTheme(theme: string | undefined) {
   return theme === 'dark' ? vscodeDarkInit({ settings }) : vscodeLightInit({ settings });
 }
 
-export function formatJson(text: string) {
+// old js-beautify code
+// export function formatJson(text: string) {
+//   try {
+//     return beautify(text, {
+//       indent_size: 2,
+//       space_in_empty_paren: true,
+//       e4x: false,
+//       end_with_newline: true,
+//     });
+//   } catch {
+//     return text;
+//   }
+// }
+
+export function formatJson(text: string): string {
   try {
-    return beautify(text, {
-      indent_size: 2,
-      space_in_empty_paren: true,
-      e4x: false,
-      end_with_newline: true,
-    });
+    const parsed = JSON.parse(text);
+    return JSON.stringify(parsed, null, 2) + '\n';
   } catch {
     return text;
   }
+}
+
+export function formatCode(bodyType: RequestBodyType, data: string) {
+  const formatted = bodyType === REQUEST_BODY_TYPE.JSON ? formatJson(data) : data;
+  return formatted;
 }
