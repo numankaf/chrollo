@@ -19,8 +19,8 @@ declare global {
         connect: (connection: StompConnection) => void;
         disconnect: (id: string) => void;
         disconnectAll: () => void;
-        subscribe: (id: string, topic: string) => void;
-        unsubscribe: (id: string, topic: string) => void;
+        subscribe: (connectionId: string, subscriptionId: string, topic: string) => void;
+        unsubscribe: (connectionId: string, subscriptionId: string, topic: string) => void;
         send: (id: string, data: Request) => void;
       };
       workspace: {

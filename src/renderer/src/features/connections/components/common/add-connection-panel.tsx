@@ -4,7 +4,6 @@ import useConnectionStore from '@/store/connection-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Plus } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -58,7 +57,7 @@ function AddConnectionPanel() {
 
         case CONNECTION_TYPE.STOMP: {
           const connectionPayload: StompConnection = {
-            id: nanoid(8),
+            id: nanoid(),
             name: values.name,
             workspaceId: activeWorkspaceId,
             ...STOMP_DEFAULT_VALUES,

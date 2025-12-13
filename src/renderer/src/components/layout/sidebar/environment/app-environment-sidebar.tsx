@@ -5,7 +5,6 @@ import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { Container, Plus } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -65,7 +64,7 @@ function EnvironmentsSidebar() {
     }
     try {
       const environmentPayload: Environment = {
-        id: nanoid(8),
+        id: nanoid(),
         name: values.name,
         workspaceId: activeWorkspaceId,
         ...ENVIRONMENT_DEFAULT_VALUES,

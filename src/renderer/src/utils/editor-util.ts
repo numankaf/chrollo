@@ -15,7 +15,6 @@ export function getEditorTheme(theme: string | undefined) {
     gutterBorder: cssVar('--border', theme === 'dark' ? '#2a2d2e' : '#e0e0e0'),
     gutterActiveForeground: cssVar('--foreground', theme === 'dark' ? '#cccccc' : '#e0e0e0'),
   };
-  console.log(settings);
 
   return theme === 'dark' ? vscodeDarkInit({ settings }) : vscodeLightInit({ settings });
 }

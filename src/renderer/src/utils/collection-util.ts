@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-
 import {
   COLLECTION_TYPE,
   type Collection,
@@ -61,7 +59,7 @@ export function cloneCollectionItemDeep(
     const original = collectionItemMap.get(itemId);
     if (!original) return;
 
-    const newId = nanoid(8);
+    const newId = nanoid();
     idMap.set(itemId, newId);
 
     const name = itemId === originalId ? `${original.name} (Copy)` : original.name;

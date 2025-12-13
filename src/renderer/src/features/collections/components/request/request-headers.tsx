@@ -118,7 +118,7 @@ function RequestHeaders({ headers }: { headers: Header[] }) {
   };
 
   const addRow = () => {
-    const updated = [...headers, { id: nanoid(8), key: '', value: '', description: '', enabled: false }];
+    const updated = [...headers, { id: nanoid(), key: '', value: '', description: '', enabled: false }];
     form.setValue(PROPERTY_KEY, updated, { shouldDirty: true });
   };
 

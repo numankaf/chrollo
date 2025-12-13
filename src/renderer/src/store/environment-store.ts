@@ -1,7 +1,6 @@
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
-import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
 import type { Environment } from '@/types/environment';
@@ -32,7 +31,7 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
     return get().environments.find((e) => e.id === id)!;
   },
   createEnvironment: (environment) => {
-    const newEnvironment = { ...environment, id: nanoid(8) };
+    const newEnvironment = { ...environment, id: nanoid() };
 
     set((state) => ({
       environments: [...state.environments, newEnvironment],
@@ -87,7 +86,7 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
 
     const newEnvironment = {
       ...original,
-      id: nanoid(8),
+      id: nanoid(),
       name: `${original.name} (Copy)`,
     } as Environment;
 

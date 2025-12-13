@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import useEnvironmentStore from '@/store/environment-store';
 import { Plus, Trash2 } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { EnvironmentVariable } from '@/types/environment';
@@ -118,7 +117,7 @@ function EnvironmentView() {
   };
 
   const addRow = () => {
-    const updated = [...variables, { id: nanoid(8), key: '', value: '', description: '', enabled: true }];
+    const updated = [...variables, { id: nanoid(), key: '', value: '', description: '', enabled: true }];
     if (environment) updateEnvironment({ ...environment, variables: updated });
   };
 

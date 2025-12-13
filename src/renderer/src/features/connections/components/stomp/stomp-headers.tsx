@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { useFormContext } from 'react-hook-form';
 
 import type { Header } from '@/types/common';
@@ -118,7 +117,7 @@ function StompHeaders({ headers }: { headers: Header[] }) {
   };
 
   const addRow = () => {
-    const updated = [...headers, { id: nanoid(8), key: '', value: '', description: '', enabled: false }];
+    const updated = [...headers, { id: nanoid(), key: '', value: '', description: '', enabled: false }];
     form.setValue(PROPERTY_KEY, updated, { shouldDirty: true });
   };
 

@@ -26,8 +26,10 @@ const api = {
     connect: (connection: StompConnection) => ipcRenderer.send('stomp:connect', connection),
     disconnect: (id: string) => ipcRenderer.send('stomp:disconnect', id),
     disconnectAll: () => ipcRenderer.send('stomp:disconnectAll'),
-    subscribe: (id: string, topic: string) => ipcRenderer.send('stomp:subscribe', { id, topic }),
-    unsubscribe: (id: string, topic: string) => ipcRenderer.send('stomp:unsubscribe', { id, topic }),
+    subscribe: (connectionId: string, subscriptionId: string, topic: string) =>
+      ipcRenderer.send('stomp:subscribe', { connectionId, subscriptionId, topic }),
+    unsubscribe: (connectionId: string, subscriptionId: string, topic: string) =>
+      ipcRenderer.send('stomp:unsubscribe', { connectionId, subscriptionId, topic }),
     send: (id: string, data: Request) => ipcRenderer.send('stomp:send', id, data),
   },
 

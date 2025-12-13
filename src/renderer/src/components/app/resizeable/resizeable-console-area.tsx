@@ -11,7 +11,7 @@ function ResizeableConsoleArea({ children }: { children: ReactNode }) {
           {children}
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel collapsible collapsedSize={5} className="min-h-8">
+        <ResizablePanel collapsible className="min-h-8">
           <SocketMessageConsole />
         </ResizablePanel>
       </ResizablePanelGroup>

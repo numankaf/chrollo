@@ -16,6 +16,7 @@ export const SOCKET_MESSAGE_TYPE = {
 export type SocketMessageType = (typeof SOCKET_MESSAGE_TYPE)[keyof typeof SOCKET_MESSAGE_TYPE];
 
 export type SocketMessage = {
+  id: number;
   connectionId: string;
   connectionType: ConnectionType;
   type: SocketMessageType;

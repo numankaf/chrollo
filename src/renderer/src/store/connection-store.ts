@@ -1,7 +1,6 @@
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
-import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 
 import { CONNECTION_TYPE, type Connection } from '@/types/connection';
@@ -34,7 +33,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
   },
 
   createConnection: (connection) => {
-    const newConnection = { ...connection, id: nanoid(8) };
+    const newConnection = { ...connection, id: nanoid() };
     set((state) => ({
       connections: [...state.connections, newConnection],
     }));
@@ -101,7 +100,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     const newConnection = {
       ...original,
-      id: nanoid(8),
+      id: nanoid(),
       name: `${original.name} (Copy)`,
     } as Connection;
 

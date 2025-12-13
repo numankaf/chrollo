@@ -13,7 +13,7 @@ import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 const PROPERTY_KEY = 'subscriptions';
 
 function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription[] }) {
-  const { activeTab } = useActiveItem();
+  const { activeConnection } = useActiveItem();
   const form = useFormContext();
 
   const columns = useMemo(
@@ -23,6 +23,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
         header: 'Enabled',
         size: 40,
         cell: ({ row, column, table }) => {
+          const subscriptionId = row.original.id;
           const value = row.original.enabled;
           const topic = row.original.topic;
           const disabled = !topic?.trim();
@@ -34,11 +35,11 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
                 disabled={disabled}
                 onCheckedChange={(checked) => {
                   table.options.meta?.updateData(row.index, column.id, checked);
-                  if (activeTab) {
+                  if (activeConnection) {
                     if (checked) {
-                      window.api.stomp.subscribe(activeTab.id, topic);
+                      window.api.stomp.subscribe(activeConnection.id, subscriptionId, topic);
                     } else {
-                      window.api.stomp.unsubscribe(activeTab.id, topic);
+                      window.api.stomp.unsubscribe(activeConnection.id, subscriptionId, topic);
                     }
                   }
                 }}
@@ -83,6 +84,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
         header: '',
         size: 40,
         cell: ({ row, table }) => {
+          const subscriptionId = row.original.id;
           const topic = row.original.topic;
           const disabled = !topic?.trim();
           return (
@@ -94,8 +96,8 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
                 className="w-6 h-6"
                 onClick={() => {
                   table.options.meta?.deleteRow(row.index);
-                  if (activeTab && !disabled) {
-                    window.api.stomp.unsubscribe(activeTab.id, topic);
+                  if (activeConnection && !disabled) {
+                    window.api.stomp.unsubscribe(activeConnection.id, subscriptionId, topic);
                   }
                 }}
               >
@@ -106,7 +108,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
         },
       },
     ],
-    [activeTab]
+    [activeConnection]
   );
 
   const updateData = (rowIndex: number, columnId: keyof StompSubscription, value: unknown) => {
@@ -122,7 +124,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
   };
 
   const addRow = () => {
-    const updated = [...subscriptions, { id: nanoid(8), topic: '', description: '', enabled: false }];
+    const updated = [...subscriptions, { id: nanoid(), topic: '', description: '', enabled: false }];
     form.setValue(PROPERTY_KEY, updated, { shouldDirty: true });
   };
 

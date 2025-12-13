@@ -15,6 +15,9 @@ import {
 } from '@/types/connection';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
 
+let seq = 0;
+const nextSeq = () => ++seq;
+
 const stompClients: Record<string, Client> = {};
 
 export function initStompIpc() {
@@ -71,6 +74,7 @@ export function initStompIpc() {
         timestamp: Date.now(),
       } as ConnectionStatusData);
       const socketConnectedMessage: SocketMessage = {
+        id: nextSeq(),
         connectionId: id,
         connectionType: CONNECTION_TYPE.STOMP,
         type: SOCKET_MESSAGE_TYPE.CONNECTED,
@@ -85,26 +89,32 @@ export function initStompIpc() {
       // ------------------------------
       for (const subscription of subscriptions) {
         if (subscription.enabled) {
-          client.subscribe(subscription.topic, (msg: Message) => {
-            const socketReceivedMessage: SocketMessage = {
-              connectionId: id,
-              connectionType: CONNECTION_TYPE.STOMP,
-              type: SOCKET_MESSAGE_TYPE.RECEIVED,
-              timestamp: Date.now(),
-              data: msg.body,
-              meta: {
-                command: msg.command,
-                headers: msg.headers,
-                isBinaryBody: msg.isBinaryBody,
-                binaryBody: msg.binaryBody,
-              },
-            };
+          client.subscribe(
+            subscription.topic,
+            (msg: Message) => {
+              const socketReceivedMessage: SocketMessage = {
+                id: nextSeq(),
+                connectionId: id,
+                connectionType: CONNECTION_TYPE.STOMP,
+                type: SOCKET_MESSAGE_TYPE.RECEIVED,
+                timestamp: Date.now(),
+                data: msg.body,
+                meta: {
+                  command: msg.command,
+                  headers: msg.headers,
+                  isBinaryBody: msg.isBinaryBody,
+                  binaryBody: msg.binaryBody,
+                },
+              };
 
-            mainWindow.webContents.send('stomp:message', socketReceivedMessage);
-            const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
-            mainWindow.webContents.send('console:log', data);
-          });
+              mainWindow.webContents.send('stomp:message', socketReceivedMessage);
+              const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
+              mainWindow.webContents.send('console:log', data);
+            },
+            { id: subscription.id }
+          );
           const socketSubscribedMessage: SocketMessage = {
+            id: nextSeq(),
             connectionId: id,
             connectionType: CONNECTION_TYPE.STOMP,
             type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
@@ -141,6 +151,7 @@ export function initStompIpc() {
         timestamp: Date.now(),
       } as ConnectionStatusData);
       const socketDisconnectedMessage: SocketMessage = {
+        id: nextSeq(),
         connectionId: id,
         connectionType: CONNECTION_TYPE.STOMP,
         type: SOCKET_MESSAGE_TYPE.DISCONNECTED,
@@ -178,22 +189,41 @@ export function initStompIpc() {
   // ------------------------------
   // SUBSCRIBE
   // ------------------------------
-  ipcMain.on('stomp:subscribe', (_, data: { id: string; topic: string }) => {
-    const client = stompClients[data.id];
+  ipcMain.on('stomp:subscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
+    const { connectionId, subscriptionId, topic } = data;
+    const client = stompClients[connectionId];
     if (client && client.connected && client.active) {
-      client.subscribe(data.topic, (msg: Message) => {
-        mainWindow.webContents.send('stomp:message', {
-          connectionId: data.id,
-          topic: data.topic,
-          body: msg.body,
-        });
-      });
+      client.subscribe(
+        topic,
+        (msg: Message) => {
+          const socketReceivedMessage: SocketMessage = {
+            id: nextSeq(),
+            connectionId: connectionId,
+            connectionType: CONNECTION_TYPE.STOMP,
+            type: SOCKET_MESSAGE_TYPE.RECEIVED,
+            timestamp: Date.now(),
+            data: msg.body,
+            meta: {
+              command: msg.command,
+              headers: msg.headers,
+              isBinaryBody: msg.isBinaryBody,
+              binaryBody: msg.binaryBody,
+            },
+          };
+
+          mainWindow.webContents.send('stomp:message', socketReceivedMessage);
+          const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
+          mainWindow.webContents.send('console:log', data);
+        },
+        { id: subscriptionId }
+      );
       const socketSubscribedMessage: SocketMessage = {
-        connectionId: data.id,
+        id: nextSeq(),
+        connectionId: connectionId,
         connectionType: CONNECTION_TYPE.STOMP,
         type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
         timestamp: Date.now(),
-        data: `Subscribed to ${data.topic}`,
+        data: `Subscribed to ${topic}`,
       };
 
       mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
@@ -203,16 +233,18 @@ export function initStompIpc() {
   // ------------------------------
   // UNSUBSCRIBE
   // ------------------------------
-  ipcMain.on('stomp:unsubscribe', (_, data: { id: string; topic: string }) => {
-    const client = stompClients[data.id];
+  ipcMain.on('stomp:unsubscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
+    const { connectionId, subscriptionId, topic } = data;
+    const client = stompClients[connectionId];
     if (client) {
-      client.unsubscribe(data.topic);
+      client.unsubscribe(subscriptionId);
       const socketUnsubscribedMessage: SocketMessage = {
-        connectionId: data.id,
+        id: nextSeq(),
+        connectionId: connectionId,
         connectionType: CONNECTION_TYPE.STOMP,
         type: SOCKET_MESSAGE_TYPE.UNSUBSCRIBED,
         timestamp: Date.now(),
-        data: `Unsubscribed from ${data.topic}`,
+        data: `Unsubscribed from ${topic}`,
       };
 
       mainWindow.webContents.send('stomp:message', socketUnsubscribedMessage);
@@ -237,6 +269,7 @@ export function initStompIpc() {
       });
       mainWindow.webContents.send('console:log', ` [${id}] Message sent: ${body}`);
       const socketSentMessage: SocketMessage = {
+        id: nextSeq(),
         connectionId: id,
         connectionType: CONNECTION_TYPE.STOMP,
         type: SOCKET_MESSAGE_TYPE.SENT,

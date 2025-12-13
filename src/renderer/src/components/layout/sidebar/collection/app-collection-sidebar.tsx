@@ -62,7 +62,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
     }
     try {
       const folderPayload: Folder = {
-        id: nanoid(8),
+        id: nanoid(),
         name: values.name,
         workspaceId: activeWorkspaceId,
         parentId: item.id,
@@ -83,7 +83,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
     }
     try {
       const requestPayload: Request = {
-        id: nanoid(8),
+        id: nanoid(),
         name: values.name,
         workspaceId: activeWorkspaceId,
         parentId: item.id,
@@ -313,7 +313,7 @@ export default function CollectionSidebar() {
     }
     try {
       const collectionPayload: Collection = {
-        id: nanoid(8),
+        id: nanoid(),
         name: values.name,
         workspaceId: activeWorkspaceId,
         ...COLLECTION_DEFAULT_VALUES,

@@ -8,6 +8,6 @@ export function useConnectionMessages(connectionId: string | undefined) {
 
   const list = messageMap[connectionId] ?? [];
 
-  // Sort by timestamp (newest → oldest)
-  return [...list].sort((a, b) => b.timestamp - a.timestamp);
+  // Sort by id
+  return [...list].sort((a, b) => b.id - a.id);
 }

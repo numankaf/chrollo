@@ -3,7 +3,6 @@ import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Plus, X } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
@@ -71,7 +70,7 @@ function AppTabs() {
   const handleAddTab = () => {
     if (activeWorkspaceId) {
       addTab({
-        id: nanoid(8),
+        id: nanoid(),
         workspaceId: activeWorkspaceId,
         modelType: BASE_MODEL_TYPE.COLLECTION,
       });
