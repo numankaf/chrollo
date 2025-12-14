@@ -9,6 +9,8 @@ on:
 jobs:
   release:
     runs-on: ${{ matrix.os }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
