@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { TIME_FORMAT_HH_MM_SS_MMM } from '@/constants/date-constants';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useConnectionStatusStore from '@/store/connection-status-store';
@@ -7,6 +7,7 @@ import { getConnectionButtonVariant } from '@/utils/connection-util';
 import { formatCode } from '@/utils/editor-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -104,12 +105,12 @@ function ConsoleMessage({ message }: { message: SocketMessage }) {
         <div className="p-2.5 flex w-full items-center gap-4 ">
           <SocketConsoleMessageIcon messageType={message.type} size={16} />
           <span className="flex-1 truncate w-0">{message.data}</span>
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground min-w-20 text-end">
             {new Date(message.timestamp).toLocaleTimeString([], TIME_FORMAT_HH_MM_SS_MMM)}
           </span>
         </div>
       </AccordionTrigger>
-      <AccordionContent>
+      <AccordionContent className="px-3">
         <ConsoleMessageContent message={message} />
       </AccordionContent>
     </AccordionItem>
@@ -132,6 +133,17 @@ function SocketMessageConsole() {
 
   const filteredMessages = applyTextSearch(messages, debouncedSearch, (message) => message.data);
   const { variant } = getConnectionButtonVariant(status);
+
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const virtualizer = useVirtualizer({
+    count: filteredMessages.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 40,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
 
   return (
     <div className="h-full">
@@ -166,15 +178,33 @@ function SocketMessageConsole() {
               Clear Messages
             </Button>
           </header>
-          <ScrollArea style={{ height: 'calc(100% - 4rem)' }}>
-            <Accordion type="multiple" className="w-full max-w-full px-4">
+          <ScrollArea viewportRef={parentRef} style={{ height: 'calc(100% - 4rem)' }}>
+            <Accordion
+              type="multiple"
+              className="w-full max-w-full relative"
+              style={{ height: virtualizer.getTotalSize() }}
+            >
               {messages.length === 0 && <NoSocketMessageFound />}
               {messages.length !== 0 && filteredMessages.length === 0 && (
                 <NoResultsFound searchTerm={debouncedSearch} />
               )}
-              {filteredMessages.map((message) => (
-                <ConsoleMessage key={message.id} message={message} />
-              ))}
+              <div
+                className="px-4 w-full absolute top-0 left-0"
+                style={{
+                  transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
+                }}
+              >
+                {virtualItems.map((virtualRow) => (
+                  <div
+                    className="border-b"
+                    key={virtualRow.key}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                  >
+                    <ConsoleMessage key={virtualRow.index} message={filteredMessages[virtualRow.index]} />
+                  </div>
+                ))}
+              </div>
             </Accordion>
           </ScrollArea>
         </>
