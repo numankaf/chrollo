@@ -97,8 +97,8 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
                 className="w-6 h-6"
                 onClick={() => {
                   table.options.meta?.deleteRow(row.index);
-                  if (activeConnection && !disabled) {
-                    unsubscribeStomp(activeConnection.id, subscriptionId, topic);
+                  if (activeTab && !disabled) {
+                    unsubscribeStomp(activeTab.id, subscriptionId, topic);
                   }
                 }}
               >

@@ -5,6 +5,12 @@ import type { Request } from '@/types/collection';
 import type { StompConnection } from '@/types/connection';
 import { PLUGIN_ID } from '@/types/plugin';
 
+function joinPathWithSlash(prefix: string, path: string) {
+  if (!prefix.endsWith('/')) prefix += '/';
+  if (path.startsWith('/')) path = path.slice(1);
+  return prefix + path;
+}
+
 export class ScopePlatformPlugin implements BaseStompPlugin {
   id = PLUGIN_ID.SCOPE_PLATFORM;
   name = 'SCOPE Platform Plugin';
@@ -63,9 +69,10 @@ export class ScopePlatformPlugin implements BaseStompPlugin {
 
   onPreSend(connectionId: string, request: Request): Request {
     const clientSessionId = this.getClientSessionId(connectionId);
-
+    const destination = joinPathWithSlash(`/app/secure/${this.macros.requestId()}`, request.destination);
     return {
       ...request,
+      destination,
       headers: [
         ...request.headers,
         {

@@ -13,6 +13,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
+import { deepParseJson } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useConnectionMessages } from '@/hooks/socket/use-connection-messages';
@@ -29,6 +30,8 @@ import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-messa
 
 function SentAndReceivedMessageContent({ message }: { message: SocketMessage }) {
   const [bodyType, setBodyType] = useState<RequestBodyType>(getMessageContentType(message.meta?.headers));
+
+  const parsedStringResponse = JSON.stringify(deepParseJson(message.data));
   return (
     <div className="mt-1">
       <div>
@@ -51,7 +54,7 @@ function SentAndReceivedMessageContent({ message }: { message: SocketMessage }) 
         </Select>
       </div>
       <ScrollArea className="mt-1 border rounded-lg" style={{ height: '12rem' }}>
-        <CodeEditor bodyType={bodyType} value={formatCode(bodyType, message.data)} readOnly />
+        <CodeEditor bodyType={bodyType} value={formatCode(bodyType, parsedStringResponse)} readOnly />
       </ScrollArea>
     </div>
   );
