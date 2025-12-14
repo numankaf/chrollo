@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - develop
+    tags:
+      - v*.*.*
 
 jobs:
   build-linux:
@@ -71,7 +73,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scopewsinspector-${{ env.APP_VERSION }}-linux
-          path: dist/
+          path: |
+            dist/*.AppImage
 
   build-mac:
     runs-on: macos-latest
@@ -137,7 +140,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scopewsinspector-${{ env.APP_VERSION }}-mac
-          path: dist/
+          path: |
+            dist/*.dmg
 
   build-windows:
     runs-on: windows-latest
@@ -204,4 +208,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scopewsinspector-${{ env.APP_VERSION }}-win
-          path: dist/
+          path: |
+            dist/*.exe
