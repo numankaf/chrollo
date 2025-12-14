@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from '@/components/common/sidebar';
 
-export function SettingsPanel() {
+export function SettingsPanelContainer() {
   const [settingsItem, setSettingsItem] = useState<SettingsItem>(SETTINGS_NAV_ITEMS[0]);
 
   return (

@@ -1,4 +1,4 @@
-import { SettingsPanel } from '@/features/settings/components/settings-panel';
+import { SettingsPanelContainer } from '@/features/settings/components/settings-panel-container';
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/common/dialog';
 
@@ -12,7 +12,7 @@ function SettingsDialog({ visible, onVisibleChange }: SettingsDialogProps) {
       <DialogContent className="flex flex-col items-start p-0 h-[75vh] min-w-[75vw]">
         <DialogTitle className="sr-only">Settings</DialogTitle>
         <DialogDescription className="sr-only">Customize your settings here.</DialogDescription>
-        <SettingsPanel />
+        <SettingsPanelContainer />
       </DialogContent>
     </Dialog>
   );

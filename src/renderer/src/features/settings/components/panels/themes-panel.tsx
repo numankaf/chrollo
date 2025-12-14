@@ -33,7 +33,7 @@ function ThemePresetItem({ themePreset }: { themePreset: ThemePreset }) {
   );
 }
 
-function ThemeSettings() {
+function ThemesPanel() {
   const { setTheme, resolvedTheme: theme } = useTheme();
 
   const { activeTheme } = use(ActiveThemeProviderContext);
@@ -75,4 +75,4 @@ function ThemeSettings() {
   );
 }
 
-export default ThemeSettings;
+export default ThemesPanel;
