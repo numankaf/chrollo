@@ -10,7 +10,7 @@ import WorkspaceView from '@/features/workspaces/view/workspace-view';
 import AppLayout from '@/layout/app-layout';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 
-import './App.css';
+import './app.css';
 
 function App() {
   useEffect(() => {
