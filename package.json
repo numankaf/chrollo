@@ -17,9 +17,9 @@
     "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "electron-builder --dir",
-    "build:win": "electron-builder --win",
-    "build:mac": " electron-builder --mac",
-    "build:linux": "electron-builder --linux"
+    "build:win": "electron-builder --win --publish never",
+    "build:mac": " electron-builder --mac --publish never",
+    "build:linux": "electron-builder --linux --publish never"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.4",
