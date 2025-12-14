@@ -1,5 +1,6 @@
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { disconnectStomp } from '@/utils/stomp-util';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
@@ -76,7 +77,7 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
     if (connectionToDelete) {
       switch (connectionToDelete.connectionType) {
         case CONNECTION_TYPE.STOMP: {
-          window.api.stomp.disconnect(id);
+          disconnectStomp(id);
           break;
         }
         default: {

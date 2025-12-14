@@ -1,4 +1,5 @@
 import useConnectionStatusStore from '@/store/connection-status-store';
+import { sendStompMessage } from '@/utils/stomp-util';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -28,7 +29,7 @@ export function useConnection() {
 
     switch (activeConnection.connectionType) {
       case CONNECTION_TYPE.STOMP: {
-        window.api.stomp.send(activeConnection.id, request);
+        sendStompMessage(activeConnection.id, request);
         return;
       }
       default:

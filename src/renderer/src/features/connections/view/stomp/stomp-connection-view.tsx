@@ -6,6 +6,7 @@ import StompHeaders from '@/features/connections/components/stomp/stomp-headers'
 import StompSettings from '@/features/connections/components/stomp/stomp-settings';
 import StompSubsciptions from '@/features/connections/components/stomp/stomp-subscriptions';
 import useConnectionStore from '@/store/connection-store';
+import { connectStomp, disconnectStomp } from '@/utils/stomp-util';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDownIcon } from 'lucide-react';
 import { Controller, FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
@@ -116,10 +117,10 @@ function StompConnectionView() {
               connection={connection}
               onConnect={() =>
                 form.handleSubmit((data) => {
-                  window.api.stomp.connect(data);
+                  connectStomp(data as StompConnection);
                 })()
               }
-              onDisconnect={(conenctionId: string) => window.api.stomp.disconnect(conenctionId)}
+              onDisconnect={(conenctionId: string) => disconnectStomp(conenctionId)}
             />
           </div>
           <Tabs

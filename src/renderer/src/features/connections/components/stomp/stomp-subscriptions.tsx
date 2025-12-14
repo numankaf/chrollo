@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { subscribeStomp, unsubscribeStomp } from '@/utils/stomp-util';
 import { Plus, Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useFormContext } from 'react-hook-form';
@@ -37,9 +38,9 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
                   table.options.meta?.updateData(row.index, column.id, checked);
                   if (activeConnection) {
                     if (checked) {
-                      window.api.stomp.subscribe(activeConnection.id, subscriptionId, topic);
+                      subscribeStomp(activeConnection.id, subscriptionId, topic);
                     } else {
-                      window.api.stomp.unsubscribe(activeConnection.id, subscriptionId, topic);
+                      unsubscribeStomp(activeConnection.id, subscriptionId, topic);
                     }
                   }
                 }}
@@ -97,7 +98,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
                 onClick={() => {
                   table.options.meta?.deleteRow(row.index);
                   if (activeConnection && !disabled) {
-                    window.api.stomp.unsubscribe(activeConnection.id, subscriptionId, topic);
+                    unsubscribeStomp(activeConnection.id, subscriptionId, topic);
                   }
                 }}
               >
