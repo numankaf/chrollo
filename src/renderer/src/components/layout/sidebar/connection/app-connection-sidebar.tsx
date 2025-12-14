@@ -24,6 +24,7 @@ import {
   SidebarMenuButton,
 } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
+import NoConnectionFound from '@/components/app/empty/no-connection-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 import { ConnectionIcon } from '@/components/icon/connection-icon';
 
@@ -118,7 +119,10 @@ function ConnectionSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredConnections.length === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
+              {connections.length === 0 && <NoConnectionFound />}
+              {connections.length !== 0 && filteredConnections.length === 0 && (
+                <NoResultsFound searchTerm={debouncedSearch} />
+              )}
               {filteredConnections.map((item) => (
                 <SidebarMenuButton
                   size="sm"

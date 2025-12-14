@@ -30,6 +30,7 @@ import { SearchBar } from '@/components/common/search-input';
 import { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
+import NoCollectionFound from '@/components/app/empty/no-collection-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 
@@ -274,17 +275,18 @@ export default function CollectionSidebar() {
   const debouncedSearch = useDebouncedValue(search, 300);
   const [count, setCount] = useState(0);
 
+  const collectionItemMap = useWorkspaceCollectionItemMap();
+
   const updateCount = useEffectEvent((c: number) => {
     setCount(c);
   });
 
   useEffect(() => {
     updateCount(tree?.visibleNodes.length ?? 0);
-  }, [tree, debouncedSearch]);
+  }, [tree, collectionItemMap, debouncedSearch]);
 
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
-  const collectionItemMap = useWorkspaceCollectionItemMap();
   const roots = useMemo(() => {
     if (!collectionItemMap || collectionItemMap.size === 0) {
       return [];
@@ -373,7 +375,8 @@ export default function CollectionSidebar() {
       </SidebarHeader>
       <SidebarGroup className="p-1! h-[calc(100%-3rem)]" ref={ref}>
         <SidebarGroupContent>
-          {count === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
+          {roots.length === 0 && <NoCollectionFound />}
+          {roots.length !== 0 && count === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
           <Tree<CollectionItem>
             ref={(t) => setTree(t)}
             data={roots}

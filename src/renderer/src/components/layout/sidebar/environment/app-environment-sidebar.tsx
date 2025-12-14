@@ -28,6 +28,7 @@ import {
 } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
+import NoEnvironmentFound from '@/components/app/empty/no-environment-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 
 function EnvironmentsSidebar() {
@@ -164,7 +165,10 @@ function EnvironmentsSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredEnvironments.length === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
+              {environments.length === 0 && <NoEnvironmentFound />}
+              {environments.length !== 0 && filteredEnvironments.length === 0 && (
+                <NoResultsFound searchTerm={debouncedSearch} />
+              )}
               {filteredEnvironments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
