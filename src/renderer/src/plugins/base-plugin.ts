@@ -12,9 +12,9 @@ export interface BasePlugin {
 export interface BaseStompPlugin extends BasePlugin {
   onPreConnect?(connection: StompConnection): StompConnection;
 
-  onPreSubscribe?(subscriptionId: string, topic: string): { id: string; topic: string }[];
+  onPreSubscribe?(clientSessionId: string, subscriptionId: string, topic: string): { id: string; topic: string }[];
 
-  onPreSend?(request: Request): Request;
+  onPreSend?(clientSessionId: string, request: Request): Request;
 
-  onReceiveMessage?(message: SocketMessage): void;
+  onReceiveMessage?(clientSessionId: string, message: SocketMessage): void;
 }

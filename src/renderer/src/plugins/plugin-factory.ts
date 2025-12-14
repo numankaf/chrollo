@@ -1,5 +1,5 @@
 import type { BasePlugin } from '@/plugins/base-plugin';
-import { ScopePlatformPlugin } from '@/plugins/scope-platform-plugin';
+import { ScopePlatformPlugin } from '@/plugins/stomp/scope-platform-plugin';
 
 import { PLUGIN_ID, type PluginId } from '@/types/plugin';
 

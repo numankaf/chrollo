@@ -14,7 +14,7 @@ import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 const PROPERTY_KEY = 'subscriptions';
 
 function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription[] }) {
-  const { activeConnection } = useActiveItem();
+  const { activeTab } = useActiveItem();
   const form = useFormContext();
 
   const columns = useMemo(
@@ -36,11 +36,11 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
                 disabled={disabled}
                 onCheckedChange={(checked) => {
                   table.options.meta?.updateData(row.index, column.id, checked);
-                  if (activeConnection) {
+                  if (activeTab) {
                     if (checked) {
-                      subscribeStomp(activeConnection.id, subscriptionId, topic);
+                      subscribeStomp(activeTab.id, subscriptionId, topic);
                     } else {
-                      unsubscribeStomp(activeConnection.id, subscriptionId, topic);
+                      unsubscribeStomp(activeTab.id, subscriptionId, topic);
                     }
                   }
                 }}
@@ -109,7 +109,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
         },
       },
     ],
-    [activeConnection]
+    [activeTab]
   );
 
   const updateData = (rowIndex: number, columnId: keyof StompSubscription, value: unknown) => {

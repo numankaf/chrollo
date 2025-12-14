@@ -1,40 +1,30 @@
-import type { BaseStompPlugin } from '@/plugins/base-plugin';
-import { createPlugin } from '@/plugins/plugin-factory';
-import { pluginStore } from '@/plugins/plugin-store';
-import { useAppConfigStore } from '@/store/app-config-store';
+import { getActiveStompPlugin } from '@/plugins/plugin-runtime';
 
 import type { Request } from '@/types/collection';
 import type { StompConnection, StompSubscription } from '@/types/connection';
 
 export function connectStomp(connection: StompConnection) {
-  const { subscriptions } = connection;
-  const activePluginId = useAppConfigStore.getState().activePlugin;
-
+  const plugin = getActiveStompPlugin();
   let constructedConnection = connection;
 
-  if (activePluginId) {
-    let plugin = pluginStore.get(connection.id) as BaseStompPlugin | undefined;
+  if (plugin?.onPreConnect) {
+    constructedConnection = plugin.onPreConnect(constructedConnection);
+  }
 
-    if (!plugin) {
-      plugin = createPlugin(activePluginId) as BaseStompPlugin;
-      pluginStore.set(connection.id, plugin);
-    }
-
-    if (plugin.onPreConnect) {
-      constructedConnection = plugin.onPreConnect(connection);
-    }
-
+  if (plugin?.onPreSubscribe) {
     const newSubscriptions: StompSubscription[] = [];
 
-    if (plugin.onPreSubscribe) {
-      for (const subscription of subscriptions) {
-        const pluginSubsciptions = plugin.onPreSubscribe(subscription.id, subscription.topic);
-        for (const pluginSubscription of pluginSubsciptions) {
-          newSubscriptions.push({ ...subscription, id: pluginSubscription.id, topic: pluginSubscription.topic });
-        }
+    for (const sub of connection.subscriptions) {
+      const expanded = plugin.onPreSubscribe(connection.id, sub.id, sub.topic);
+      for (const e of expanded) {
+        newSubscriptions.push({ ...sub, id: e.id, topic: e.topic });
       }
     }
-    constructedConnection.subscriptions = newSubscriptions;
+
+    constructedConnection = {
+      ...constructedConnection,
+      subscriptions: newSubscriptions,
+    };
   }
 
   window.api.stomp.connect(constructedConnection);
@@ -45,44 +35,32 @@ export function disconnectStomp(connectionId: string) {
 }
 
 export function subscribeStomp(connectionId: string, subscriptionId: string, topic: string) {
-  const activePluginId = useAppConfigStore.getState().activePlugin;
-  const plugin = activePluginId ? (pluginStore.get(connectionId) as BaseStompPlugin | undefined) : undefined;
+  const plugin = getActiveStompPlugin();
 
-  let subscriptions: { id: string; topic: string }[] = [{ id: subscriptionId, topic }];
+  const subs = plugin?.onPreSubscribe
+    ? plugin.onPreSubscribe(connectionId, subscriptionId, topic)
+    : [{ id: subscriptionId, topic }];
 
-  if (plugin?.onPreSubscribe) {
-    subscriptions = plugin.onPreSubscribe(subscriptionId, topic);
-  }
-
-  for (const sub of subscriptions) {
+  for (const sub of subs) {
     window.api.stomp.subscribe(connectionId, sub.id, sub.topic);
   }
 }
 
 export function unsubscribeStomp(connectionId: string, subscriptionId: string, topic: string) {
-  const activePluginId = useAppConfigStore.getState().activePlugin;
-  const plugin = activePluginId ? (pluginStore.get(connectionId) as BaseStompPlugin | undefined) : undefined;
+  const plugin = getActiveStompPlugin();
 
-  let subscriptions: { id: string; topic: string }[] = [{ id: subscriptionId, topic }];
+  const subs = plugin?.onPreSubscribe
+    ? plugin.onPreSubscribe(connectionId, subscriptionId, topic)
+    : [{ id: subscriptionId, topic }];
 
-  if (plugin?.onPreSubscribe) {
-    subscriptions = plugin.onPreSubscribe(subscriptionId, topic);
-  }
-
-  for (const sub of subscriptions) {
+  for (const sub of subs) {
     window.api.stomp.unsubscribe(connectionId, sub.id, sub.topic);
   }
 }
 
 export function sendStompMessage(connectionId: string, request: Request) {
-  const activePluginId = useAppConfigStore.getState().activePlugin;
-  const plugin = activePluginId ? (pluginStore.get(connectionId) as BaseStompPlugin) : undefined;
-
-  let finalRequest = request;
-
-  if (plugin && plugin.onPreSend) {
-    finalRequest = plugin.onPreSend(request);
-  }
+  const plugin = getActiveStompPlugin();
+  const finalRequest = plugin?.onPreSend ? plugin.onPreSend(connectionId, request) : request;
 
   window.api.stomp.send(connectionId, finalRequest);
 }
