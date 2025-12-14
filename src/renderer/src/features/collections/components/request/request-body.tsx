@@ -1,5 +1,5 @@
 import { formatCode } from '@/utils/editor-util';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import { REQUEST_BODY_TYPE } from '@/types/collection';
 import { Button } from '@/components/common/button';
@@ -36,7 +36,11 @@ function BodyTypeSelector() {
 
 function RequestBody() {
   const form = useFormContext();
-  const bodyType = form.getValues(BODY_TYPE_PROPERTY_KEY);
+
+  const bodyType = useWatch({
+    control: form.control,
+    name: BODY_TYPE_PROPERTY_KEY,
+  });
 
   const formatRequestData = () => {
     const data = form.getValues(BODY_DATA_PROPERTY_KEY);
