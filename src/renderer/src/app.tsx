@@ -6,7 +6,8 @@ import StompConnectionView from '@/features/connections/view/stomp/stomp-connect
 import EnvironmentView from '@/features/environments/view/environment-view';
 import HistoryView from '@/features/history/view/history-view';
 import HomeView from '@/features/home/view/home-view';
-import WorkspaceView from '@/features/workspaces/view/workspace-view';
+import EmptyView from '@/features/workspaces/empty/view/empty-view';
+import WorkspaceView from '@/features/workspaces/workspace/view/workspace-view';
 import AppLayout from '@/layout/app-layout';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 
@@ -33,6 +34,10 @@ function App() {
         {
           path: '/',
           element: <HomeView />,
+        },
+        {
+          path: '/empty',
+          element: <EmptyView />,
         },
         {
           path: '/workspace/:id',
@@ -66,7 +71,7 @@ function App() {
     },
     {
       path: '*',
-      element: <Navigate to="/" replace={true} />,
+      element: <Navigate to="/empty" replace={true} />,
     },
   ]);
   return <RouterProvider router={router} />;

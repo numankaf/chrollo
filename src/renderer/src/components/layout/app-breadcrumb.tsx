@@ -40,7 +40,7 @@ function AppBreadcrumb() {
         </Breadcrumb>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      <SaveItemButton />
+      {activeTab && <SaveItemButton />}
     </div>
   );
 }
