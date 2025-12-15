@@ -1,4 +1,13 @@
-import { ArrowDownFromLine, ArrowUpFromLine, Bell, BellOff, CircleCheck, CircleX } from 'lucide-react';
+import {
+  ArrowDownFromLine,
+  ArrowUpFromLine,
+  Bell,
+  BellOff,
+  CircleCheck,
+  CircleX,
+  Info,
+  TriangleAlert,
+} from 'lucide-react';
 
 import type { IconProps } from '@/types/common';
 import { SOCKET_MESSAGE_TYPE, type SocketMessageType } from '@/types/socket';
@@ -17,10 +26,16 @@ export function SocketConsoleMessageIcon({ messageType, className, ...props }: S
       return <ArrowDownFromLine className={cn('bg-sky-600/10 text-sky-600 rounded-xs', className)} {...props} />;
 
     case SOCKET_MESSAGE_TYPE.CONNECTED:
-      return <CircleCheck className={cn(' text-green-600', className)} {...props} />;
+      return <CircleCheck className={cn('text-green-600', className)} {...props} />;
+
+    case SOCKET_MESSAGE_TYPE.ERROR:
+      return <TriangleAlert className={cn('text-yellow-600', className)} {...props} />;
+
+    case SOCKET_MESSAGE_TYPE.EVENT:
+      return <Info className={cn('text-blue-600', className)} {...props} />;
 
     case SOCKET_MESSAGE_TYPE.DISCONNECTED:
-      return <CircleX className={cn(' text-destructive', className)} {...props} />;
+      return <CircleX className={cn('text-destructive', className)} {...props} />;
 
     case SOCKET_MESSAGE_TYPE.SUBSCRIBED:
       return <Bell className={cn('text-indigo-500', className)} {...props} />;

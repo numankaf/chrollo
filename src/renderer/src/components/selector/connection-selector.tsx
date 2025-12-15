@@ -36,7 +36,6 @@ function ConnectionSelector() {
   const filteredConnections = applyTextSearch(connections, search, (c) => c.name);
 
   const { variant } = getConnectionButtonVariant(status);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

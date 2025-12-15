@@ -5,6 +5,7 @@ import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection, type WsUrlScheme 
 
 const STOMP_VALIDATION_SCHEMA = z.object({
   id: z.string(),
+  name: z.string(),
   prefix: z.enum(Object.values(WS_URL_SCHEME) as [WsUrlScheme, ...WsUrlScheme[]]),
   url: z.string().min(1, 'URL is required.'),
   settings: z.object({

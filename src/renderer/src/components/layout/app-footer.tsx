@@ -20,7 +20,14 @@ function Footer() {
           <CircleCheck />
           Online
         </Button>
-        <Button variant="ghost" size="xs" className="h-full">
+        <Button
+          variant="ghost"
+          size="xs"
+          className="h-full"
+          onClick={() => {
+            window.api.devtools.toggleDevTools();
+          }}
+        >
           <SquareChevronRight />
           Console
         </Button>

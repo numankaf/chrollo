@@ -54,9 +54,7 @@ export interface StompConnection extends Connection {
 export const CONNECTION_STATUS = {
   CONNECTED: 'connected',
   DISCONNECTED: 'disconnected',
-  ERROR: 'error',
   CLOSED: 'closed',
-  DEACTIVATED: 'deactivated',
 } as const;
 
 export type ConnectionStatus = (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];

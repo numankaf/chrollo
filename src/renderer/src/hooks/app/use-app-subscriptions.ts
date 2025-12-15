@@ -25,7 +25,6 @@ export function useAppSubscriptions() {
 
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
       useSocketMessageStatusStore.getState().addMessage(data);
-      console.log(data);
     });
 
     const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {

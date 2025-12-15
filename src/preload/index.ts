@@ -15,6 +15,10 @@ interface Window {
 declare const window: Window & typeof globalThis;
 
 const api = {
+  devtools: {
+    toggleDevTools: () => ipcRenderer.send('devtools:toggle'),
+  },
+
   view: {
     minimize: () => ipcRenderer.send('view:minimize'),
     maximize: () => ipcRenderer.send('view:maximize'),

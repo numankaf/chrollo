@@ -9,6 +9,9 @@ import type { Workspace, WorkspaceFile } from '@/types/workspace';
 declare global {
   interface Window {
     api: {
+      devtools: {
+        toggleDevTools: () => void;
+      };
       view: {
         minimize: () => void;
         maximize: () => void;

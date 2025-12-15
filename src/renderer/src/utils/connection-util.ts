@@ -8,18 +8,12 @@ export function getConnectionButtonVariant(status: ConnectionStatus | undefined)
       return {
         variant: 'success-bordered-ghost',
       };
-    case CONNECTION_STATUS.CLOSED:
-    case CONNECTION_STATUS.DISCONNECTED: {
+    case CONNECTION_STATUS.CLOSED: {
       return {
         variant: 'error-bordered-ghost',
       };
     }
-    case CONNECTION_STATUS.ERROR:
-      return {
-        variant: 'warn-bordered-ghost',
-      };
-
-    case CONNECTION_STATUS.DEACTIVATED:
+    case CONNECTION_STATUS.DISCONNECTED:
     default:
       return {
         variant: 'outline',

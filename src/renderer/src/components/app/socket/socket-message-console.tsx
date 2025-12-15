@@ -66,6 +66,17 @@ function ConsoleMessageContent({ message }: { message: SocketMessage }) {
     case SOCKET_MESSAGE_TYPE.RECEIVED:
       return <SentAndReceivedMessageContent message={message} />;
 
+    case SOCKET_MESSAGE_TYPE.EVENT:
+      return (
+        <ScrollArea className="mt-1 border rounded-lg" style={{ height: '12rem' }}>
+          <CodeEditor
+            bodyType={REQUEST_BODY_TYPE.JSON}
+            value={formatCode(REQUEST_BODY_TYPE.JSON, message.data)}
+            readOnly
+          />
+        </ScrollArea>
+      );
+
     case SOCKET_MESSAGE_TYPE.SUBSCRIBED:
       return (
         <div className="m-2">
@@ -106,7 +117,7 @@ function ConsoleMessage({ message }: { message: SocketMessage }) {
     <AccordionItem value={message.id.toString()}>
       <AccordionTrigger className="cursor-pointer rounded-xs hover:bg-secondary hover:no-underline p-0 px-2 [&>svg]:h-full">
         <div className="p-2.5 flex w-full items-center gap-4 ">
-          <SocketConsoleMessageIcon messageType={message.type} size={16} />
+          <SocketConsoleMessageIcon messageType={message.type} size={18} />
           <span className="flex-1 truncate w-0">{message.data}</span>
           <span className="text-muted-foreground min-w-20 text-end">
             {new Date(message.timestamp).toLocaleTimeString([], TIME_FORMAT_HH_MM_SS_MMM)}

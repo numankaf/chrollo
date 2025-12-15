@@ -99,6 +99,17 @@ app.whenReady().then(() => {
     if (win) win.reload();
   });
 
+  ipcMain.on('devtools:toggle', (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+
+    if (win.webContents.isDevToolsOpened()) {
+      win.webContents.closeDevTools();
+    } else {
+      win.webContents.openDevTools({ mode: 'detach' });
+    }
+  });
+
   initStompIpc();
   initWorkspaceIpc();
   initConnectionIpc();
