@@ -1,4 +1,5 @@
 import { getMainWindow } from '@/main/index';
+import { stripAllWhitespace } from '@/main/utils/common-util';
 import { CONTENT_TYPE_MAP, isJsonContentType } from '@/main/utils/message-util';
 import { Client, type IFrame, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
@@ -34,9 +35,11 @@ export function initStompIpc() {
       delete stompClients[id];
     }
 
-    const headers = connectHeaders.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+    const headers = connectHeaders
+      .filter((h) => h.enabled)
+      .reduce((acc, h) => ({ ...acc, [h.key]: h.value.trim() }), {});
 
-    const connectionUrl = prefix + url;
+    const connectionUrl = stripAllWhitespace(prefix + url);
 
     let socketFactory: () => WebSocket | InstanceType<typeof SockJS>;
     switch (prefix) {
@@ -89,7 +92,7 @@ export function initStompIpc() {
       for (const subscription of subscriptions) {
         if (subscription.enabled) {
           client.subscribe(
-            subscription.topic,
+            subscription.topic.trim(),
             (msg: Message) => {
               const socketReceivedMessage: SocketMessage = {
                 id: nextSeq(),
@@ -120,7 +123,7 @@ export function initStompIpc() {
             timestamp: Date.now(),
             data: `Subscribed to ${subscription.topic}`,
             meta: {
-              headers: { id: subscription.id, destination: subscription.topic },
+              headers: { id: subscription.id, destination: subscription.topic.trim() },
             },
           };
 
@@ -194,7 +197,7 @@ export function initStompIpc() {
     const client = stompClients[connectionId];
     if (client && client.connected && client.active) {
       client.subscribe(
-        topic,
+        topic.trim(),
         (msg: Message) => {
           const socketReceivedMessage: SocketMessage = {
             id: nextSeq(),
@@ -225,7 +228,7 @@ export function initStompIpc() {
         timestamp: Date.now(),
         data: `Subscribed to ${topic}`,
         meta: {
-          headers: { id: subscriptionId, destination: topic },
+          headers: { id: subscriptionId, destination: topic.trim() },
         },
       };
 
@@ -266,10 +269,9 @@ export function initStompIpc() {
     const payload = body.data;
 
     const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
-
     if (client && client.connected) {
       client.publish({
-        destination: destination,
+        destination: destination.trim(),
         body: payload,
         headers: requestHeaders,
       });

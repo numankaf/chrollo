@@ -29,10 +29,10 @@ export function SocketConsoleMessageIcon({ messageType, className, ...props }: S
       return <CircleCheck className={cn('text-green-600', className)} {...props} />;
 
     case SOCKET_MESSAGE_TYPE.ERROR:
-      return <TriangleAlert className={cn('text-yellow-600', className)} {...props} />;
+      return <TriangleAlert className={cn('text-orange-300', className)} {...props} />;
 
     case SOCKET_MESSAGE_TYPE.EVENT:
-      return <Info className={cn('text-blue-600', className)} {...props} />;
+      return <Info className={cn('text-zinc-600', className)} {...props} />;
 
     case SOCKET_MESSAGE_TYPE.DISCONNECTED:
       return <CircleX className={cn('text-destructive', className)} {...props} />;
