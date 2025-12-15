@@ -1,5 +1,5 @@
-appId: com.scopewsinspector.app
-productName: ScopeWsInspector
+appId: com.chrollo.app
+productName: Chrollo
 directories:
   buildResources: build
 files:
@@ -13,7 +13,7 @@ asarUnpack:
   - resources/**
   - assets/**
 win:
-  executableName: ScopeWsInspector
+  executableName: Chrollo
   icon: build/icon.ico
 nsis:
   oneClick: false

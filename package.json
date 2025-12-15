@@ -1,6 +1,6 @@
 {
-  "name": "scope-ws-inspector",
-  "description": "A Postman-like tool for inspecting, testing, and debugging WebSocket APIs, built specifically for the SCOPE Platform.",
+  "name": "chrollo",
+  "description": "A Postman-like tool for inspecting, testing, and debugging WebSocket APIs.",
   "private": true,
   "version": "0.0.0",
   "type": "module",

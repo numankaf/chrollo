@@ -2,6 +2,7 @@ import { use } from 'react';
 import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
+import AppText from '@/resources/app-text.svg';
 import { Maximize, Minus, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
@@ -22,9 +23,9 @@ function Topbar() {
       className="h-(--sidebar-top-offset) fixed w-full bg-sidebar border flex items-center justify-between"
     >
       <div className="flex items-center gap-2 px-2 flex-1 draggable">
-        <div className="flex items-center gap-2 cursor-pointer hover:text-primary shrink-0">
+        <div className="flex items-center gap-1 cursor-pointer hover:text-primary shrink-0">
           <img className="w-8 h-8 shrink-0" src={AppLogo} alt="App Logo" />
-          <span className="whitespace-nowrap text-lg shrink-0">WS Inspector</span>
+          <img className="h-8 shrink-0" src={AppText} alt="App Text" />
         </div>
 
         {appLoaded && <Button variant="ghost">Home</Button>}
