@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import CollectionView from '@/features/collections/view/collection/collection-view';
 import FolderView from '@/features/collections/view/folder/folder-view';
 import RequestView from '@/features/collections/view/request/request-view';
@@ -14,19 +13,6 @@ import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 import './app.css';
 
 function App() {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F5') {
-        e.preventDefault();
-        window.api?.view?.reload();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
   const router = createHashRouter([
     {
       element: <AppLayout />,

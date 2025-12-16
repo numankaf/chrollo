@@ -1,3 +1,4 @@
+import AboutPanel from '@/features/settings/components/panels/about-panel';
 import PluginsPanel from '@/features/settings/components/panels/plugins-panel';
 import ThemesPanel from '@/features/settings/components/panels/themes-panel';
 import { BrickWallShield, Info, Keyboard, Palette, Plug, Settings } from 'lucide-react';
@@ -11,5 +12,5 @@ export const SETTINGS_NAV_ITEMS: SettingsItem[] = [
   { id: 'themes', name: 'Themes', icon: Palette, component: ThemesPanel },
   { id: 'plugins', name: 'Plugins', icon: Plug, component: PluginsPanel },
   { id: 'certificates', name: 'Certificates', icon: BrickWallShield, component: ComingSoon },
-  { id: 'about', name: 'About', icon: Info, component: ComingSoon },
+  { id: 'about', name: 'About', icon: Info, component: AboutPanel },
 ];

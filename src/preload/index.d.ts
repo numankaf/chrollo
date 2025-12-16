@@ -9,6 +9,14 @@ import type { Workspace, WorkspaceFile } from '@/types/workspace';
 declare global {
   interface Window {
     api: {
+      about: {
+        electron: string;
+        chrome: string;
+        node: string;
+        arch: string;
+        platform: string;
+        osVersion: string;
+      };
       devtools: {
         toggleDevTools: () => void;
       };

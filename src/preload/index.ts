@@ -15,6 +15,14 @@ interface Window {
 declare const window: Window & typeof globalThis;
 
 const api = {
+  about: {
+    electron: process.versions.electron,
+    chrome: process.versions.chrome,
+    node: process.versions.node,
+    arch: process.arch,
+    platform: process.platform,
+    osVersion: process.getSystemVersion(),
+  },
   devtools: {
     toggleDevTools: () => ipcRenderer.send('devtools:toggle'),
   },

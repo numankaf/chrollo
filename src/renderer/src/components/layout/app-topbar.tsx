@@ -24,7 +24,7 @@ function Topbar() {
       className="h-(--sidebar-top-offset) fixed w-full bg-sidebar border flex items-center justify-between"
     >
       <div className="flex items-center gap-2 px-2 flex-1 draggable">
-        <div className="flex items-center gap-1 cursor-pointer hover:text-primary shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <img className="w-8 h-8 shrink-0" src={AppLogo} alt="App Logo" />
           <img className="h-8 shrink-0" src={AppText} alt="App Text" />
         </div>
