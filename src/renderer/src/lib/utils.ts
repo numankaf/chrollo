@@ -30,3 +30,30 @@ export function deepParseJson<T extends JsonValue>(input: T): T {
   }
   return input;
 }
+
+const IGNORED_KEYS = new Set(['id', 'children', 'modelType', 'createdDate', 'createdBy', 'updatedDate', 'updatedBy']);
+
+type PlainObject = Record<string, unknown>;
+
+function isPlainObject(value: unknown): value is PlainObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function normalizeForCompare<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(normalizeForCompare) as T;
+  }
+
+  if (isPlainObject(value)) {
+    const result: PlainObject = {};
+
+    for (const [key, val] of Object.entries(value)) {
+      if (IGNORED_KEYS.has(key)) continue;
+      result[key] = normalizeForCompare(val);
+    }
+
+    return result as T;
+  }
+
+  return value;
+}

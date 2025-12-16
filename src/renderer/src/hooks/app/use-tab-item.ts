@@ -7,7 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Tab } from '@/types/layout';
 
-export function useTabItem(tab: Tab) {
+export function useTabItem(tab: Tab | null) {
   const { workspaces } = useWorkspaceStore(
     useShallow((state) => ({
       workspaces: state.workspaces,
@@ -32,7 +32,7 @@ export function useTabItem(tab: Tab) {
     }))
   );
 
-  switch (tab.modelType) {
+  switch (tab?.modelType) {
     case BASE_MODEL_TYPE.WORKSPACE:
       return workspaces.find((w) => w.id === tab.id);
 

@@ -6,18 +6,20 @@ import { BASE_MODEL_TYPE } from '@/types/base';
 import type { CollectionItem } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { TabItem } from '@/types/layout';
 
-export const saveHandlers = {
-  [BASE_MODEL_TYPE.CONNECTION]: {
-    get: (id: string) => useConnectionStore.getState().getConnection(id),
-    save: (item: Connection) => useConnectionStore.getState().saveConnection(item),
-  },
-  [BASE_MODEL_TYPE.ENVIRONMENT]: {
-    get: (id: string) => useEnvironmentStore.getState().getEnvironment(id),
-    save: (item: Environment) => useEnvironmentStore.getState().saveEnvironment(item),
-  },
-  [BASE_MODEL_TYPE.COLLECTION]: {
-    get: (id: string) => useCollectionItemStore.getState().collectionItemMap.get(id),
-    save: (item: CollectionItem) => useCollectionItemStore.getState().saveCollectionItem(item),
-  },
-} as const;
+export function saveItem(item: TabItem) {
+  switch (item.modelType) {
+    case BASE_MODEL_TYPE.CONNECTION:
+      return useConnectionStore.getState().saveConnection(item as Connection);
+
+    case BASE_MODEL_TYPE.ENVIRONMENT:
+      return useEnvironmentStore.getState().saveEnvironment(item as Environment);
+
+    case BASE_MODEL_TYPE.COLLECTION:
+      return useCollectionItemStore.getState().saveCollectionItem(item as CollectionItem);
+
+    default:
+      return Promise.resolve(undefined);
+  }
+}

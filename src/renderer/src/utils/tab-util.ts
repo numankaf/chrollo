@@ -75,6 +75,25 @@ export function getTabItem(tab: Tab): TabItem | undefined {
   }
 }
 
+export async function getPersistedTabItem(tab: Tab) {
+  switch (tab.modelType) {
+    case BASE_MODEL_TYPE.WORKSPACE:
+      return window.api.workspace.get(tab.id);
+
+    case BASE_MODEL_TYPE.CONNECTION:
+      return window.api.connection.get(tab.id);
+
+    case BASE_MODEL_TYPE.COLLECTION:
+      return window.api.collection.get(tab.id);
+
+    case BASE_MODEL_TYPE.ENVIRONMENT:
+      return window.api.environment.get(tab.id);
+
+    default:
+      return undefined;
+  }
+}
+
 export function getTabBreadcrumbs(tab: Tab) {
   const getCollectionItemChain = (item: CollectionItem): CollectionItem[] => {
     if (!hasParent(item) || (hasParent(item) && !item.parentId)) return [item];
