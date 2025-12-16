@@ -3,10 +3,11 @@ import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
-import { Maximize, Minus, Search, X } from 'lucide-react';
+import { Minus, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
 import SettingsButton from '@/components/app/button/settings-button';
+import { WindowMaximizeButton } from '@/components/app/button/window-maximize-button';
 import ConnectionSelector from '@/components/selector/connection-selector';
 import WorkspaceSelector from '@/components/selector/workspace-selector';
 
@@ -46,17 +47,15 @@ function Topbar() {
 
       <div className="flex items-center justify-end flex-1 draggable">
         <SettingsButton />
-        <Button variant="ghost" size="icon" onClick={() => window.api.view.minimize()} aria-label="Minimize">
+        <Button variant="ghost" size="icon" onClick={() => window.api.window.minimize()} aria-label="Minimize">
           <Minus />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => window.api.view.maximize()} aria-label="Maximize">
-          <Maximize />
-        </Button>
+        <WindowMaximizeButton />
         <Button
           variant="ghost"
           size="icon"
           className="hover:bg-red-400!"
-          onClick={() => window.api.view.close()}
+          onClick={() => window.api.window.close()}
           aria-label="Close"
         >
           <X />

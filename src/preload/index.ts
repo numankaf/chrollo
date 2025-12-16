@@ -19,11 +19,13 @@ const api = {
     toggleDevTools: () => ipcRenderer.send('devtools:toggle'),
   },
 
-  view: {
-    minimize: () => ipcRenderer.send('view:minimize'),
-    maximize: () => ipcRenderer.send('view:maximize'),
-    close: () => ipcRenderer.send('view:close'),
-    reload: () => ipcRenderer.send('view:reload'),
+  window: {
+    minimize: () => ipcRenderer.send('window:minimize'),
+    maximize: () => ipcRenderer.send('window:maximize'),
+    unmaximize: () => ipcRenderer.send('window:unmaximize'),
+    isMaximized: () => ipcRenderer.invoke('window:isMaximized'),
+    close: () => ipcRenderer.send('window:close'),
+    reload: () => ipcRenderer.send('window:reload'),
   },
 
   stomp: {
@@ -72,6 +74,11 @@ const api = {
 };
 
 const listener = {
+  window: {
+    onMaximizeChange: (callback: (maximized: boolean) => void) => {
+      ipcRenderer.on('window:maximize-changed', (_, value) => callback(value));
+    },
+  },
   stomp: {
     onStatus: (callback: (data: ConnectionStatusData) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);

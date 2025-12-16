@@ -12,9 +12,11 @@ declare global {
       devtools: {
         toggleDevTools: () => void;
       };
-      view: {
+      window: {
         minimize: () => void;
         maximize: () => void;
+        unmaximize: () => void;
+        isMaximized: () => Promise<boolean>;
         close: () => void;
         reload: () => void;
       };
@@ -57,6 +59,9 @@ declare global {
       };
     };
     listener: {
+      window: {
+        onMaximizeChange: (callback: (data: boolean) => void) => () => void;
+      };
       stomp: {
         onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
         onMessage: (callback: (data: SocketMessage) => void) => () => void;

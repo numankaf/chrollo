@@ -73,28 +73,41 @@ app.whenReady().then(() => {
 
   createWindow();
 
-  ipcMain.on('view:minimize', (event) => {
+  ipcMain.on('window:minimize', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.minimize();
   });
 
-  ipcMain.on('view:maximize', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender);
-    if (!win) return;
-
-    if (win.isMaximized()) {
-      win.unmaximize();
-    } else {
-      win.maximize();
+  ipcMain.on('window:maximize', () => {
+    if (!mainWindow.isMaximized()) {
+      mainWindow.maximize();
     }
   });
 
-  ipcMain.on('view:close', (event) => {
+  ipcMain.on('window:unmaximize', () => {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    }
+  });
+
+  ipcMain.handle('window:isMaximized', () => {
+    return mainWindow.isMaximized();
+  });
+
+  mainWindow.on('maximize', () => {
+    mainWindow.webContents.send('window:maximize-changed', true);
+  });
+
+  mainWindow.on('unmaximize', () => {
+    mainWindow.webContents.send('window:maximize-changed', false);
+  });
+
+  ipcMain.on('window:close', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.close();
   });
 
-  ipcMain.on('view:reload', () => {
+  ipcMain.on('window:reload', () => {
     const win = BrowserWindow.getFocusedWindow();
     if (win) win.reload();
   });
