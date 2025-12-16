@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import useTabsStore from '@/store/tab-store';
 import { saveItem } from '@/utils/save-registry-util';
 import { getPersistedTabItem } from '@/utils/tab-util';
 import deepEqual from 'fast-deep-equal';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import { useShallow } from 'zustand/react/shallow';
 
 import type { TabItem } from '@/types/layout';
 import { normalizeForCompare } from '@/lib/utils';
@@ -18,12 +20,19 @@ function SaveItemButton() {
   const [loading, setLoading] = useState(false);
 
   const [persistedItem, setPersistedItem] = useState<TabItem | undefined>(undefined);
-  const [dirty, setDirty] = useState(false);
+
+  const { dirtyBeforeSaveByTab, setDirtyBeforeSaveByTab } = useTabsStore(
+    useShallow((state) => ({
+      dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
+      setDirtyBeforeSaveByTab: state.setDirtyBeforeSaveByTab,
+    }))
+  );
+
+  const dirty = activeTab ? dirtyBeforeSaveByTab[activeTab.id] : false;
 
   useEffect(() => {
     if (!activeTab) {
       setPersistedItem(undefined);
-      setDirty(false);
       return;
     }
 
@@ -45,12 +54,11 @@ function SaveItemButton() {
 
   useEffect(() => {
     if (!item || !persistedItem) {
-      setDirty(false);
       return;
     }
 
-    setDirty(!deepEqual(normalizeForCompare(item), normalizeForCompare(persistedItem)));
-  }, [item, persistedItem]);
+    setDirtyBeforeSaveByTab(item.id, !deepEqual(normalizeForCompare(item), normalizeForCompare(persistedItem)));
+  }, [item, persistedItem, setDirtyBeforeSaveByTab]);
 
   async function save() {
     if (!activeTab || !item) return;

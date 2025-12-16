@@ -31,7 +31,16 @@ export function deepParseJson<T extends JsonValue>(input: T): T {
   return input;
 }
 
-const IGNORED_KEYS = new Set(['id', 'children', 'modelType', 'createdDate', 'createdBy', 'updatedDate', 'updatedBy']);
+const IGNORED_KEYS = new Set([
+  'id',
+  'name',
+  'children',
+  'modelType',
+  'createdDate',
+  'createdBy',
+  'updatedDate',
+  'updatedBy',
+]);
 
 type PlainObject = Record<string, unknown>;
 

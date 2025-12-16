@@ -22,14 +22,17 @@ function AppTabs() {
     }))
   );
 
-  const { addTab, openTab, closeTab } = useTabsStore(
+  const { addTab, openTab, closeTab, dirtyBeforeSaveByTab } = useTabsStore(
     useShallow((state) => ({
       addTab: state.addTab,
       closeTab: state.closeTab,
       openTab: state.openTab,
+      dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
     }))
   );
+
   const { activeTab } = useActiveItem();
+
   const tabs = useWorkspaceTabs();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -91,7 +94,7 @@ function AppTabs() {
             return (
               <div className="h-full flex" key={tab.id} data-tab-id={tab.id}>
                 <div
-                  className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
+                  className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
                     openTab(tab);
@@ -103,7 +106,10 @@ function AppTabs() {
                     }
                   }}
                 >
-                  <TabItemContent tab={tab} />
+                  <div className="flex-1 truncate">
+                    <TabItemContent tab={tab} />
+                  </div>
+                  {dirtyBeforeSaveByTab[tab.id] && <div className="w-1.5 h-1.5 rounded-full bg-accent" />}
                   <Button
                     id="tabs-close"
                     variant="ghost"

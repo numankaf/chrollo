@@ -13,12 +13,23 @@ interface TabsStore {
   addTab: (item: Tab) => Tab;
   openTab: (item: Tab) => Tab;
   closeTab: (id: string) => Tab | null;
+  dirtyBeforeSaveByTab: Record<string, boolean>;
+  setDirtyBeforeSaveByTab: (tabId: string, dirty: boolean) => void;
 }
 
 const useTabsStore = create<TabsStore>()(
   persist(
     (set, get) => ({
       tabs: [],
+      dirtyBeforeSaveByTab: {},
+
+      setDirtyBeforeSaveByTab: (tabId, dirty) =>
+        set((state) => ({
+          dirtyBeforeSaveByTab: {
+            ...state.dirtyBeforeSaveByTab,
+            [tabId]: dirty,
+          },
+        })),
       setTabs: (tabs) => set({ tabs }),
       addTab: (tab) => {
         const activeWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId!;
