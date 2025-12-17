@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
-import { getTabItem } from '@/utils/tab-util';
+import { confirmTabClose, getTabItem } from '@/utils/tab-util';
 import { ChevronDown, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -22,12 +22,12 @@ function TabSelector() {
       updateWorkspaceSelection: state.updateWorkspaceSelection,
     }))
   );
-
-  const { closeTab } = useTabsStore(
+  const { dirtyBeforeSaveByTab } = useTabsStore(
     useShallow((state) => ({
-      closeTab: state.closeTab,
+      dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
     }))
   );
+
   return (
     <Popover
       onOpenChange={(open) => {
@@ -55,12 +55,16 @@ function TabSelector() {
                   size="sm"
                   onClick={() => updateWorkspaceSelection({ activeTabId: tab.id })}
                 >
-                  <TabItemContent tab={tab} />
+                  <div className="flex-1 truncate">
+                    <TabItemContent tab={tab} />
+                  </div>
+                  {dirtyBeforeSaveByTab[tab.id] && <div className="w-1.5 h-1.5 rounded-full bg-accent" />}
+
                   <span
                     className="opacity-0 p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTab(tab.id);
+                      confirmTabClose(tab.id);
                     }}
                   >
                     <X />

@@ -1,16 +1,25 @@
-import type { AlertDialogAction, AlertDialogCancel } from '@radix-ui/react-alert-dialog';
+import type { ReactNode } from 'react';
 import { create } from 'zustand';
+
+import type { AlertDialogAction, AlertDialogCancel } from '@/components/common/alert-dialog';
 
 type ConfirmDialogOptions = {
   header?: string;
   message?: string;
   icon?: React.ReactNode;
-  defaultFocus?: 'accept' | 'cancel';
-  accept?: () => void;
-  reject?: () => void;
-  actionLabel?: string;
-  cancelLabel?: string;
-  actionButtonProps?: React.ComponentProps<typeof AlertDialogAction>;
+
+  defaultFocus?: 'primary' | 'secondary' | 'cancel';
+
+  onPrimaryAction?: () => void;
+  onSecondaryAction?: () => void;
+  onCancel?: () => void;
+
+  primaryLabel?: ReactNode;
+  secondaryLabel?: ReactNode;
+  cancelLabel?: ReactNode;
+
+  primaryButtonProps?: React.ComponentProps<typeof AlertDialogAction>;
+  secondaryButtonProps?: React.ComponentProps<typeof AlertDialogAction>;
   cancelButtonProps?: React.ComponentProps<typeof AlertDialogCancel>;
 };
 

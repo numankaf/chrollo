@@ -1,8 +1,12 @@
 import useCollectionItemStore from '@/store/collection-item-store';
+import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
+import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasParent } from '@/utils/collection-util';
+import { saveItem } from '@/utils/save-registry-util';
+import { toast } from 'sonner';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
@@ -114,5 +118,44 @@ export function getTabBreadcrumbs(tab: Tab) {
     }
     default:
       return [tab];
+  }
+}
+
+export function confirmTabClose(tabId: string) {
+  const tab = useTabsStore.getState().tabs.find((t) => t.id === tabId) ?? null;
+  if (!tab) {
+    useTabsStore.getState().closeTab(tabId);
+    return;
+  }
+  const tabItem = getTabItem(tab);
+  if (!tabItem) {
+    useTabsStore.getState().closeTab(tab.id);
+    return;
+  }
+
+  const dirty = useTabsStore.getState().dirtyBeforeSaveByTab[tab.id];
+
+  if (dirty) {
+    confirmDialog({
+      header: 'Do you want to save?',
+      message: `The tab ${tabItem.name} has unsaved changes.
+                If you close it now, those changes might be lost when you close the app.
+                Save your changes to avoid losing your work.`,
+      primaryLabel: 'Save Changes',
+      onPrimaryAction: async () => {
+        if (!tabItem) return;
+        const savedItem = await saveItem(tabItem);
+        toast.success(`${savedItem?.name} saved.`, { duration: 1000 });
+        useTabsStore.getState().closeTab(tab.id);
+      },
+      primaryButtonProps: { variant: 'default' },
+      secondaryLabel: "Don't Save",
+      onSecondaryAction: () => {
+        useTabsStore.getState().closeTab(tab.id);
+      },
+      cancelLabel: 'Close',
+    });
+  } else {
+    useTabsStore.getState().closeTab(tab.id);
   }
 }

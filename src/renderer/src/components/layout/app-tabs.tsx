@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { confirmTabClose } from '@/utils/tab-util';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
@@ -22,10 +23,9 @@ function AppTabs() {
     }))
   );
 
-  const { addTab, openTab, closeTab, dirtyBeforeSaveByTab } = useTabsStore(
+  const { addTab, openTab, dirtyBeforeSaveByTab } = useTabsStore(
     useShallow((state) => ({
       addTab: state.addTab,
-      closeTab: state.closeTab,
       openTab: state.openTab,
       dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
     }))
@@ -102,7 +102,7 @@ function AppTabs() {
                   onMouseDown={(e) => {
                     if (e.button === 1) {
                       e.preventDefault();
-                      closeTab(tab.id);
+                      confirmTabClose(tab.id);
                     }
                   }}
                 >
@@ -117,7 +117,7 @@ function AppTabs() {
                     size="xs"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTab(tab.id);
+                      confirmTabClose(tab.id);
                     }}
                   >
                     <X size={16} />

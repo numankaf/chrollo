@@ -141,8 +141,8 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
             confirmDialog({
               header: `Delete "${item.name}"`,
               message: `Are you sure you want to delete "${item.name}"?`,
-              actionLabel: 'Delete',
-              accept: () => {
+              primaryLabel: 'Delete',
+              onPrimaryAction: () => {
                 deleteCollectionItem(item.id);
               },
             });

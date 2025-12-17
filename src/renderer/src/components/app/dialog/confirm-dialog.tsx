@@ -14,13 +14,18 @@ import {
 export function ConfirmDialog() {
   const { open, options, close } = useConfirmDialogStore();
 
-  const handleAccept = () => {
-    options?.accept?.();
+  const handlePrimaryClick = () => {
+    options?.onPrimaryAction?.();
     close();
   };
 
-  const handleReject = () => {
-    options?.reject?.();
+  const handleSecondaryClick = () => {
+    options?.onSecondaryAction?.();
+    close();
+  };
+
+  const handleCancelClick = () => {
+    options?.onCancel?.();
     close();
   };
 
@@ -38,13 +43,24 @@ export function ConfirmDialog() {
 
         {options?.icon && <div className="flex items-center gap-2 text-muted-foreground">{options.icon}</div>}
 
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleReject} {...options?.actionButtonProps}>
-            {options?.cancelLabel ?? 'Cancel'}
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={handleAccept} {...options?.cancelButtonProps}>
-            {options?.actionLabel ?? 'Accept'}
-          </AlertDialogAction>
+        <AlertDialogFooter className="justify-between!">
+          <div>
+            {options?.secondaryLabel && (
+              <AlertDialogCancel onClick={handleSecondaryClick} {...options?.secondaryButtonProps}>
+                {options.secondaryLabel}
+              </AlertDialogCancel>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <AlertDialogCancel onClick={handleCancelClick} {...options?.cancelButtonProps}>
+              {options?.cancelLabel ?? 'Cancel'}
+            </AlertDialogCancel>
+
+            <AlertDialogAction onClick={handlePrimaryClick} {...options?.primaryButtonProps}>
+              {options?.primaryLabel ?? 'Accept'}
+            </AlertDialogAction>
+          </div>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
