@@ -1,20 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { type PluginId } from '@/types/plugin';
-
 type AppConfigState = {
-  activeStompPlugin: PluginId | undefined;
-
-  setActiveStompPlugin: (pluginId?: PluginId) => void;
+  applicationSettings: unknown;
+  setApplicationSettings: (settings: unknown) => void;
 };
 
 export const useAppConfigStore = create<AppConfigState>()(
   persist(
     (set) => ({
-      activeStompPlugin: undefined,
+      applicationSettings: undefined,
 
-      setActiveStompPlugin: (pluginId) => set({ activeStompPlugin: pluginId }),
+      setApplicationSettings: (settings) => set({ applicationSettings: settings }),
     }),
     {
       name: 'app-config',

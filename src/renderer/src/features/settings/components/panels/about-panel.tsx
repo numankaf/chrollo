@@ -15,8 +15,7 @@ function AboutPanel() {
           <img className="h-16 shrink-0" src={AppText} alt="App Text" />
         </div>
         <p className="leading-7 text-center">
-          Chrollo is a Postman-like tool designed for inspecting, testing, and debugging WebSocket APIs, featuring
-          built-in plugins developed specifically for the SCOPE Platform.
+          Chrollo is a Postman-like tool designed for inspecting, testing, and debugging WebSocket APIs.
         </p>
 
         <div className="flex flex-col items-center">

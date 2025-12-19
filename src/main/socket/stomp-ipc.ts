@@ -1,4 +1,5 @@
 import { getMainWindow } from '@/main/index';
+import { chrolloEngine } from '@/main/scripts/engine';
 import { stripAllWhitespace } from '@/main/utils/common-util';
 import { CONTENT_TYPE_MAP, isJsonContentType } from '@/main/utils/message-util';
 import { Client, type IFrame, type Message } from '@stomp/stompjs';
@@ -21,6 +22,141 @@ const nextSeq = () => ++seq;
 
 const stompClients: Record<string, Client> = {};
 
+chrolloEngine.load(`
+    chrollo.stomp.onPreConnect(({ connection }) => {
+      const clientSessionId = chrollo.utils.randomId();
+      const key = 'clientSessionId' + '-' + connection.id;
+      chrollo.variables.set(key, clientSessionId);
+      connection.connectHeaders.push({
+          id: chrollo.utils.randomId(),
+          key: '_clientSessionId',
+          value: clientSessionId,
+          enabled: true,
+      }) 
+    });
+
+    chrollo.stomp.onPreSubscribe(({ connectionId, subscriptionId, topic, subscribe, disableDefault }) => {
+      disableDefault();
+      const key = 'clientSessionId' + '-' + connectionId;
+      const clientSessionId = chrollo.variables.get(key);
+    
+      const broadcastId = subscriptionId + '-broadcast';  
+      const broadcastTopic = '/topic/' + topic + "/broadcast/";
+      subscribe(connectionId, broadcastId, broadcastTopic);
+
+      const clientBroadcastId = subscriptionId + '-client-broadcast';  
+      const clientBroadcastTopic = '/topic/' + topic + "/" + clientSessionId + "/broadcast/";
+      subscribe(connectionId, clientBroadcastId, clientBroadcastTopic);
+
+      const clientId = subscriptionId + '-client';  
+      const clientTopic = '/topic/' + topic + "/" + clientSessionId;
+      subscribe(connectionId, clientId, clientTopic);
+    });
+
+    chrollo.stomp.onPostUnsubscribe(({ connectionId, subscriptionId, topic, unsubscribe, disableDefault }) => {
+      disableDefault();
+      const key = 'clientSessionId' + '-' + connectionId;
+      const clientSessionId = chrollo.variables.get(key);
+    
+      const broadcastId = subscriptionId + '-broadcast';  
+      const broadcastTopic = '/topic/' + topic + "/broadcast/";
+      unsubscribe(connectionId, broadcastId, broadcastTopic);
+
+      const clientBroadcastId = subscriptionId + '-client-broadcast';  
+      const clientBroadcastTopic = '/topic/' + topic + "/" + clientSessionId + "/broadcast/";
+      unsubscribe(connectionId, clientBroadcastId, clientBroadcastTopic);
+
+      const clientId = subscriptionId + '-client';  
+      const clientTopic = '/topic/' + topic + "/" + clientSessionId;
+      unsubscribe(connectionId, clientId, clientTopic);
+    });
+
+    chrollo.stomp.onPreSend(({ connectionId, request }) => {
+      const key = 'clientSessionId' + '-' + connectionId;
+      const clientSessionId = chrollo.variables.get(key);
+      const requestId = chrollo.utils.randomId();
+      request.destination = '/app/secure/' + requestId + '/' + request.destination;
+      request.headers.push({
+          id: chrollo.utils.randomId(),
+          key: 'clientSessionId',
+          value: clientSessionId,
+          enabled: true,
+      })
+    });
+`);
+
+const runtime = chrolloEngine.getRuntime();
+
+function subscribeInternal(connectionId: string, subscriptionId: string, topic: string) {
+  const mainWindow = getMainWindow();
+  const client = stompClients[connectionId];
+  if (!mainWindow) return;
+  if (client && client.connected && client.active) {
+    client.subscribe(
+      topic.trim(),
+      (msg: Message) => {
+        const socketReceivedMessage: SocketMessage = {
+          id: nextSeq(),
+          connectionId,
+          connectionType: CONNECTION_TYPE.STOMP,
+          type: SOCKET_MESSAGE_TYPE.RECEIVED,
+          timestamp: Date.now(),
+          data: msg.body,
+          meta: {
+            command: msg.command,
+            headers: msg.headers,
+            isBinaryBody: msg.isBinaryBody,
+            binaryBody: msg.binaryBody,
+          },
+        };
+
+        mainWindow.webContents.send('stomp:message', socketReceivedMessage);
+
+        const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
+
+        mainWindow.webContents.send('console:log', data);
+      },
+      { id: subscriptionId }
+    );
+  }
+
+  const socketSubscribedMessage: SocketMessage = {
+    id: nextSeq(),
+    connectionId,
+    connectionType: CONNECTION_TYPE.STOMP,
+    type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
+    timestamp: Date.now(),
+    data: `Subscribed to ${topic}`,
+    meta: {
+      headers: { id: subscriptionId, destination: topic.trim() },
+    },
+  };
+
+  mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
+}
+
+function unSubscribeInternal(connectionId: string, subscriptionId: string, topic: string) {
+  const mainWindow = getMainWindow();
+  const client = stompClients[connectionId];
+  if (!mainWindow) return;
+  if (client && client.connected && client.active) {
+    client.unsubscribe(subscriptionId);
+    const socketUnsubscribedMessage: SocketMessage = {
+      id: nextSeq(),
+      connectionId: connectionId,
+      connectionType: CONNECTION_TYPE.STOMP,
+      type: SOCKET_MESSAGE_TYPE.UNSUBSCRIBED,
+      timestamp: Date.now(),
+      data: `Unsubscribed from ${topic}`,
+      meta: {
+        headers: { id: subscriptionId },
+      },
+    };
+
+    mainWindow.webContents.send('stomp:message', socketUnsubscribedMessage);
+  }
+}
+
 export function initStompIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
@@ -29,6 +165,9 @@ export function initStompIpc() {
   // CONNECT
   // ------------------------------
   ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
+    const ctx = { connection };
+    runtime.stomp.runPreConnect(ctx);
+
     const { id, name, prefix, url, connectHeaders, subscriptions } = connection;
     if (stompClients[id]) {
       stompClients[id].deactivate();
@@ -91,43 +230,16 @@ export function initStompIpc() {
       // ------------------------------
       for (const subscription of subscriptions) {
         if (subscription.enabled) {
-          client.subscribe(
-            subscription.topic.trim(),
-            (msg: Message) => {
-              const socketReceivedMessage: SocketMessage = {
-                id: nextSeq(),
-                connectionId: id,
-                connectionType: CONNECTION_TYPE.STOMP,
-                type: SOCKET_MESSAGE_TYPE.RECEIVED,
-                timestamp: Date.now(),
-                data: msg.body,
-                meta: {
-                  command: msg.command,
-                  headers: msg.headers,
-                  isBinaryBody: msg.isBinaryBody,
-                  binaryBody: msg.binaryBody,
-                },
-              };
-
-              mainWindow.webContents.send('stomp:message', socketReceivedMessage);
-              const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
-              mainWindow.webContents.send('console:log', data);
-            },
-            { id: subscription.id }
-          );
-          const socketSubscribedMessage: SocketMessage = {
-            id: nextSeq(),
+          const ctx = {
             connectionId: id,
-            connectionType: CONNECTION_TYPE.STOMP,
-            type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
-            timestamp: Date.now(),
-            data: `Subscribed to ${subscription.topic}`,
-            meta: {
-              headers: { id: subscription.id, destination: subscription.topic.trim() },
-            },
+            subscriptionId: subscription.id,
+            topic: subscription.topic,
+            subscribe: subscribeInternal,
           };
-
-          mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
+          const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
+          if (!defaultDisabled) {
+            subscribeInternal(id, subscription.id, subscription.topic);
+          }
         }
       }
     };
@@ -194,46 +306,15 @@ export function initStompIpc() {
   // ------------------------------
   ipcMain.on('stomp:subscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
     const { connectionId, subscriptionId, topic } = data;
-    const client = stompClients[connectionId];
-    if (client && client.connected && client.active) {
-      client.subscribe(
-        topic.trim(),
-        (msg: Message) => {
-          const socketReceivedMessage: SocketMessage = {
-            id: nextSeq(),
-            connectionId: connectionId,
-            connectionType: CONNECTION_TYPE.STOMP,
-            type: SOCKET_MESSAGE_TYPE.RECEIVED,
-            timestamp: Date.now(),
-            data: msg.body,
-            meta: {
-              command: msg.command,
-              headers: msg.headers,
-              isBinaryBody: msg.isBinaryBody,
-              binaryBody: msg.binaryBody,
-            },
-          };
-
-          mainWindow.webContents.send('stomp:message', socketReceivedMessage);
-          const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
-          mainWindow.webContents.send('console:log', data);
-        },
-        { id: subscriptionId }
-      );
-      const socketSubscribedMessage: SocketMessage = {
-        id: nextSeq(),
-        connectionId: connectionId,
-        connectionType: CONNECTION_TYPE.STOMP,
-        type: SOCKET_MESSAGE_TYPE.SUBSCRIBED,
-        timestamp: Date.now(),
-        data: `Subscribed to ${topic}`,
-        meta: {
-          headers: { id: subscriptionId, destination: topic.trim() },
-        },
-      };
-
-      mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
-    }
+    const ctx = {
+      connectionId,
+      subscriptionId,
+      topic,
+      subscribe: subscribeInternal,
+    };
+    const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
+    if (defaultDisabled) return;
+    subscribeInternal(connectionId, subscriptionId, topic);
   });
 
   // ------------------------------
@@ -241,29 +322,23 @@ export function initStompIpc() {
   // ------------------------------
   ipcMain.on('stomp:unsubscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
     const { connectionId, subscriptionId, topic } = data;
-    const client = stompClients[connectionId];
-    if (client) {
-      client.unsubscribe(subscriptionId);
-      const socketUnsubscribedMessage: SocketMessage = {
-        id: nextSeq(),
-        connectionId: connectionId,
-        connectionType: CONNECTION_TYPE.STOMP,
-        type: SOCKET_MESSAGE_TYPE.UNSUBSCRIBED,
-        timestamp: Date.now(),
-        data: `Unsubscribed from ${topic}`,
-        meta: {
-          headers: { id: subscriptionId },
-        },
-      };
-
-      mainWindow.webContents.send('stomp:message', socketUnsubscribedMessage);
-    }
+    const ctx = {
+      connectionId,
+      subscriptionId,
+      topic,
+      unsubscribe: unSubscribeInternal,
+    };
+    const { defaultDisabled } = runtime.stomp.runPostUnsubscribe(ctx);
+    if (defaultDisabled) return;
+    unSubscribeInternal(connectionId, subscriptionId, topic);
   });
 
   // ------------------------------
   // SEND
   // ------------------------------
   ipcMain.on('stomp:send', (_, id: string, request: Request) => {
+    const ctx = { connectionId: id, request };
+    runtime.stomp.runPreSend(ctx);
     const client = stompClients[id];
     const { body, destination, headers } = request;
     const payload = body.data;
