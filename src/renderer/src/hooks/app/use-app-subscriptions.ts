@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
+import { AppContext } from '@/provider/app-init-provider';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
 import { getTabRoute } from '@/utils/tab-util';
@@ -8,9 +9,12 @@ import { useActiveItem } from '@/hooks/app/use-active-item';
 
 export function useAppSubscriptions() {
   const navigate = useNavigate();
+  const { appLoaded } = use(AppContext);
+
   const { activeTab, activeWorkspace } = useActiveItem();
 
   useEffect(() => {
+    if (!appLoaded) return;
     if (activeTab) {
       navigate(getTabRoute(activeTab));
     } else {
@@ -20,7 +24,7 @@ export function useAppSubscriptions() {
       }
       navigate('/main/empty');
     }
-  }, [activeTab, activeWorkspace, navigate]);
+  }, [appLoaded, activeTab, activeWorkspace, navigate]);
 
   useEffect(() => {
     const unsubscribeConsoleLog = window.listener.console.log((data) => {

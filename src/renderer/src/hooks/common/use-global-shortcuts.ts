@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { useAppConfigStore } from '@/store/app-config-store';
+import { useShallow } from 'zustand/react/shallow';
 
 import { SHORTCUT_TO_COMMAND } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
@@ -21,6 +23,12 @@ export function normalizeShortcut(e: KeyboardEvent): string {
 }
 
 export function useGlobalShortcuts() {
+  const { applicationSettings } = useAppConfigStore(
+    useShallow((state) => ({
+      applicationSettings: state.applicationSettings,
+    }))
+  );
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
@@ -31,8 +39,7 @@ export function useGlobalShortcuts() {
 
       const shortcut = normalizeShortcut(e);
       const command = SHORTCUT_TO_COMMAND[shortcut];
-      console.log('Detected shortcut:', shortcut, '-> command:', command);
-      if (!command) return;
+      if (!applicationSettings.shortcutsEnabled || !command) return;
 
       e.preventDefault();
       commandBus.emit(command);
@@ -40,5 +47,5 @@ export function useGlobalShortcuts() {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [applicationSettings.shortcutsEnabled]);
 }

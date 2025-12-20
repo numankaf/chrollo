@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/common/scroll-area';
 function GeneralPanel() {
   return (
     <ScrollArea style={{ height: 'calc(100% - 2rem)' }}>
-      <div className="flex flex-col gap-3 p-3">
+      <div className="flex flex-col gap-3 m-3">
         <UserInterfaceSettings />
         <RequestSettings />
       </div>

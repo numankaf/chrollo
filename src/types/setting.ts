@@ -2,12 +2,14 @@ export interface AppSettings {
   discardUnsavedChangesOnClose: boolean;
   formatResponses: boolean;
   showTabIcons: boolean;
+  shortcutsEnabled: boolean;
 }
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
   discardUnsavedChangesOnClose: false,
   formatResponses: true,
   showTabIcons: true,
+  shortcutsEnabled: true,
 };
 
 export interface SettingItem {
