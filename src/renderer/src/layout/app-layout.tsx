@@ -3,12 +3,13 @@ import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import { Outlet } from 'react-router';
 
+import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
 import AppLoader from '@/components/layout/app-loader';
 import Topbar from '@/components/layout/app-topbar';
 
 function AppLayout() {
-  const { appLoaded } = use(AppContext);
-
+  const { appLoaded, loadingText } = use(AppContext);
+  useAppSubscriptions();
   return (
     <>
       <Topbar />
@@ -19,7 +20,7 @@ function AppLayout() {
           top: SIDEBAR_TOP_OFFSET,
         }}
       >
-        {!appLoaded && <AppLoader />}
+        {!appLoaded && <AppLoader text={loadingText} />}
         {appLoaded && <Outlet />}
       </div>
     </>

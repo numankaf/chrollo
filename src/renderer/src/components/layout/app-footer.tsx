@@ -1,5 +1,5 @@
 import { FOOTER_BOTTOM_OFFSET } from '@/constants/layout-constants';
-import { CircleCheck, CircleQuestionMark, GalleryHorizontalEnd, SquareChevronRight } from 'lucide-react';
+import { CircleQuestionMark, GalleryHorizontalEnd, SquareChevronRight, WifiOff } from 'lucide-react';
 
 import { Button } from '@/components/common/button';
 import { SidebarTrigger } from '@/components/common/sidebar';
@@ -17,8 +17,8 @@ function Footer() {
       <div className="flex items-center gap-1 h-full">
         <SidebarTrigger />
         <Button variant="ghost" size="xs" className="h-full">
-          <CircleCheck />
-          Online
+          <WifiOff />
+          Offline
         </Button>
         <Button
           variant="ghost"

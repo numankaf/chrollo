@@ -8,15 +8,19 @@ import { useActiveItem } from '@/hooks/app/use-active-item';
 
 export function useAppSubscriptions() {
   const navigate = useNavigate();
-  const { activeTab } = useActiveItem();
+  const { activeTab, activeWorkspace } = useActiveItem();
 
   useEffect(() => {
     if (activeTab) {
       navigate(getTabRoute(activeTab));
     } else {
+      if (!activeWorkspace) {
+        navigate(`/home`);
+        return;
+      }
       navigate('/main/empty');
     }
-  }, [activeTab, navigate]);
+  }, [activeTab, activeWorkspace, navigate]);
 
   useEffect(() => {
     const unsubscribeConsoleLog = window.listener.console.log((data) => {

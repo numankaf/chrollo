@@ -12,7 +12,7 @@ interface WorkspaceStore {
   createWorkspace: (workspace: Workspace) => void;
   updateWorkspace: (workspace: Workspace) => void;
   deleteWorkspace: (id: string) => void;
-  setActiveWorkspace: (id: string) => void;
+  setActiveWorkspace: (id: string | undefined) => void;
 
   initWorkspaceStore: (workspaceFile: WorkspaceFile) => Promise<void>;
   updateWorkspaceSelection: (values: Partial<WorkspaceSelectionValue>) => void;

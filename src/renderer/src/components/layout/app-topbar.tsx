@@ -3,8 +3,10 @@ import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
+import useWorkspaceStore from '@/store/workspace-store';
 import { Minus, Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/common/button';
 import SettingsButton from '@/components/app/button/settings-button';
@@ -15,6 +17,12 @@ import WorkspaceSelector from '@/components/selector/workspace-selector';
 function Topbar() {
   const { appLoaded } = use(AppContext);
   const navigate = useNavigate();
+  const { activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
+    useShallow((state) => ({
+      setActiveWorkspace: state.setActiveWorkspace,
+      activeWorkspaceId: state.activeWorkspaceId,
+    }))
+  );
   return (
     <nav
       style={
@@ -31,12 +39,17 @@ function Topbar() {
         </div>
 
         {appLoaded && (
-          <Button variant="ghost" onClick={() => navigate('/')}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setActiveWorkspace(undefined);
+            }}
+          >
             Home
           </Button>
         )}
         {appLoaded && <WorkspaceSelector />}
-        {appLoaded && <ConnectionSelector />}
+        {appLoaded && activeWorkspaceId && <ConnectionSelector />}
       </div>
 
       {appLoaded && (

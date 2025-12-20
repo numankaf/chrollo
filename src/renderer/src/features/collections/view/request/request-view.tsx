@@ -50,7 +50,7 @@ function RequestView() {
     }
   }, [watchedValues, updateCollectionItem, dirtyFields]);
 
-  if (!request) return <div>Request not found</div>;
+  if (!request) return <></>;
   return (
     <div className="max-h-full h-full flex flex-col">
       <FormProvider {...form}>

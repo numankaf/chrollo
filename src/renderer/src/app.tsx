@@ -63,14 +63,14 @@ function App() {
           ],
         },
         {
-          path: '/',
+          path: '/home',
           element: <HomeView />,
         },
       ],
     },
     {
       path: '*',
-      element: <Navigate to="/" replace={true} />,
+      element: <Navigate to="/home" replace={true} />,
     },
   ]);
   return <RouterProvider router={router} />;

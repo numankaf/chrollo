@@ -2,7 +2,6 @@ import { APP_BREADCRUMB_OFFSET, SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } f
 import { LayoutProvider } from '@/provider/layout-provider';
 import { Outlet } from 'react-router';
 
-import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
 import { useLayout } from '@/hooks/layout/use-layout';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
@@ -12,7 +11,6 @@ import AppTabs from '@/components/layout/app-tabs';
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 
 function AppMainLayoutInner() {
-  useAppSubscriptions();
   const { activeItem, sidebarRef } = useLayout();
 
   return (

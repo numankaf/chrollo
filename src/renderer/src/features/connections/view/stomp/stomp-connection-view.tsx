@@ -60,7 +60,7 @@ function StompConnectionView() {
     }
   }, [updateConnection, watchedValues, dirtyFields]);
 
-  if (!connection) return <div>Connection not found</div>;
+  if (!connection) return <></>;
 
   return (
     <div className="max-h-full h-full flex flex-col">
