@@ -18,6 +18,11 @@ const UI_SETTINGS: SettingItem[] = [
     title: 'Show icons with tab names',
     description: 'Display icons alongside tab titles for easier identification of open tabs.',
   },
+  {
+    key: 'selectTabItemOnMainSidebar',
+    title: 'Sync main sidebar with active tab',
+    description: 'Automatically select the related item in the main sidebar whenever a tab is changed.',
+  },
 ];
 
 function UserInterfaceSettings() {

@@ -1,6 +1,8 @@
 import React, { createContext, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useAppConfigStore } from '@/store/app-config-store';
 import { Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
 import type { ImperativePanelHandle } from 'react-resizable-panels';
+import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import type { SidebarItem } from '@/types/layout';
@@ -59,7 +61,11 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
   const [activeItem, setActiveItem] = useState<SidebarItem>(SIDEBAR_ITEMS[0]);
   const { activeTab } = useActiveItem();
   const sidebarRef = useRef<ImperativePanelHandle>(null);
-
+  const { applicationSettings } = useAppConfigStore(
+    useShallow((state) => ({
+      applicationSettings: state.applicationSettings,
+    }))
+  );
   function toggleSidebar() {
     if (sidebarRef.current?.isCollapsed()) {
       sidebarRef.current?.expand();
@@ -70,13 +76,14 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
 
   React.useEffect(() => {
     if (!activeTab) return;
+    if (!applicationSettings.selectTabItemOnMainSidebar) return;
 
     const match = SIDEBAR_ITEMS.find((item) => item.modelType === activeTab.modelType);
 
     if (match) {
       setActiveItem(match);
     }
-  }, [activeTab]);
+  }, [activeTab, applicationSettings.selectTabItemOnMainSidebar]);
 
   const value = {
     sidebarItems: SIDEBAR_ITEMS,

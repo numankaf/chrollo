@@ -3,6 +3,7 @@ export interface AppSettings {
   formatResponses: boolean;
   showTabIcons: boolean;
   shortcutsEnabled: boolean;
+  selectTabItemOnMainSidebar: boolean;
 }
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
@@ -10,6 +11,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   formatResponses: true,
   showTabIcons: true,
   shortcutsEnabled: true,
+  selectTabItemOnMainSidebar: true,
 };
 
 export interface SettingItem {
