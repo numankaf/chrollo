@@ -57,7 +57,7 @@ function RequestBody() {
           Beautify
         </Button>
       </div>
-      <div className="flex-1 mx-2 my-2 border rounded-lg" style={{ height: 'calc(100% - 6rem)' }}>
+      <div className="flex-1 mx-2 mb-2 border rounded-lg" style={{ height: 'calc(100% - 6rem)' }}>
         <ScrollArea className="p-0.5 min-h-full h-full">
           <Controller
             name={BODY_DATA_PROPERTY_KEY}

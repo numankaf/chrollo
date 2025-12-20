@@ -50,7 +50,7 @@ function HomeView() {
           <CardContent className="space-y-4">
             <div className="grid gap-3">
               {workspaces.map((ws) => (
-                <Item variant="outline">
+                <Item variant="outline" key={ws.id}>
                   <WorkspaceTypeIcon workspaceType={ws.type} />
                   <ItemContent>
                     <ItemTitle>{ws.name}</ItemTitle>

@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { confirmTabClose } from '@/utils/tab-util';
+import { confirmTabClose, getNextTab, getPreviousTab } from '@/utils/tab-util';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
@@ -36,6 +38,35 @@ function AppTabs() {
   const tabs = useWorkspaceTabs();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    const unsubscribeTabClose = commandBus.on(COMMANDS.TAB_CLOSE, () => {
+      if (activeTab) confirmTabClose(activeTab.id);
+    });
+    const unsubscribeTabNext = commandBus.on(COMMANDS.TAB_NEXT, () => {
+      if (!activeTab) return;
+
+      const nextTab = getNextTab(tabs, activeTab.id);
+      if (nextTab) {
+        openTab(nextTab);
+      }
+    });
+
+    const unsubscribeTabPrevious = commandBus.on(COMMANDS.TAB_PREVIOUS, () => {
+      if (!activeTab) return;
+
+      const prevTab = getPreviousTab(tabs, activeTab.id);
+      if (prevTab) {
+        openTab(prevTab);
+      }
+    });
+
+    return () => {
+      unsubscribeTabClose?.();
+      unsubscribeTabNext?.();
+      unsubscribeTabPrevious?.();
+    };
+  }, [activeTab, openTab, tabs]);
 
   useEffect(() => {
     const el = scrollRef.current;

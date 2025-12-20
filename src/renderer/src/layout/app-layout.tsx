@@ -4,12 +4,14 @@ import { AppContext } from '@/provider/app-init-provider';
 import { Outlet } from 'react-router';
 
 import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
+import { useGlobalShortcuts } from '@/hooks/common/use-global-shortcuts';
 import AppLoader from '@/components/layout/app-loader';
 import Topbar from '@/components/layout/app-topbar';
 
 function AppLayout() {
   const { appLoaded, loadingText } = use(AppContext);
   useAppSubscriptions();
+  useGlobalShortcuts();
   return (
     <>
       <Topbar />

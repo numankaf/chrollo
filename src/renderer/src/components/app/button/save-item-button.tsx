@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useTabsStore from '@/store/tab-store';
 import { saveItem } from '@/utils/save-registry-util';
 import { getPersistedTabItem } from '@/utils/tab-util';
@@ -7,7 +7,9 @@ import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
+import { COMMANDS } from '@/types/command';
 import type { TabItem } from '@/types/layout';
+import { commandBus } from '@/lib/command-bus';
 import { normalizeForCompare } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useTabItem } from '@/hooks/app/use-tab-item';
@@ -60,7 +62,7 @@ function SaveItemButton() {
     setDirtyBeforeSaveByTab(item.id, !deepEqual(normalizeForCompare(item), normalizeForCompare(persistedItem)));
   }, [item, persistedItem, setDirtyBeforeSaveByTab]);
 
-  async function save() {
+  const save = useCallback(async () => {
     if (!activeTab || !item) return;
 
     try {
@@ -72,7 +74,16 @@ function SaveItemButton() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [activeTab, item]);
+
+  useEffect(() => {
+    const unsubscribeSave = commandBus.on(COMMANDS.REQUEST_SAVE, () => {
+      save();
+    });
+    return () => {
+      unsubscribeSave?.();
+    };
+  }, [save]);
 
   return (
     <Tooltip>

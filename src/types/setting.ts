@@ -15,3 +15,7 @@ export interface SettingItem {
   title: string;
   description: string;
 }
+export interface ShortcutItem {
+  key: keyof AppSettings;
+  title: string;
+}

@@ -161,3 +161,21 @@ export function confirmTabClose(tabId: string) {
     useTabsStore.getState().closeTab(tab.id);
   }
 }
+
+export function getNextTab(tabs: Tab[], activeTabId?: string) {
+  if (!tabs.length || !activeTabId) return null;
+
+  const index = tabs.findIndex((t) => t.id === activeTabId);
+  if (index === -1) return null;
+
+  return tabs[(index + 1) % tabs.length];
+}
+
+export function getPreviousTab(tabs: Tab[], activeTabId?: string) {
+  if (!tabs.length || !activeTabId) return null;
+
+  const index = tabs.findIndex((t) => t.id === activeTabId);
+  if (index === -1) return null;
+
+  return tabs[(index - 1 + tabs.length) % tabs.length];
+}

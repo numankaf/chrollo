@@ -53,7 +53,7 @@ function ConnectionSelector() {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command shouldFilter={false}>
-          <CommandInput value={search} onValueChange={setSearch} placeholder="Search conenction..." className="h-9" />
+          <CommandInput value={search} onValueChange={setSearch} placeholder="Search connection..." className="h-9" />
           <CommandList>
             <CommandEmpty>No connection found.</CommandEmpty>
             <CommandGroup>

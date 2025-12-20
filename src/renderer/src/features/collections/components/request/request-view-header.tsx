@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { Request } from '@/types/collection';
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
 import { useConnection } from '@/hooks/connection/use-connection';
 import { Button } from '@/components/common/button';
 import { InputGroup, InputGroupInput } from '@/components/common/input-group';
@@ -8,6 +11,17 @@ import { InputGroup, InputGroupInput } from '@/components/common/input-group';
 function RequestViewHeader() {
   const form = useFormContext();
   const { sendRequest } = useConnection();
+
+  useEffect(() => {
+    const unsubscribeSend = commandBus.on(COMMANDS.REQUEST_SEND, () => {
+      form.handleSubmit((data) => {
+        sendRequest(data as Request);
+      })();
+    });
+    return () => {
+      unsubscribeSend?.();
+    };
+  }, [form, sendRequest]);
 
   return (
     <div className="p-2 w-full flex items-center justify-between gap-2 h-10">
