@@ -14,6 +14,8 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/common/use-mobile';
 import { useLayout } from '@/hooks/layout/use-layout';
@@ -242,6 +244,16 @@ function Sidebar({
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useLayout();
+
+  React.useEffect(() => {
+    const unsubscribeToggleSidebar = commandBus.on(COMMANDS.TOGGLE_SIDEBAR, () => {
+      toggleSidebar();
+    });
+
+    return () => {
+      unsubscribeToggleSidebar();
+    };
+  }, [toggleSidebar]);
 
   return (
     <Button

@@ -1,5 +1,3 @@
-// use-global-shortcuts.ts
-
 import { useEffect } from 'react';
 
 import { SHORTCUT_TO_COMMAND } from '@/types/command';
@@ -33,7 +31,7 @@ export function useGlobalShortcuts() {
 
       const shortcut = normalizeShortcut(e);
       const command = SHORTCUT_TO_COMMAND[shortcut];
-
+      console.log('Detected shortcut:', shortcut, '-> command:', command);
       if (!command) return;
 
       e.preventDefault();

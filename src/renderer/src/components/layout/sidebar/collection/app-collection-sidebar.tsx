@@ -20,6 +20,8 @@ import {
   type Folder,
   type Request,
 } from '@/types/collection';
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useResizeObserver } from '@/hooks/common/use-resize-observer';
@@ -56,6 +58,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
+  const { activeTab } = useActiveItem();
   const [addFolderDialogOpen, setAddFolderDialogOpen] = useState<boolean>(false);
   const [addRequestDialogOpen, setAddRequestDialogOpen] = useState<boolean>(false);
 
@@ -100,6 +103,35 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       toast.error('Failed to submit collection.');
     }
   }
+  useEffect(() => {
+    const unsubscribeItemRename = commandBus.on(COMMANDS.ITEM_RENAME, () => {
+      if (activeTab?.id !== item.id) return;
+      node.edit();
+    });
+
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
+      if (activeTab?.id !== item.id) return;
+      cloneCollectionItem(item.id);
+    });
+
+    const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
+      if (activeTab?.id !== item.id) return;
+      confirmDialog({
+        header: `Delete "${item.name}"`,
+        message: `Are you sure you want to delete "${item.name}"?`,
+        primaryLabel: 'Delete',
+        onPrimaryAction: () => {
+          deleteCollectionItem(item.id);
+        },
+      });
+    });
+
+    return () => {
+      unsubscribeItemRename?.();
+      unsubscribeItemDuplicate?.();
+      unsubscribeItemDelete?.();
+    };
+  }, [item, cloneCollectionItem, deleteCollectionItem, node, activeTab]);
 
   function getOperationItems(item: CollectionItem): OperationButtonItem[] {
     const operationItems = [

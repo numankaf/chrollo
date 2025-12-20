@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TIME_FORMAT_HH_MM_SS_MMM } from '@/constants/date-constants';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import { useAppConfigStore } from '@/store/app-config-store';
@@ -13,7 +13,9 @@ import { Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
+import { COMMANDS } from '@/types/command';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
+import { commandBus } from '@/lib/command-bus';
 import { deepParseJson } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
@@ -164,6 +166,16 @@ function SocketMessageConsole() {
   });
 
   const virtualItems = virtualizer.getVirtualItems();
+
+  useEffect(() => {
+    const unsubscribeClearRequestConsole = commandBus.on(COMMANDS.CLEAR_REQUEST_CONSOLE, () => {
+      if (activeConnection) clearMessages(activeConnection?.id);
+    });
+
+    return () => {
+      unsubscribeClearRequestConsole?.();
+    };
+  }, [activeConnection, clearMessages]);
 
   return (
     <div className="h-full">

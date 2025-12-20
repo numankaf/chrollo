@@ -1,10 +1,22 @@
+import { useEffect } from 'react';
 import { FOOTER_BOTTOM_OFFSET } from '@/constants/layout-constants';
 import { CircleQuestionMark, GalleryHorizontalEnd, SquareChevronRight, WifiOff } from 'lucide-react';
 
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
 import { Button } from '@/components/common/button';
 import { SidebarTrigger } from '@/components/common/sidebar';
 
 function Footer() {
+  useEffect(() => {
+    const unsubscribeToggleConsole = commandBus.on(COMMANDS.TOGGLE_CONSOLE, () => {
+      window.api.devtools.toggleDevTools();
+    });
+    return () => {
+      unsubscribeToggleConsole();
+    };
+  }, []);
+
   return (
     <footer
       style={

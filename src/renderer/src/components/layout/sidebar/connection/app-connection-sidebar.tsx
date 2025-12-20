@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddConnectionPanel from '@/features/connections/components/common/add-connection-panel';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
 import useTabsStore from '@/store/tab-store';
 import { applyTextSearch } from '@/utils/search-util';
+import { getTabItem } from '@/utils/tab-util';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
+import { COMMANDS } from '@/types/command';
 import type { Connection } from '@/types/connection';
+import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
@@ -49,6 +52,38 @@ function ConnectionSidebar() {
       updateConnection: state.updateConnection,
     }))
   );
+
+  useEffect(() => {
+    const unsubscribeItemRename = commandBus.on(COMMANDS.ITEM_RENAME, () => {
+      if (activeTab) setEditingItemId(activeTab.id);
+    });
+
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
+      if (activeTab) cloneConnection(activeTab.id);
+    });
+
+    const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
+      if (activeTab) {
+        const tabItem = getTabItem(activeTab);
+        if (!tabItem) return;
+
+        confirmDialog({
+          header: `Delete "${tabItem.name}"`,
+          message: `Are you sure you want to delete "${tabItem.name}"?`,
+          primaryLabel: 'Delete',
+          onPrimaryAction: () => {
+            deleteConnection(tabItem.id);
+          },
+        });
+      }
+    });
+
+    return () => {
+      unsubscribeItemRename?.();
+      unsubscribeItemDuplicate?.();
+      unsubscribeItemDelete?.();
+    };
+  }, [activeTab, cloneConnection, deleteConnection]);
 
   function getOperationItems(item: Connection): OperationButtonItem[] {
     return [

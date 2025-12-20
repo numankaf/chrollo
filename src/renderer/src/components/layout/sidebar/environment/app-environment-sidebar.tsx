@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useEnvironmentStore from '@/store/environment-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
+import { getTabItem } from '@/utils/tab-util';
 import { Container, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
+import { COMMANDS } from '@/types/command';
 import type { Environment } from '@/types/environment';
 import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
+import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
@@ -82,6 +85,38 @@ function EnvironmentsSidebar() {
       toast.error('Failed to submit environment.');
     }
   }
+
+  useEffect(() => {
+    const unsubscribeItemRename = commandBus.on(COMMANDS.ITEM_RENAME, () => {
+      if (activeTab) setEditingItemId(activeTab.id);
+    });
+
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
+      if (activeTab) cloneEnvironment(activeTab.id);
+    });
+
+    const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
+      if (activeTab) {
+        const tabItem = getTabItem(activeTab);
+        if (!tabItem) return;
+
+        confirmDialog({
+          header: `Delete "${tabItem.name}"`,
+          message: `Are you sure you want to delete "${tabItem.name}"?`,
+          primaryLabel: 'Delete',
+          onPrimaryAction: () => {
+            deleteEnvironment(tabItem.id);
+          },
+        });
+      }
+    });
+
+    return () => {
+      unsubscribeItemRename?.();
+      unsubscribeItemDuplicate?.();
+      unsubscribeItemDelete?.();
+    };
+  }, [activeTab, cloneEnvironment, deleteEnvironment]);
 
   function getOperationItems(item: Environment): OperationButtonItem[] {
     return [
