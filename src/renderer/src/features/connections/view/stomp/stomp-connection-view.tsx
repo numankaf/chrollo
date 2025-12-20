@@ -63,10 +63,10 @@ function StompConnectionView() {
   if (!connection) return <div>Connection not found</div>;
 
   return (
-    <div className="h-full">
+    <div className="max-h-full h-full flex flex-col">
       <FormProvider {...form}>
         <form className="h-full" noValidate>
-          <div className="flex gap-2 m-2">
+          <div className="flex gap-2 m-2 h-10">
             <Controller
               name="prefix"
               control={form.control}
@@ -123,18 +123,13 @@ function StompConnectionView() {
               onDisconnect={(conenctionId: string) => disconnectStomp(conenctionId)}
             />
           </div>
-          <Tabs
-            defaultValue="settings"
-            className="w-full mt-3"
-            variant="link"
-            style={{ height: 'calc(100% - 6.5rem)' }}
-          >
+          <Tabs defaultValue="settings" className="w-full mt-3 h-full flex-1" variant="link">
             <TabsList className="mx-2">
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             </TabsList>
-            <ScrollArea className="h-full">
+            <ScrollArea style={{ height: 'calc(100% - 6.5rem)' }}>
               <TabsContent className="mx-2" value="settings">
                 <StompSettings />
               </TabsContent>

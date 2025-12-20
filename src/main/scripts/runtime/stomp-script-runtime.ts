@@ -4,7 +4,7 @@ import type { SocketMessage } from '@/types/socket';
 
 export type PreStompConnectHandler = (ctx: PreStompConnectCtx) => void;
 export type PreStompSubscribeHandler = (ctx: PreStompSubscribeCtx) => void;
-export type PostStompUnsubscribeHandler = (ctx: PostStompUnsubscribeCtx) => void;
+export type PreStompUnsubscribeHandler = (ctx: PreStompUnsubscribeCtx) => void;
 export type PreStompSendHandler = (ctx: PreStompSendCtx) => void;
 export type StompMessageHandler = (ctx: StompMessageCtx) => void;
 
@@ -20,7 +20,7 @@ export interface PreStompSubscribeCtx {
   disableDefault(): void;
 }
 
-export interface PostStompUnsubscribeCtx {
+export interface PreStompUnsubscribeCtx {
   connectionId: string;
   subscriptionId: string;
   topic: string;
@@ -40,7 +40,7 @@ export interface StompMessageCtx {
 export class StompScriptRuntime {
   preConnect: PreStompConnectHandler[] = [];
   preSubscribe: PreStompSubscribeHandler[] = [];
-  postUnsubscribe: PostStompUnsubscribeHandler[] = [];
+  preUnsubscribe: PreStompUnsubscribeHandler[] = [];
   preSend: PreStompSendHandler[] = [];
   message: StompMessageHandler[] = [];
 
@@ -63,17 +63,17 @@ export class StompScriptRuntime {
     return { defaultDisabled };
   }
 
-  runPostUnsubscribe(ctx: Omit<PostStompUnsubscribeCtx, 'disableDefault'>) {
+  runPreUnsubscribe(ctx: Omit<PreStompUnsubscribeCtx, 'disableDefault'>) {
     let defaultDisabled = false;
 
-    const internalCtx: PostStompUnsubscribeCtx = {
+    const internalCtx: PreStompUnsubscribeCtx = {
       ...ctx,
       disableDefault() {
         defaultDisabled = true;
       },
     };
 
-    for (const fn of this.postUnsubscribe) fn(internalCtx);
+    for (const fn of this.preUnsubscribe) fn(internalCtx);
 
     return { defaultDisabled };
   }

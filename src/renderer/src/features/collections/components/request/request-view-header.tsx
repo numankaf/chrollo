@@ -10,7 +10,7 @@ function RequestViewHeader() {
   const { sendRequest } = useConnection();
 
   return (
-    <div className="p-2 w-full flex items-center justify-between gap-2">
+    <div className="p-2 w-full flex items-center justify-between gap-2 h-10">
       <div className="flex rounded-md shadow-xs flex-1">
         <Controller
           name="destination"

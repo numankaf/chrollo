@@ -123,7 +123,7 @@ function StompHeaders({ headers }: { headers: Header[] }) {
   };
 
   return (
-    <div className="mx-4">
+    <div className="mx-4 pb-2">
       <p className="text-muted-foreground my-1">Connect Headers</p>
       <TanstackDataTable<Header> data={headers} columns={columns} meta={{ updateData, deleteRow, addRow }} />
     </div>

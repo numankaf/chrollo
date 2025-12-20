@@ -1,20 +1,28 @@
-import { SIDEBAR_TOP_OFFSET, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
+import { APP_BREADCRUMB_OFFSET, SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
+import { LayoutProvider } from '@/provider/layout-provider';
 import { Outlet } from 'react-router';
 
 import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
 import { useLayout } from '@/hooks/layout/use-layout';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
-import { SidebarInset } from '@/components/common/sidebar';
-import SocketMessageConsole from '@/components/app/socket/socket-message-console';
+import { SidebarInset, SidebarProvider } from '@/components/common/sidebar';
 import AppBreadcrumb from '@/components/layout/app-breadcrumb';
+import Footer from '@/components/layout/app-footer';
 import AppTabs from '@/components/layout/app-tabs';
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 
-function AppMainContent() {
+function AppMainLayoutInner() {
   useAppSubscriptions();
   const { activeItem, sidebarRef } = useLayout();
+
   return (
-    <>
+    <SidebarProvider
+      style={
+        {
+          '--sidebar-width': SIDEBAR_WIDTH_ICON,
+        } as React.CSSProperties
+      }
+    >
       <AppSidebar />
       <SidebarInset>
         <ResizablePanelGroup direction="horizontal" autoSaveId="main-content-group">
@@ -34,25 +42,26 @@ function AppMainContent() {
             <AppBreadcrumb />
             <div
               style={{
-                height: `calc(100% - ${SIDEBAR_TOP_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET})`,
+                height: `calc(100% - ${APP_BREADCRUMB_OFFSET} - ${SIDEBAR_WORKSPACE_OFFSET})`,
               }}
               className="flex flex-col overflow-hidden"
             >
-              <ResizablePanelGroup direction="vertical" autoSaveId="resizeable-console-group">
-                <ResizablePanel collapsible minSize={10}>
-                  <Outlet />
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel collapsible className="min-h-8">
-                  <SocketMessageConsole />
-                </ResizablePanel>
-              </ResizablePanelGroup>
+              <Outlet />
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </SidebarInset>
-    </>
+      <Footer />
+    </SidebarProvider>
   );
 }
 
-export default AppMainContent;
+function AppMainLayout() {
+  return (
+    <LayoutProvider>
+      <AppMainLayoutInner />
+    </LayoutProvider>
+  );
+}
+
+export default AppMainLayout;

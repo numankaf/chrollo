@@ -49,7 +49,7 @@ function RequestBody() {
   };
 
   return (
-    <>
+    <div className="h-full flex flex-col">
       <div className="flex items-center justify-end gap-2 mx-2 mb-1 ">
         <p className="text-muted-foreground my-1 flex-1">Body</p>
         <BodyTypeSelector />
@@ -57,32 +57,27 @@ function RequestBody() {
           Beautify
         </Button>
       </div>
-      <ScrollArea className="mx-2 mb-2 border rounded-lg" style={{ height: 'calc(100% - 2.5rem)' }}>
-        <Controller
-          name={BODY_DATA_PROPERTY_KEY}
-          control={form.control}
-          render={({ field }) => (
-            <CodeEditor
-              value={field.value}
-              bodyType={bodyType}
-              onChange={(value) => {
-                form.setValue(BODY_DATA_PROPERTY_KEY, value, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                });
-              }}
-              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-                // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-                  e.preventDefault();
-                  formatRequestData();
-                }
-              }}
-            />
-          )}
-        />
-      </ScrollArea>
-    </>
+      <div className="flex-1 mx-2 my-2 border rounded-lg" style={{ height: 'calc(100% - 6rem)' }}>
+        <ScrollArea className="p-0.5 min-h-full h-full">
+          <Controller
+            name={BODY_DATA_PROPERTY_KEY}
+            control={form.control}
+            render={({ field }) => (
+              <CodeEditor
+                value={field.value}
+                bodyType={bodyType}
+                onChange={(value) => {
+                  form.setValue(BODY_DATA_PROPERTY_KEY, value, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                  });
+                }}
+              />
+            )}
+          />
+        </ScrollArea>
+      </div>
+    </div>
   );
 }
 

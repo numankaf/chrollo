@@ -53,7 +53,7 @@ chrolloEngine.load(`
       subscribe(connectionId, clientId, clientTopic);
     });
 
-    chrollo.stomp.onPostUnsubscribe(({ connectionId, subscriptionId, topic, unsubscribe, disableDefault }) => {
+    chrollo.stomp.onPreUnsubscribe(({ connectionId, subscriptionId, topic, unsubscribe, disableDefault }) => {
       disableDefault();
       const key = 'clientSessionId' + '-' + connectionId;
       const clientSessionId = chrollo.variables.get(key);
@@ -328,7 +328,7 @@ export function initStompIpc() {
       topic,
       unsubscribe: unSubscribeInternal,
     };
-    const { defaultDisabled } = runtime.stomp.runPostUnsubscribe(ctx);
+    const { defaultDisabled } = runtime.stomp.runPreUnsubscribe(ctx);
     if (defaultDisabled) return;
     unSubscribeInternal(connectionId, subscriptionId, topic);
   });

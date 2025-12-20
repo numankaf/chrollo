@@ -4,6 +4,7 @@ import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
 import { Minus, Search, X } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/common/button';
 import SettingsButton from '@/components/app/button/settings-button';
@@ -13,7 +14,7 @@ import WorkspaceSelector from '@/components/selector/workspace-selector';
 
 function Topbar() {
   const { appLoaded } = use(AppContext);
-
+  const navigate = useNavigate();
   return (
     <nav
       style={
@@ -29,7 +30,11 @@ function Topbar() {
           <img className="h-8 shrink-0" src={AppText} alt="App Text" />
         </div>
 
-        {appLoaded && <Button variant="ghost">Home</Button>}
+        {appLoaded && (
+          <Button variant="ghost" onClick={() => navigate('/')}>
+            Home
+          </Button>
+        )}
         {appLoaded && <WorkspaceSelector />}
         {appLoaded && <ConnectionSelector />}
       </div>

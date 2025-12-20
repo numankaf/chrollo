@@ -130,7 +130,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
   };
 
   return (
-    <div className="mx-4">
+    <div className="mx-4 pb-2">
       <p className="text-muted-foreground my-1">Stomp Subscriptions</p>
 
       <TanstackDataTable<StompSubscription>

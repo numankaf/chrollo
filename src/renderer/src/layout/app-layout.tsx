@@ -1,11 +1,8 @@
 import { use } from 'react';
-import { SIDEBAR_WIDTH_ICON } from '@/constants/layout-constants';
-import AppMainContent from '@/layout/app-main-content';
+import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
-import { LayoutProvider } from '@/provider/layout-provider';
+import { Outlet } from 'react-router';
 
-import { SidebarProvider } from '@/components/common/sidebar';
-import Footer from '@/components/layout/app-footer';
 import AppLoader from '@/components/layout/app-loader';
 import Topbar from '@/components/layout/app-topbar';
 
@@ -14,20 +11,17 @@ function AppLayout() {
 
   return (
     <>
-      <LayoutProvider>
-        <SidebarProvider
-          style={
-            {
-              '--sidebar-width': SIDEBAR_WIDTH_ICON,
-            } as React.CSSProperties
-          }
-        >
-          <Topbar />
-          {!appLoaded && <AppLoader />}
-          {appLoaded && <AppMainContent />}
-          <Footer />
-        </SidebarProvider>
-      </LayoutProvider>
+      <Topbar />
+      <div
+        className="relative"
+        style={{
+          height: `calc(100vh - ${SIDEBAR_TOP_OFFSET})`,
+          top: SIDEBAR_TOP_OFFSET,
+        }}
+      >
+        {!appLoaded && <AppLoader />}
+        {appLoaded && <Outlet />}
+      </div>
     </>
   );
 }

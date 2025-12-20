@@ -14,7 +14,7 @@ export function useAppSubscriptions() {
     if (activeTab) {
       navigate(getTabRoute(activeTab));
     } else {
-      navigate('/empty');
+      navigate('/main/empty');
     }
   }, [activeTab, navigate]);
 

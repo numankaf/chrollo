@@ -11,6 +11,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import ComingSoon from '@/components/app/empty/coming-soon';
 
@@ -51,34 +52,33 @@ function RequestView() {
 
   if (!request) return <div>Request not found</div>;
   return (
-    <div className="h-full">
+    <div className="max-h-full h-full flex flex-col">
       <FormProvider {...form}>
         <form className="h-full" noValidate>
           <RequestViewHeader />
-          <Tabs
-            defaultValue="body"
-            className="w-full mt-3 gap-0"
-            variant="link"
-            style={{ height: 'calc(100% - 4rem)' }}
-          >
+          <Tabs defaultValue="body" className="w-full mt-3 h-full flex-1" variant="link">
             <TabsList className="mx-2">
               <TabsTrigger value="docs">Docs</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
-            <TabsContent value="docs">
-              <ComingSoon />
-            </TabsContent>
-            <TabsContent value="headers">
-              <RequestHeaders headers={request.headers} />
-            </TabsContent>
-            <TabsContent className="h-full " value="body">
-              <RequestBody />
-            </TabsContent>
-            <TabsContent value="scripts">
-              <ComingSoon />
-            </TabsContent>
+            <div style={{ height: 'calc(100% - 6rem)', minHeight: 'calc(100% - 6rem)' }}>
+              <TabsContent value="docs">
+                <ComingSoon />
+              </TabsContent>
+              <TabsContent value="headers" className="h-full">
+                <ScrollArea className="h-full">
+                  <RequestHeaders headers={request.headers} />
+                </ScrollArea>
+              </TabsContent>
+              <TabsContent className="h-full" value="body">
+                <RequestBody />
+              </TabsContent>
+              <TabsContent value="scripts">
+                <ComingSoon />
+              </TabsContent>
+            </div>
           </Tabs>
         </form>
       </FormProvider>

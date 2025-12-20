@@ -7,7 +7,9 @@ import HistoryView from '@/features/history/view/history-view';
 import HomeView from '@/features/home/view/home-view';
 import EmptyView from '@/features/workspaces/empty/view/empty-view';
 import WorkspaceView from '@/features/workspaces/workspace/view/workspace-view';
+import AppConsoleLayout from '@/layout/app-console-layout';
 import AppLayout from '@/layout/app-layout';
+import AppMainLayout from '@/layout/app-main-layout';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router';
 
 import './app.css';
@@ -18,46 +20,57 @@ function App() {
       element: <AppLayout />,
       children: [
         {
+          element: <AppMainLayout />,
+          path: '/main',
+          children: [
+            {
+              element: <AppConsoleLayout />,
+              children: [
+                {
+                  path: '/main/connection/stomp/:id',
+                  element: <StompConnectionView />,
+                },
+                {
+                  path: '/main/collection/folder/request/:id',
+                  element: <RequestView />,
+                },
+              ],
+            },
+            {
+              path: '/main/empty',
+              element: <EmptyView />,
+            },
+            {
+              path: '/main/workspace/:id',
+              element: <WorkspaceView />,
+            },
+            {
+              path: '/main/collection/:id',
+              element: <CollectionView />,
+            },
+            {
+              path: '/main/collection/folder/:id',
+              element: <FolderView />,
+            },
+            {
+              path: '/main/environment/:id',
+              element: <EnvironmentView />,
+            },
+            {
+              path: '/main/history',
+              element: <HistoryView />,
+            },
+          ],
+        },
+        {
           path: '/',
           element: <HomeView />,
-        },
-        {
-          path: '/empty',
-          element: <EmptyView />,
-        },
-        {
-          path: '/workspace/:id',
-          element: <WorkspaceView />,
-        },
-        {
-          path: '/connection/stomp/:id',
-          element: <StompConnectionView />,
-        },
-        {
-          path: '/collection/:id',
-          element: <CollectionView />,
-        },
-        {
-          path: '/collection/folder/:id',
-          element: <FolderView />,
-        },
-        {
-          path: '/collection/folder/request/:id',
-          element: <RequestView />,
-        },
-        {
-          path: '/environment/:id',
-          element: <EnvironmentView />,
-        },
-        {
-          path: '/history',
-          element: <HistoryView />,
         },
       ],
     },
     {
       path: '*',
-      element: <Navigate to="/empty" replace={true} />,
+      element: <Navigate to="/" replace={true} />,
     },
   ]);
   return <RouterProvider router={router} />;

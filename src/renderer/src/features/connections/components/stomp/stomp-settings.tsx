@@ -8,7 +8,7 @@ function StompSettings() {
   const form = useFormContext();
 
   return (
-    <div className="m-1 space-y-4">
+    <div className="p-1 space-y-4">
       <FieldGroup>
         <Controller
           name="settings.connectionTimeout"

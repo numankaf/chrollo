@@ -1,6 +1,11 @@
-import type { PostStompUnsubscribeCtx, StompScriptRuntime } from '@/main/scripts/runtime/stomp-script-runtime';
-
-import type { PreStompConnectCtx, PreStompSendCtx, PreStompSubscribeCtx, StompMessageCtx } from '@/types/chrollo';
+import type {
+  PreStompConnectCtx,
+  PreStompSendCtx,
+  PreStompSubscribeCtx,
+  PreStompUnsubscribeCtx,
+  StompMessageCtx,
+  StompScriptRuntime,
+} from '@/main/scripts/runtime/stomp-script-runtime';
 
 export function createStompAPI(runtime: StompScriptRuntime) {
   return Object.freeze({
@@ -12,8 +17,8 @@ export function createStompAPI(runtime: StompScriptRuntime) {
       runtime.preSubscribe.push(handler);
     },
 
-    onPostUnsubscribe(handler: (ctx: PostStompUnsubscribeCtx) => void) {
-      runtime.postUnsubscribe.push(handler);
+    onPreUnsubscribe(handler: (ctx: PreStompUnsubscribeCtx) => void) {
+      runtime.preUnsubscribe.push(handler);
     },
 
     onPreSend(handler: (ctx: PreStompSendCtx) => void) {
