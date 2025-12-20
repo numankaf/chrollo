@@ -31,7 +31,6 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
           return (
             <div className="flex items-center justify-center">
               <Switch
-                className="cursor-pointer"
                 checked={value}
                 disabled={disabled}
                 onCheckedChange={(checked) => {

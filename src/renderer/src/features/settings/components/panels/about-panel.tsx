@@ -1,4 +1,4 @@
-import Contributor from '@/features/settings/components/contributor';
+import Contributor from '@/features/settings/components/about/contributor';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
 import numankaf from '@/resources/avatar/numankaf.png';

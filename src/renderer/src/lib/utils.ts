@@ -11,16 +11,16 @@ interface JsonObject {
   [key: string]: JsonValue;
 }
 
-export function deepParseJson<T extends JsonValue>(input: T): T {
+export function deepParseJson<T extends JsonValue>(input: T, deepParseEnabled?: boolean): T {
   if (typeof input === 'string') {
     try {
       const parsed = JSON.parse(input) as T;
-      return deepParseJson(parsed);
+      return deepParseEnabled ? deepParseJson(parsed, deepParseEnabled) : parsed;
     } catch {
       return input;
     }
   } else if (Array.isArray(input)) {
-    return input.map(deepParseJson) as T;
+    return input.map((item) => deepParseJson(item)) as T;
   } else if (input && typeof input === 'object') {
     const result: JsonObject = {};
     for (const key in input) {

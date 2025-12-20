@@ -1,5 +1,7 @@
 import type { JSX } from 'react';
+import { useAppConfigStore } from '@/store/app-config-store';
 import { Container, LayoutDashboard } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Tab } from '@/types/layout';
@@ -13,6 +15,12 @@ export type TabItemContentProps = React.ComponentProps<'span'> & {
 };
 
 function TabItemContent({ className, tab }: TabItemContentProps) {
+  const { applicationSettings } = useAppConfigStore(
+    useShallow((state) => ({
+      applicationSettings: state.applicationSettings,
+    }))
+  );
+
   let Icon: JSX.Element | null = null;
   let name = '';
 
@@ -51,7 +59,7 @@ function TabItemContent({ className, tab }: TabItemContentProps) {
 
   return (
     <span className={cn('flex items-center gap-2 text-sm overflow-hidden no-scrollbar transition-all', className)}>
-      {Icon}
+      {applicationSettings.showTabIcons && Icon}
       <span title={name} className="truncate">
         {name}
       </span>

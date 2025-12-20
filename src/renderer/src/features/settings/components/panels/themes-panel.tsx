@@ -24,7 +24,7 @@ function ThemePresetItem({ themePreset }: { themePreset: ThemePreset }) {
           setActiveTheme(themePreset.theme);
         }}
       >
-        <RadioGroupItem className="cursor-pointer" value={themePreset.theme} id={themePreset.theme} />
+        <RadioGroupItem value={themePreset.theme} id={themePreset.theme} />
         <Label className="cursor-pointer" htmlFor={themePreset.theme}>
           {themePreset.name}
         </Label>

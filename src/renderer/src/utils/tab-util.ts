@@ -1,3 +1,4 @@
+import { useAppConfigStore } from '@/store/app-config-store';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
@@ -134,7 +135,9 @@ export function confirmTabClose(tabId: string) {
 
   const dirty = useTabsStore.getState().dirtyBeforeSaveByTab[tab.id];
 
-  if (dirty) {
+  const discardUnsavedChangesOnClose = useAppConfigStore.getState().applicationSettings.discardUnsavedChangesOnClose;
+
+  if (dirty && !discardUnsavedChangesOnClose) {
     confirmDialog({
       header: 'Do you want to save?',
       message: `The tab ${tabItem.name} has unsaved changes.

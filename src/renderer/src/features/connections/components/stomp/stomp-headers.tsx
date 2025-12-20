@@ -30,7 +30,6 @@ function StompHeaders({ headers }: { headers: Header[] }) {
           return (
             <div className="flex items-center justify-center">
               <Checkbox
-                className="cursor-pointer"
                 checked={row.original.enabled}
                 disabled={disabled}
                 onCheckedChange={(checked) => {

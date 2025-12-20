@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { TIME_FORMAT_HH_MM_SS_MMM } from '@/constants/date-constants';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
+import { useAppConfigStore } from '@/store/app-config-store';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
 import { getConnectionButtonVariant } from '@/utils/connection-util';
@@ -29,9 +30,14 @@ import NoSocketMessageFound from '@/components/app/empty/no-socket-message-found
 import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-message-icon';
 
 function SentAndReceivedMessageContent({ message }: { message: SocketMessage }) {
+  const { applicationSettings } = useAppConfigStore(
+    useShallow((state) => ({
+      applicationSettings: state.applicationSettings,
+    }))
+  );
   const [bodyType, setBodyType] = useState<RequestBodyType>(getMessageContentType(message.meta?.headers));
 
-  const parsedStringResponse = JSON.stringify(deepParseJson(message.data));
+  const parsedStringResponse = JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses));
   return (
     <div className="mt-1">
       <div>
@@ -115,7 +121,7 @@ function ConsoleMessageContent({ message }: { message: SocketMessage }) {
 function ConsoleMessage({ message }: { message: SocketMessage }) {
   return (
     <AccordionItem value={message.id.toString()}>
-      <AccordionTrigger className="cursor-pointer rounded-xs hover:bg-secondary hover:no-underline p-0 px-2 [&>svg]:h-full">
+      <AccordionTrigger className="rounded-xs hover:bg-secondary hover:no-underline p-0 px-2 [&>svg]:h-full">
         <div className="p-2.5 flex w-full items-center gap-4 ">
           <SocketConsoleMessageIcon messageType={message.type} size={18} />
           <span className="flex-1 truncate w-0">{message.data}</span>
