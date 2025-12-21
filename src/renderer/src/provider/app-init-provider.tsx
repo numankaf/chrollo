@@ -2,6 +2,7 @@ import { createContext, useEffect, useState, type ReactNode } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
+import useInterceptionScriptStore from '@/store/interception-script-store';
 import useWorkspaceStore from '@/store/workspace-store';
 
 interface AppContextValue {
@@ -38,6 +39,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLoadingText('Loading environments...');
         const environments = await window.api.environment.load();
         await useEnvironmentStore.getState().initEnvironmentStore(environments);
+
+        setLoadingText('Loading interception scripts...');
+        const interceptionScripts = await window.api.interceptionScript.load();
+        await useInterceptionScriptStore.getState().initInterceptionScriptStore(interceptionScripts);
 
         setAppLoaded(true);
       } catch (err) {

@@ -1,6 +1,7 @@
 import type { CollectionItem } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { InterceptionScript } from '@/types/interception-script';
 
 export const BASE_MODEL_TYPE = {
   WORKSPACE: 'WORKSPACE',
@@ -8,7 +9,7 @@ export const BASE_MODEL_TYPE = {
   CONNECTION: 'CONNECTION',
   COLLECTION: 'COLLECTION',
   REQUEST_HISTORY: 'REQUEST_HISTORY',
-  SCRIPT: 'SCRIPT',
+  INTERCEPTION_SCRIPT: 'INTERCEPTION_SCRIPT',
 } as const;
 
 export type BaseModelType = (typeof BASE_MODEL_TYPE)[keyof typeof BASE_MODEL_TYPE];
@@ -25,4 +26,4 @@ export interface BaseAuditModel extends BaseModel {
   readonly updatedDate?: string;
 }
 
-export type BaseItem = Connection | CollectionItem | Environment;
+export type BaseItem = Connection | CollectionItem | Environment | InterceptionScript;

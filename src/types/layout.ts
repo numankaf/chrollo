@@ -5,9 +5,10 @@ import type { BaseModelType } from '@/types/base';
 import type { CollectionItem } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { InterceptionScript } from '@/types/interception-script';
 import type { Workspace } from '@/types/workspace';
 
-export type TabItem = Workspace | Connection | CollectionItem | Environment;
+export type TabItem = Workspace | Connection | CollectionItem | Environment | InterceptionScript;
 
 export interface Tab {
   readonly id: string;

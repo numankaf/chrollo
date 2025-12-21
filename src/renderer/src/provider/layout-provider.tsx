@@ -1,6 +1,6 @@
 import React, { createContext, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
-import { Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
+import { Cable, Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
 import type { ImperativePanelHandle } from 'react-resizable-panels';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -11,6 +11,7 @@ import CollectionSidebar from '@/components/layout/sidebar/collection/app-collec
 import ConnectionSidebar from '@/components/layout/sidebar/connection/app-connection-sidebar';
 import EnvironmentsSidebar from '@/components/layout/sidebar/environment/app-environment-sidebar';
 import HistorySidebar from '@/components/layout/sidebar/history/app-history-sidebar';
+import InterceptionScriptSidebar from '@/components/layout/sidebar/interception-script/app-interception-script-sidebar';
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
   {
@@ -33,6 +34,13 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     url: '/environments',
     icon: Columns3Cog,
     component: EnvironmentsSidebar,
+  },
+  {
+    modelType: BASE_MODEL_TYPE.INTERCEPTION_SCRIPT,
+    title: 'Scripts',
+    url: '/interception-scripts',
+    icon: Cable,
+    component: InterceptionScriptSidebar,
   },
   {
     modelType: BASE_MODEL_TYPE.REQUEST_HISTORY,

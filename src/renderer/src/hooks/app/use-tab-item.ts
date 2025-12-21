@@ -1,6 +1,7 @@
 import useCollectionItemStore from '@/store/collection-item-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
+import useInterceptionScriptStore from '@/store/interception-script-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -32,6 +33,12 @@ export function useTabItem(tab: Tab | null) {
     }))
   );
 
+  const { interceptionScripts } = useInterceptionScriptStore(
+    useShallow((state) => ({
+      interceptionScripts: state.interceptionScripts,
+    }))
+  );
+
   switch (tab?.modelType) {
     case BASE_MODEL_TYPE.WORKSPACE:
       return workspaces.find((w) => w.id === tab.id);
@@ -44,6 +51,9 @@ export function useTabItem(tab: Tab | null) {
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
       return environments.find((e) => e.id === tab.id);
+
+    case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
+      return interceptionScripts.find((e) => e.id === tab.id);
 
     default:
       return undefined;

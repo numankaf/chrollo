@@ -5,6 +5,7 @@ import { initCollectionIpc } from '@/main/collection/collection-ipc';
 import { initConnectionIpc } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
+import { initInterceptionScriptIpc } from '@/main/interception-script/interception-script-ipc';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
@@ -128,6 +129,7 @@ app.whenReady().then(() => {
   initConnectionIpc();
   initCollectionIpc();
   initEnvironmentIpc();
+  initInterceptionScriptIpc();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

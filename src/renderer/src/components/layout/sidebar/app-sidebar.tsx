@@ -32,7 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       }}
                     >
                       <item.icon size={16} />
-                      <span className="text-xs">{item.title}</span>
+                      <span className="text-xs text-center! whitespace-pre-wrap!">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

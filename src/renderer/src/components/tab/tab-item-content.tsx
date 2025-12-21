@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
-import { Container, LayoutDashboard } from 'lucide-react';
+import { Container, FileCode, LayoutDashboard } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
@@ -36,6 +36,11 @@ function TabItemContent({ className, tab }: TabItemContentProps) {
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
       Icon = <Container size={14} className="shrink-0" />;
+      name = item.name;
+      break;
+
+    case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
+      Icon = <FileCode size={14} className="shrink-0" />;
       name = item.name;
       break;
 

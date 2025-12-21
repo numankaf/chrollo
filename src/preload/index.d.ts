@@ -3,6 +3,7 @@ import { ElectronAPI } from '@electron-toolkit/preload';
 import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { InterceptionScript } from '@/types/interception-script';
 import type { SocketMessage } from '@/types/socket';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
@@ -63,6 +64,13 @@ declare global {
         get: (id: string) => Promise<Environment | undefined>;
         delete: (id: string) => Promise<void>;
         load: () => Promise<Environment[]>;
+        clear: () => Promise<void>;
+      };
+      interceptionScript: {
+        save: (interceptionScript: InterceptionScript) => Promise<void>;
+        get: (id: string) => Promise<InterceptionScript | undefined>;
+        delete: (id: string) => Promise<void>;
+        load: () => Promise<InterceptionScript[]>;
         clear: () => Promise<void>;
       };
     };

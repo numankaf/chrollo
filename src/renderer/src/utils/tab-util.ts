@@ -3,6 +3,7 @@ import useCollectionItemStore from '@/store/collection-item-store';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
+import useInterceptionScriptStore from '@/store/interception-script-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasParent } from '@/utils/collection-util';
@@ -38,6 +39,7 @@ export function getTabRoute(tab: Tab): string {
 
         case COLLECTION_TYPE.REQUEST_RESPONSE:
           return `/main/collection/folder/request/request-response/${item.id}`;
+
         default:
           return '/main/empty';
       }
@@ -53,12 +55,17 @@ export function getTabRoute(tab: Tab): string {
 
         case CONNECTION_TYPE.SOCKETIO:
           return `/main/connection/socketio/${item.id}`;
+
         default:
           return '/main/empty';
       }
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
       return `/main/environment/${item.id}`;
+
+    case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
+      return `/main/interception-script/${item.id}`;
+
     default:
       return '/main/empty';
   }
@@ -68,12 +75,19 @@ export function getTabItem(tab: Tab): TabItem | undefined {
   switch (tab.modelType) {
     case BASE_MODEL_TYPE.WORKSPACE:
       return useWorkspaceStore.getState().workspaces.find((w) => w.id === tab.id);
+
     case BASE_MODEL_TYPE.CONNECTION:
       return useConnectionStore.getState().connections.find((c) => c.id === tab.id);
+
     case BASE_MODEL_TYPE.COLLECTION:
       return useCollectionItemStore.getState().collectionItemMap.get(tab.id);
+
     case BASE_MODEL_TYPE.ENVIRONMENT:
       return useEnvironmentStore.getState().environments.find((e) => e.id === tab.id);
+
+    case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
+      return useInterceptionScriptStore.getState().interceptionScripts.find((e) => e.id === tab.id);
+
     default:
       return undefined;
   }
@@ -92,6 +106,9 @@ export async function getPersistedTabItem(tab: Tab) {
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
       return window.api.environment.get(tab.id);
+
+    case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
+      return window.api.interceptionScript.get(tab.id);
 
     default:
       return undefined;

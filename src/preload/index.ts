@@ -4,6 +4,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
+import type { InterceptionScript } from '@/types/interception-script';
 import type { SocketMessage } from '@/types/socket';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
@@ -78,6 +79,15 @@ const api = {
     delete: (id: string) => ipcRenderer.invoke('environments:delete', id) as Promise<void>,
     load: () => ipcRenderer.invoke('environments:load') as Promise<Environment[]>,
     clear: () => ipcRenderer.invoke('environments:clear') as Promise<void>,
+  },
+
+  interceptionScript: {
+    save: (interceptionScript: InterceptionScript) =>
+      ipcRenderer.invoke('interception-script:save', interceptionScript) as Promise<void>,
+    get: (id: string) => ipcRenderer.invoke('interception-script:get', id) as Promise<InterceptionScript | undefined>,
+    delete: (id: string) => ipcRenderer.invoke('interception-script:delete', id) as Promise<void>,
+    load: () => ipcRenderer.invoke('interception-script:load') as Promise<InterceptionScript[]>,
+    clear: () => ipcRenderer.invoke('interception-script:clear') as Promise<void>,
   },
 };
 
