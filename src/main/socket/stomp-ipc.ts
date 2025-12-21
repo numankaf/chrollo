@@ -145,7 +145,7 @@ export function initStompIpc() {
 
     let lastStompStatus: ConnectionStatus | null = null;
     lastStompStatus = CONNECTION_STATUS.CONNECTED;
-    client.onConnect = () => {
+    client.onConnect = (frame) => {
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
         status: lastStompStatus,
@@ -158,6 +158,10 @@ export function initStompIpc() {
         type: SOCKET_MESSAGE_TYPE.CONNECTED,
         timestamp: Date.now(),
         data: `Connected to ${connectionUrl}`,
+        meta: {
+          command: frame.command,
+          headers: { ...frame.headers, ...headers },
+        },
       };
 
       mainWindow.webContents.send('stomp:message', socketConnectedMessage);
@@ -181,7 +185,7 @@ export function initStompIpc() {
       }
     };
 
-    client.onDisconnect = () => {
+    client.onDisconnect = (frame) => {
       lastStompStatus = CONNECTION_STATUS.DISCONNECTED;
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
@@ -195,6 +199,10 @@ export function initStompIpc() {
         type: SOCKET_MESSAGE_TYPE.DISCONNECTED,
         timestamp: Date.now(),
         data: `Disconnected from ${connectionUrl}`,
+        meta: {
+          command: frame.command,
+          headers: frame.headers,
+        },
       };
 
       mainWindow.webContents.send('stomp:message', socketDisconnectedMessage);
@@ -210,6 +218,10 @@ export function initStompIpc() {
         type: SOCKET_MESSAGE_TYPE.ERROR,
         timestamp: Date.now(),
         data: `ERROR: ${frame.headers['message']}`,
+        meta: {
+          command: frame.command,
+          headers: frame.headers,
+        },
       };
 
       mainWindow.webContents.send('stomp:message', socketStompErrorMessage);

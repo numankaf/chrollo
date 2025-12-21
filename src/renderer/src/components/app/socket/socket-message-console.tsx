@@ -9,7 +9,7 @@ import { formatCode } from '@/utils/editor-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Trash2 } from 'lucide-react';
+import { Maximize2, Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
@@ -30,6 +30,26 @@ import NoActiveConnectionFound from '@/components/app/empty/no-active-connection
 import NoResultsFound from '@/components/app/empty/no-results-found';
 import NoSocketMessageFound from '@/components/app/empty/no-socket-message-found';
 import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-message-icon';
+
+import { SocketMessageDetailDialog } from './socket-message-detail-dialog';
+
+function MessageMetaInfo({ headers }: { headers?: Record<string, unknown> }) {
+  if (!headers || Object.keys(headers).length === 0) return null;
+
+  return (
+    <div className="mt-2 text-xs border rounded-md p-2 bg-muted/30">
+      <p className="font-semibold mb-1 uppercase text-[10px] text-muted-foreground">Headers</p>
+      <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
+        {Object.entries(headers).map(([key, value]) => (
+          <div key={key} className="contents">
+            <span className="text-muted-foreground">{key}:</span>
+            <span className="break-all">{String(value)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function SentAndReceivedMessageContent({ message }: { message: SocketMessage }) {
   const { applicationSettings } = useAppConfigStore(
@@ -76,60 +96,106 @@ function ConsoleMessageContent({ message }: { message: SocketMessage }) {
 
     case SOCKET_MESSAGE_TYPE.EVENT:
       return (
-        <ScrollArea className="mt-1 border rounded-lg" style={{ height: '12rem' }}>
-          <CodeEditor
-            bodyType={REQUEST_BODY_TYPE.JSON}
-            value={formatCode(REQUEST_BODY_TYPE.JSON, message.data)}
-            readOnly
-          />
-        </ScrollArea>
+        <div className="flex flex-col gap-1">
+          <ScrollArea className="mt-1 border rounded-lg" style={{ height: '12rem' }}>
+            <CodeEditor
+              bodyType={REQUEST_BODY_TYPE.JSON}
+              value={formatCode(REQUEST_BODY_TYPE.JSON, message.data)}
+              readOnly
+            />
+          </ScrollArea>
+          <MessageMetaInfo headers={message.meta?.headers} />
+        </div>
       );
 
     case SOCKET_MESSAGE_TYPE.SUBSCRIBED:
       return (
-        <div className="m-2">
-          Subscription to topic<span className="font-semibold"> {message.meta?.headers?.['destination']}</span> with id
-          <span className="font-semibold"> {message.meta?.headers?.['id']}</span> was initialized successfully.
+        <div className="m-2 flex flex-col gap-2">
+          <div>
+            Subscription to topic<span className="font-semibold"> {message.meta?.headers?.['destination']}</span> with
+            id
+            <span className="font-semibold"> {message.meta?.headers?.['id']}</span> was initialized successfully.
+          </div>
+          <MessageMetaInfo headers={message.meta?.headers} />
         </div>
       );
 
     case SOCKET_MESSAGE_TYPE.UNSUBSCRIBED:
       return (
-        <div className="m-2">
-          Subscription to topic<span className="font-semibold"> {message.meta?.headers?.['destination']}</span> with id
-          <span className="font-semibold"> {message.meta?.headers?.['id']}</span> was removed successfully.
+        <div className="m-2 flex flex-col gap-2">
+          <div>
+            Subscription to topic<span className="font-semibold"> {message.meta?.headers?.['destination']}</span> with
+            id
+            <span className="font-semibold"> {message.meta?.headers?.['id']}</span> was removed successfully.
+          </div>
+          <MessageMetaInfo headers={message.meta?.headers} />
         </div>
       );
 
     case SOCKET_MESSAGE_TYPE.CONNECTED:
       return (
-        <div className="m-2">
-          Connection with id <span className="font-semibold"> {message.connectionId}</span> was established
-          successfully.
+        <div className="m-2 flex flex-col gap-2">
+          <div>
+            Connection with id <span className="font-semibold"> {message.connectionId}</span> was established
+            successfully.
+          </div>
+          <MessageMetaInfo headers={message.meta?.headers} />
         </div>
       );
 
     case SOCKET_MESSAGE_TYPE.DISCONNECTED:
       return (
-        <div className="m-2">
-          Connection with id <span className="font-semibold"> {message.connectionId}</span> was closed successfully.
+        <div className="m-2 flex flex-col gap-2">
+          <div>
+            Connection with id <span className="font-semibold"> {message.connectionId}</span> was closed successfully.
+          </div>
+          <MessageMetaInfo headers={message.meta?.headers} />
         </div>
       );
     default:
-      return <div className="m-2">{message.data}</div>;
+      return (
+        <div className="m-2 flex flex-col gap-2">
+          <div>{message.data}</div>
+          <MessageMetaInfo headers={message.meta?.headers} />
+        </div>
+      );
   }
 }
 
-function ConsoleMessage({ message }: { message: SocketMessage }) {
+function ConsoleMessage({
+  message,
+  onShowDetail,
+}: {
+  message: SocketMessage;
+  onShowDetail: (msg: SocketMessage) => void;
+}) {
+  const isReqRes = message.type === SOCKET_MESSAGE_TYPE.SENT || message.type === SOCKET_MESSAGE_TYPE.RECEIVED;
+
   return (
     <AccordionItem value={message.id.toString()}>
       <AccordionTrigger className="rounded-xs hover:bg-secondary hover:no-underline p-0 px-2 [&>svg]:h-full">
-        <div className="p-2.5 flex w-full items-center gap-4 ">
+        <div className="p-2.5 flex w-full items-center gap-4 group">
           <SocketConsoleMessageIcon messageType={message.type} size={18} />
-          <span className="flex-1 truncate w-0">{message.data}</span>
-          <span className="text-muted-foreground min-w-20 text-end">
-            {new Date(message.timestamp).toLocaleTimeString([], TIME_FORMAT_HH_MM_SS_MMM)}
-          </span>
+          <span className="flex-1 truncate w-0 text-start">{message.data}</span>
+          <div className="flex items-center gap-1">
+            {isReqRes && (
+              <Button
+                asChild
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:flex size-4 rounded-md p-0.5"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShowDetail(message);
+                }}
+              >
+                <Maximize2 />
+              </Button>
+            )}
+            <span className="text-muted-foreground min-w-20 text-end">
+              {new Date(message.timestamp).toLocaleTimeString([], TIME_FORMAT_HH_MM_SS_MMM)}
+            </span>
+          </div>
         </div>
       </AccordionTrigger>
       <AccordionContent className="px-3">
@@ -152,6 +218,7 @@ function SocketMessageConsole() {
   const messages = useConnectionMessages(activeConnection?.id);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue<string>(search, 300);
+  const [detailMessage, setDetailMessage] = useState<SocketMessage | null>(null);
 
   const filteredMessages = applyTextSearch(messages, debouncedSearch, (message) => message.data);
   const { variant } = getConnectionButtonVariant(status);
@@ -233,12 +300,22 @@ function SocketMessageConsole() {
                     data-index={virtualRow.index}
                     ref={virtualizer.measureElement}
                   >
-                    <ConsoleMessage key={virtualRow.index} message={filteredMessages[virtualRow.index]} />
+                    <ConsoleMessage
+                      key={virtualRow.index}
+                      message={filteredMessages[virtualRow.index]}
+                      onShowDetail={setDetailMessage}
+                    />
                   </div>
                 ))}
               </div>
             </Accordion>
           </ScrollArea>
+          <SocketMessageDetailDialog
+            message={detailMessage}
+            onOpenChange={(open) => {
+              if (!open) setDetailMessage(null);
+            }}
+          />
         </>
       )}
     </div>
