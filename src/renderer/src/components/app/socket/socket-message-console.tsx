@@ -59,7 +59,10 @@ function SentAndReceivedMessageContent({ message }: { message: SocketMessage }) 
   );
   const [bodyType, setBodyType] = useState<RequestBodyType>(getMessageContentType(message.meta?.headers));
 
-  const parsedStringResponse = JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses));
+  const parsedStringResponse =
+    bodyType === REQUEST_BODY_TYPE.JSON
+      ? JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses))
+      : message.data;
   return (
     <div className="mt-1">
       <div>

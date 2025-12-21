@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
+import useCollectionItemStore from '@/store/collection-item-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { confirmTabClose, getNextTab, getPreviousTab } from '@/utils/tab-util';
@@ -7,7 +8,7 @@ import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
-import { BASE_MODEL_TYPE } from '@/types/base';
+import { NULL_PARENT_ID, REQUEST_DEFAULT_VALUES, type Request } from '@/types/collection';
 import { COMMANDS } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
@@ -22,6 +23,12 @@ function AppTabs() {
   const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
       activeWorkspaceId: state.activeWorkspaceId,
+    }))
+  );
+
+  const { saveCollectionItem } = useCollectionItemStore(
+    useShallow((state) => ({
+      saveCollectionItem: state.saveCollectionItem,
     }))
   );
 
@@ -102,13 +109,17 @@ function AppTabs() {
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  const handleAddTab = () => {
+  const handleAddTab = async () => {
     if (activeWorkspaceId) {
-      addTab({
+      const requestPayload: Request = {
         id: nanoid(),
+        name: 'New Request',
         workspaceId: activeWorkspaceId,
-        modelType: BASE_MODEL_TYPE.COLLECTION,
-      });
+        parentId: NULL_PARENT_ID,
+        ...REQUEST_DEFAULT_VALUES,
+      };
+      const newRequest = await saveCollectionItem(requestPayload);
+      addTab(newRequest);
     }
   };
 

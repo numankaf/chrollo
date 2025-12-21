@@ -32,7 +32,10 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
 
   if (!message) return null;
 
-  const parsedStringResponse = JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses));
+  const parsedStringResponse =
+    bodyType === REQUEST_BODY_TYPE.JSON
+      ? JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses))
+      : message.data;
   const headers = message.meta?.headers || {};
 
   return (

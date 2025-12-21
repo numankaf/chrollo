@@ -2,6 +2,8 @@ import { BASE_MODEL_TYPE, type BaseAuditModel } from '@/types/base';
 import type { Header, Scripts } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
 
+export const NULL_PARENT_ID = 'NULL_PARENT_ID';
+
 export const COLLECTION_TYPE = {
   COLLECTION: 'COLLECTION',
   FOLDER: 'FOLDER',

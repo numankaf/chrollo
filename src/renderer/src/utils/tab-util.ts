@@ -11,7 +11,7 @@ import { saveItem } from '@/utils/save-registry-util';
 import { toast } from 'sonner';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
+import { COLLECTION_TYPE, NULL_PARENT_ID, type CollectionItem } from '@/types/collection';
 import { CONNECTION_TYPE } from '@/types/connection';
 import type { Tab, TabItem } from '@/types/layout';
 
@@ -170,6 +170,13 @@ export function confirmTabClose(tabId: string) {
       primaryButtonProps: { variant: 'default' },
       secondaryLabel: "Don't Save",
       onSecondaryAction: () => {
+        if (
+          tabItem.modelType === BASE_MODEL_TYPE.COLLECTION &&
+          hasParent(tabItem) &&
+          tabItem.parentId === NULL_PARENT_ID
+        ) {
+          window.api.collection.delete(tabItem.id);
+        }
         useTabsStore.getState().closeTab(tab.id);
       },
       cancelLabel: 'Close',

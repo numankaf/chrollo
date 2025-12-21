@@ -1,10 +1,12 @@
-import { default as useWorkspaceStore } from '@/store/workspace-store';
-import { scrollToTab } from '@/utils/tab-util';
+import useWorkspaceStore from '@/store/workspace-store';
+import { hasParent } from '@/utils/collection-util';
+import { getTabItem, scrollToTab } from '@/utils/tab-util';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
+import { NULL_PARENT_ID } from '@/types/collection';
 import type { Tab } from '@/types/layout';
 
 interface TabsStore {
@@ -23,13 +25,26 @@ const useTabsStore = create<TabsStore>()(
       tabs: [],
       dirtyBeforeSaveByTab: {},
 
-      setDirtyBeforeSaveByTab: (tabId, dirty) =>
+      setDirtyBeforeSaveByTab: (tabId, dirty) => {
+        const tab = get().tabs.find((t) => t.id === tabId);
+        const tabItem = tab ? getTabItem(tab) : undefined;
+
+        let finalDirty = dirty;
+        if (
+          tabItem?.modelType === BASE_MODEL_TYPE.COLLECTION &&
+          hasParent(tabItem) &&
+          tabItem.parentId === NULL_PARENT_ID
+        ) {
+          finalDirty = true;
+        }
+
         set((state) => ({
           dirtyBeforeSaveByTab: {
             ...state.dirtyBeforeSaveByTab,
-            [tabId]: dirty,
+            [tabId]: finalDirty,
           },
-        })),
+        }));
+      },
       setTabs: (tabs) => set({ tabs }),
       addTab: (tab) => {
         const activeWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId!;
