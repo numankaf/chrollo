@@ -7,6 +7,7 @@ export type PreStompSubscribeHandler = (ctx: PreStompSubscribeCtx) => void;
 export type PreStompUnsubscribeHandler = (ctx: PreStompUnsubscribeCtx) => void;
 export type PreStompSendHandler = (ctx: PreStompSendCtx) => void;
 export type StompMessageHandler = (ctx: StompMessageCtx) => void;
+export type StompScriptErrorHandler = (err: Error, hook: string) => void;
 
 export interface PreStompConnectCtx {
   connection: StompConnection;
@@ -43,9 +44,32 @@ export class StompScriptRuntime {
   preUnsubscribe: PreStompUnsubscribeHandler[] = [];
   preSend: PreStompSendHandler[] = [];
   message: StompMessageHandler[] = [];
+  private errorHandlers: StompScriptErrorHandler[] = [];
+
+  onError(handler: StompScriptErrorHandler) {
+    this.errorHandlers.push(handler);
+  }
+
+  private handleRuntimeError(err: unknown, hook: string) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error(`[SCRIPT ERROR: chrollo.stomp.${hook}]`, error);
+    for (const handler of this.errorHandlers) {
+      try {
+        handler(error, hook);
+      } catch (e) {
+        console.error('Error in script error handler:', e);
+      }
+    }
+  }
 
   runPreConnect(ctx: PreStompConnectCtx) {
-    for (const fn of this.preConnect) fn(ctx);
+    for (const fn of this.preConnect) {
+      try {
+        fn(ctx);
+      } catch (err) {
+        this.handleRuntimeError(err, 'preConnect');
+      }
+    }
   }
 
   runPreSubscribe(ctx: Omit<PreStompSubscribeCtx, 'disableDefault'>) {
@@ -58,7 +82,13 @@ export class StompScriptRuntime {
       },
     };
 
-    for (const fn of this.preSubscribe) fn(internalCtx);
+    for (const fn of this.preSubscribe) {
+      try {
+        fn(internalCtx);
+      } catch (err) {
+        this.handleRuntimeError(err, 'preSubscribe');
+      }
+    }
 
     return { defaultDisabled };
   }
@@ -73,16 +103,34 @@ export class StompScriptRuntime {
       },
     };
 
-    for (const fn of this.preUnsubscribe) fn(internalCtx);
+    for (const fn of this.preUnsubscribe) {
+      try {
+        fn(internalCtx);
+      } catch (err) {
+        this.handleRuntimeError(err, 'preUnsubscribe');
+      }
+    }
 
     return { defaultDisabled };
   }
 
   runPreSend(ctx: PreStompSendCtx) {
-    for (const fn of this.preSend) fn(ctx);
+    for (const fn of this.preSend) {
+      try {
+        fn(ctx);
+      } catch (err) {
+        this.handleRuntimeError(err, 'preSend');
+      }
+    }
   }
 
   runMessage(ctx: StompMessageCtx) {
-    for (const fn of this.message) fn(ctx);
+    for (const fn of this.message) {
+      try {
+        fn(ctx);
+      } catch (err) {
+        this.handleRuntimeError(err, 'message');
+      }
+    }
   }
 }

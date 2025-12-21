@@ -51,6 +51,21 @@ const REQUEST_TYPE = `interface Request {
   };
 }`;
 
+const SOCKET_MESSAGE_TYPE = `interface SocketMessage {
+  id: number;
+  connectionId: string;
+  connectionType: 'STOMP' | 'RAW_WEBSOCKET' | 'SOCKETIO';
+  type: 'SENT' | 'RECEIVED' | 'CONNECTED' | 'DISCONNECTED' | 'ERROR' | 'EVENT' | 'SUBSCRIBED' | 'UNSUBSCRIBED';
+  timestamp: number;
+  data: string;
+  meta?: {
+    command?: string;
+    headers?: Record<string, string>;
+    isBinaryBody?: boolean;
+    binaryBody?: Uint8Array;
+  };
+}`;
+
 const STOMP_API = [
   {
     label: 'onPreConnect',
@@ -75,7 +90,7 @@ const STOMP_API = [
   {
     label: 'onMessage',
     type: 'function',
-    info: 'Triggered when a message is received.\n\nctx: {\n  message: SocketMessage\n}',
+    info: `Triggered when a message is received.\n\nctx: {\n  message: SocketMessage\n}\n\n${SOCKET_MESSAGE_TYPE}`,
   },
 ];
 

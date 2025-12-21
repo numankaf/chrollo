@@ -1,5 +1,6 @@
 import { getMainWindow } from '@/main/index';
 import { chrolloEngine } from '@/main/scripts/engine';
+import type { StompMessageCtx } from '@/main/scripts/runtime/stomp-script-runtime';
 import { stripAllWhitespace } from '@/main/utils/common-util';
 import { CONTENT_TYPE_MAP, isJsonContentType } from '@/main/utils/message-util';
 import { Client, type IFrame, type Message } from '@stomp/stompjs';
@@ -44,6 +45,10 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
             binaryBody: msg.binaryBody,
           },
         };
+
+        const runtime = chrolloEngine.getRuntime();
+        const ctx: StompMessageCtx = { message: socketReceivedMessage };
+        runtime.stomp.runMessage(ctx);
 
         mainWindow.webContents.send('stomp:message', socketReceivedMessage);
 
@@ -95,6 +100,11 @@ function unSubscribeInternal(connectionId: string, subscriptionId: string, topic
 export function initStompIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
+
+  const runtime = chrolloEngine.getRuntime();
+  runtime.stomp.onError((err, hook) => {
+    mainWindow.webContents.send('console:error', `[Script Runtime Error: ${hook}] ${err.message}`);
+  });
 
   // ------------------------------
   // CONNECT
