@@ -120,8 +120,8 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
         header: `Delete "${item.name}"`,
         message: `Are you sure you want to delete "${item.name}"?`,
         primaryLabel: 'Delete',
-        onPrimaryAction: () => {
-          deleteCollectionItem(item.id);
+        onPrimaryAction: async () => {
+          await deleteCollectionItem(item.id);
         },
       });
     });
@@ -151,10 +151,10 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              cloneCollectionItem(item.id);
+              await cloneCollectionItem(item.id);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -174,8 +174,8 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
               header: `Delete "${item.name}"`,
               message: `Are you sure you want to delete "${item.name}"?`,
               primaryLabel: 'Delete',
-              onPrimaryAction: () => {
-                deleteCollectionItem(item.id);
+              onPrimaryAction: async () => {
+                await deleteCollectionItem(item.id);
               },
             });
           },

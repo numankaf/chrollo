@@ -10,16 +10,16 @@ interface EnvironmentStore {
   environments: Environment[];
   initEnvironmentStore: (connections: Environment[]) => Promise<void>;
   getEnvironment: (id: string) => Environment | undefined;
-  createEnvironment: (environment: Environment) => Environment;
+  createEnvironment: (environment: Environment) => Promise<Environment>;
   updateEnvironment: (
     environment: Environment,
     options?: {
       persist?: boolean;
     }
-  ) => Environment;
-  deleteEnvironment: (id: string) => void;
-  cloneEnvironment: (id: string) => Environment;
-  saveEnvironment: (environment: Environment) => Environment;
+  ) => Promise<Environment>;
+  deleteEnvironment: (id: string) => Promise<void>;
+  cloneEnvironment: (id: string) => Promise<Environment>;
+  saveEnvironment: (environment: Environment) => Promise<Environment>;
 }
 
 const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
@@ -31,18 +31,18 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   getEnvironment: (id: string) => {
     return get().environments.find((e) => e.id === id)!;
   },
-  createEnvironment: (environment) => {
+  createEnvironment: async (environment) => {
     const newEnvironment = { ...environment, id: nanoid() };
 
     set((state) => ({
       environments: [...state.environments, newEnvironment],
     }));
 
-    window.api.environment.save(newEnvironment);
+    await window.api.environment.save(newEnvironment);
 
     return newEnvironment;
   },
-  updateEnvironment: (environment, options = { persist: false }) => {
+  updateEnvironment: async (environment, options = { persist: false }) => {
     let updatedEnvironment = environment;
 
     set((state) => {
@@ -57,25 +57,30 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
       };
     });
 
-    if (options.persist) window.api.environment.save(updatedEnvironment);
+    if (options.persist) {
+      await window.api.environment.save(updatedEnvironment);
+      useTabsStore.getState().setDirtyBeforeSaveByTab(updatedEnvironment.id, false);
+    }
 
     return updatedEnvironment;
   },
 
-  deleteEnvironment: (id) => {
+  deleteEnvironment: async (id) => {
     const newEnvironments = get().environments.filter((e) => e.id !== id);
     const currentActiveEnvironmentId = getActiveWorkspaceSelection('activeEnvironmentId');
 
     if (currentActiveEnvironmentId === id) {
       useWorkspaceStore.getState().updateWorkspaceSelection({ activeEnvironmentId: undefined });
     }
+
+    await window.api.environment.delete(id);
+
     useTabsStore.getState().closeTab(id);
 
-    window.api.environment.delete(id);
     set({ environments: newEnvironments });
   },
 
-  cloneEnvironment: (id: string) => {
+  cloneEnvironment: async (id: string) => {
     const state = get();
     const environments = state.environments;
     const index = environments.findIndex((c) => c.id === id);
@@ -93,7 +98,7 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
 
     const newEnvironments = [...environments.slice(0, index + 1), newEnvironment, ...environments.slice(index + 1)];
 
-    window.api.environment.save(newEnvironment);
+    await window.api.environment.save(newEnvironment);
 
     set({ environments: newEnvironments });
 
@@ -101,11 +106,11 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
     return newEnvironment;
   },
 
-  saveEnvironment: (environment) => {
+  saveEnvironment: async (environment) => {
     const exists = get().environments.some((e) => e.id === environment.id);
     const updatedEnvironment = exists
-      ? get().updateEnvironment(environment, { persist: true })
-      : get().createEnvironment(environment);
+      ? await get().updateEnvironment(environment, { persist: true })
+      : await get().createEnvironment(environment);
     return updatedEnvironment;
   },
 }));

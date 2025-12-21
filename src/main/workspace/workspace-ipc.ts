@@ -1,3 +1,4 @@
+import EventEmitter from 'events';
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
@@ -26,6 +27,8 @@ const workspaceDataDb = workspaceDb.sublevel<string, Workspace>('data', {
 const workspaceMetaDb = workspaceDb.sublevel<string, string>('meta', {
   valueEncoding: 'utf8',
 });
+
+const workspaceEvents = new EventEmitter();
 
 async function saveWorkspace(workspace: Workspace) {
   await workspaceDataDb.put(workspace.id, workspace);
@@ -79,6 +82,7 @@ async function loadWorkspaces(): Promise<WorkspaceFile> {
 
 async function setActiveWorkspace(id: string) {
   await workspaceMetaDb.put(ACTIVE_WORKSPACE_ID_KEY, id);
+  workspaceEvents.emit('active-workspace-changed', id);
 }
 
 async function getActiveWorkspace(): Promise<string | undefined> {
@@ -87,6 +91,14 @@ async function getActiveWorkspace(): Promise<string | undefined> {
   } catch {
     return undefined;
   }
+}
+
+export async function getActiveWorkspaceId() {
+  return await getActiveWorkspace();
+}
+
+export function onWorkspaceChanged(callback: (workspaceId: string) => void) {
+  workspaceEvents.on('active-workspace-changed', callback);
 }
 
 export function initWorkspaceIpc() {

@@ -1,8 +1,10 @@
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
+import { chrolloEngine } from '@/main/scripts/engine';
 import { applyAuditFields } from '@/main/utils/audit-util';
 import { sortByDate } from '@/main/utils/sort-util';
+import { getActiveWorkspaceId, onWorkspaceChanged } from '@/main/workspace/workspace-ipc';
 import { ipcMain } from 'electron';
 import { Level } from 'level';
 
@@ -48,13 +50,33 @@ async function clearInterceptionScripts(): Promise<void> {
   await interceptionScriptDb.clear();
 }
 
+async function loadEngineScripts(workspaceId?: string) {
+  const activeWorkspaceId = workspaceId || (await getActiveWorkspaceId());
+  if (!activeWorkspaceId) return;
+
+  const allScripts = await loadInterceptionScripts();
+  const workspaceScripts = allScripts.filter((s) => s.workspaceId === activeWorkspaceId && s.enabled);
+  const userScripts = workspaceScripts.map((s) => s.script);
+
+  chrolloEngine.reloadScripts(userScripts);
+}
+
+onWorkspaceChanged((workspaceId) => {
+  loadEngineScripts(workspaceId);
+});
+
 export function initInterceptionScriptIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
 
   ipcMain.handle('interception-script:save', async (_, interceptionScript) => {
     const auditedInterceptionScript = applyAuditFields(interceptionScript);
-    return await saveInterceptionScript(auditedInterceptionScript);
+    await saveInterceptionScript(auditedInterceptionScript);
+
+    const activeWorkspaceId = await getActiveWorkspaceId();
+    if (activeWorkspaceId === auditedInterceptionScript.workspaceId) {
+      await loadEngineScripts(activeWorkspaceId);
+    }
   });
 
   ipcMain.handle('interception-script:get', async (_, id) => {
@@ -62,7 +84,14 @@ export function initInterceptionScriptIpc() {
   });
 
   ipcMain.handle('interception-script:delete', async (_, id) => {
-    return await deleteInterceptionScript(id);
+    const script = await getInterceptionScript(id);
+    if (script) {
+      await deleteInterceptionScript(id);
+      const activeWorkspaceId = await getActiveWorkspaceId();
+      if (activeWorkspaceId === script.workspaceId) {
+        await loadEngineScripts(activeWorkspaceId);
+      }
+    }
   });
 
   ipcMain.handle('interception-script:load', async () => {
@@ -72,4 +101,6 @@ export function initInterceptionScriptIpc() {
   ipcMain.handle('interception-script:clear', async () => {
     return await clearInterceptionScripts();
   });
+
+  loadEngineScripts();
 }

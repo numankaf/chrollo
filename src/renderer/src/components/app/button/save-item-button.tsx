@@ -31,7 +31,7 @@ function SaveItemButton() {
   );
 
   const dirty = activeTab ? dirtyBeforeSaveByTab[activeTab.id] : false;
-
+  console.log(dirtyBeforeSaveByTab);
   useEffect(() => {
     if (!activeTab) {
       setPersistedItem(undefined);

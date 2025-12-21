@@ -25,7 +25,7 @@ export function hasParent(item: CollectionItem): item is Folder | Request | Requ
   );
 }
 
-export function deleteItemAndChildren(map: Map<string, CollectionItem>, id: string) {
+export async function deleteItemAndChildren(map: Map<string, CollectionItem>, id: string) {
   const item = map.get(id);
   if (!item) return;
 
@@ -40,13 +40,13 @@ export function deleteItemAndChildren(map: Map<string, CollectionItem>, id: stri
     if (parent && hasChildren(parent)) {
       parent.children = parent.children.filter((cid) => cid !== id);
       map.set(parent.id, { ...parent });
-      window.api.collection.save({ ...parent });
+      await window.api.collection.save({ ...parent });
     }
   }
 
   //Delete this item from map
   map.delete(id);
-  window.api.collection.delete(id);
+  await window.api.collection.delete(id);
 }
 
 export function cloneCollectionItemDeep(

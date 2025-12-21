@@ -4,28 +4,53 @@ import { createVariablesAPI } from '@/main/scripts/api/variables-api';
 import { executeUserScript } from '@/main/scripts/engine/execute-user-script';
 import { ChrolloRuntime } from '@/main/scripts/runtime/chrollo-runtime';
 
+interface ChrolloContext {
+  chrollo: {
+    stomp: ReturnType<typeof createStompAPI>;
+    variables: ReturnType<typeof createVariablesAPI>;
+    utils: ReturnType<typeof createUtilsAPI>;
+  };
+}
+
 export class ChrolloScriptEngine {
   private runtime = new ChrolloRuntime();
   private scriptError: Error | null = null;
+  private context!: ChrolloContext;
 
-  load(script: string) {
-    this.runtime = new ChrolloRuntime();
-    this.scriptError = null;
+  constructor() {
+    this.initializeContext();
+  }
 
-    const context = {
+  private initializeContext() {
+    this.context = {
       chrollo: {
         stomp: createStompAPI(this.runtime.stomp),
         variables: createVariablesAPI(this.runtime.variables),
         utils: createUtilsAPI(this.runtime.utils),
       },
     };
+  }
+
+  loadScript(script: string) {
+    this.scriptError = null;
 
     try {
-      executeUserScript(script, context);
+      executeUserScript(script, this.context as unknown as Record<string, unknown>);
     } catch (err) {
       this.scriptError = err as Error;
       console.error('[SCRIPT ERROR]', this.scriptError);
     }
+  }
+
+  reset() {
+    this.runtime = new ChrolloRuntime();
+    this.initializeContext();
+    this.scriptError = null;
+  }
+
+  reloadScripts(scripts: string[]) {
+    this.reset();
+    scripts.forEach((script) => this.loadScript(script));
   }
 
   getRuntime() {

@@ -7,16 +7,16 @@ import { type Collection, type CollectionItem, type Folder } from '@/types/colle
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
   initCollectionStore: (items: CollectionItem[]) => Promise<void>;
-  createCollectionItem: (collection: CollectionItem) => CollectionItem;
+  createCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
   updateCollectionItem: (
     collection: CollectionItem,
     options?: {
       persist?: boolean;
     }
-  ) => CollectionItem;
-  deleteCollectionItem: (id: string) => void;
-  cloneCollectionItem: (id: string) => void;
-  saveCollectionItem: (collection: CollectionItem) => CollectionItem;
+  ) => Promise<CollectionItem>;
+  deleteCollectionItem: (id: string) => Promise<void>;
+  cloneCollectionItem: (id: string) => Promise<CollectionItem>;
+  saveCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
 }
 
 const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
@@ -32,12 +32,14 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
       return { collectionItemMap: map };
     }),
 
-  createCollectionItem: (collection: CollectionItem) => {
+  createCollectionItem: async (collection: CollectionItem) => {
+    const itemsToSave: CollectionItem[] = [];
+
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
       newMap.set(collection.id, collection);
-      window.api.collection.save(collection);
+      itemsToSave.push(collection);
 
       if (hasParent(collection)) {
         const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
@@ -48,7 +50,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
             if (hasChildren(parent)) {
               const updatedParent = { ...parent, children };
               newMap.set(parent.id, updatedParent);
-              window.api.collection.save(updatedParent);
+              itemsToSave.push(updatedParent);
             }
           }
         }
@@ -57,17 +59,22 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
       return { collectionItemMap: newMap };
     });
 
+    for (const item of itemsToSave) {
+      await window.api.collection.save(item);
+    }
+
     return collection;
   },
 
-  updateCollectionItem: (collection: CollectionItem, options = { persist: false }) => {
+  updateCollectionItem: async (collection: CollectionItem, options = { persist: false }) => {
+    const itemsToSave: CollectionItem[] = [];
+
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
       if (newMap.has(collection.id)) {
         newMap.set(collection.id, collection);
-        if (options.persist) window.api.collection.save(collection);
-
+        if (options.persist) itemsToSave.push(collection);
         if (hasParent(collection)) {
           const parent = newMap.get(collection.parentId) as Collection | Folder | undefined;
           if (parent) {
@@ -78,7 +85,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
                 const updatedParent = { ...parent, children };
                 newMap.set(parent.id, updatedParent);
                 // always persist if child added
-                window.api.collection.save(updatedParent);
+                itemsToSave.push(updatedParent);
               }
             }
           }
@@ -88,10 +95,14 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
       return { collectionItemMap: newMap };
     });
 
+    for (const item of itemsToSave) {
+      await window.api.collection.save(item);
+    }
+
     return collection;
   },
 
-  deleteCollectionItem: (id: string) => {
+  deleteCollectionItem: async (id: string) => {
     set((state) => {
       const newMap = new Map(state.collectionItemMap);
 
@@ -103,12 +114,15 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
     useTabsStore.getState().closeTab(id);
   },
 
-  cloneCollectionItem: (id: string) => {
+  cloneCollectionItem: async (id: string) => {
     let clonedId = '';
+    let parentToSave: CollectionItem | undefined;
+
     set((state) => {
       const { newMap, clonedRootId } = cloneCollectionItemDeep(state.collectionItemMap, id);
       clonedId = clonedRootId;
       const original = state.collectionItemMap.get(id);
+
       if (original && hasParent(original)) {
         const parent = newMap.get(original.parentId) as Collection | Folder | undefined;
         if (parent) {
@@ -116,22 +130,32 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
           if (index !== -1) {
             parent.children!.splice(index + 1, 0, clonedRootId);
           }
-          window.api.collection.save(parent);
+          parentToSave = parent;
         }
       }
 
       return { collectionItemMap: newMap };
     });
 
+    if (parentToSave) {
+      await window.api.collection.save(parentToSave);
+    }
+
     const clonedCollectionItem = get().collectionItemMap.get(clonedId);
-    if (clonedCollectionItem) useTabsStore.getState().openTab(clonedCollectionItem);
+    if (!clonedCollectionItem) {
+      throw new Error(`Failed to clone collection item with id: ${id}`);
+    }
+
+    useTabsStore.getState().openTab(clonedCollectionItem);
+
+    return clonedCollectionItem;
   },
 
-  saveCollectionItem: (collection) => {
+  saveCollectionItem: async (collection) => {
     const exists = get().collectionItemMap.has(collection.id);
     const updatedCollection = exists
-      ? get().updateCollectionItem(collection, { persist: true })
-      : get().createCollectionItem(collection);
+      ? await get().updateCollectionItem(collection, { persist: true })
+      : await get().createCollectionItem(collection);
 
     return updatedCollection;
   },

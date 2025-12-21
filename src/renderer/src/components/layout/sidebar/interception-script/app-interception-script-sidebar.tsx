@@ -5,7 +5,7 @@ import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { getTabItem } from '@/utils/tab-util';
-import { FileCode, Plus } from 'lucide-react';
+import { CircleCheck, FileCode, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
@@ -80,7 +80,7 @@ function AppInterceptionScriptSidebar() {
         enabled: false,
         script: '',
       };
-      const newScript = saveInterceptionScript(scriptPayload);
+      const newScript = await saveInterceptionScript(scriptPayload);
       openTab(newScript);
       setAddDialogOpen(false);
     } catch (error) {
@@ -107,8 +107,8 @@ function AppInterceptionScriptSidebar() {
           header: `Delete "${tabItem.name}"`,
           message: `Are you sure you want to delete "${tabItem.name}"?`,
           primaryLabel: 'Delete',
-          onPrimaryAction: () => {
-            deleteInterceptionScript(tabItem.id);
+          onPrimaryAction: async () => {
+            await deleteInterceptionScript(tabItem.id);
           },
         });
       }
@@ -139,10 +139,10 @@ function AppInterceptionScriptSidebar() {
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              cloneInterceptionScript(item.id);
+              await cloneInterceptionScript(item.id);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -162,8 +162,8 @@ function AppInterceptionScriptSidebar() {
               header: `Delete "${item.name}"`,
               message: `Are you sure you want to delete "${item.name}"?`,
               primaryLabel: 'Delete',
-              onPrimaryAction: () => {
-                deleteInterceptionScript(item.id);
+              onPrimaryAction: async () => {
+                await deleteInterceptionScript(item.id);
               },
             });
           },
@@ -225,6 +225,7 @@ function AppInterceptionScriptSidebar() {
                       setEditingItemId(null);
                     }}
                   />
+                  {item.enabled && <CircleCheck size={12} color="var(--primary)" />}
                   <OperationsButton items={getOperationItems(item)} />
                 </SidebarMenuButton>
               ))}

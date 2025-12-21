@@ -77,7 +77,7 @@ function EnvironmentsSidebar() {
         workspaceId: activeWorkspaceId,
         ...ENVIRONMENT_DEFAULT_VALUES,
       };
-      const newEnvironment = saveEnvironment(environmentPayload);
+      const newEnvironment = await saveEnvironment(environmentPayload);
       openTab(newEnvironment);
       setAddDialogOpen(false);
     } catch (error) {
@@ -104,8 +104,8 @@ function EnvironmentsSidebar() {
           header: `Delete "${tabItem.name}"`,
           message: `Are you sure you want to delete "${tabItem.name}"?`,
           primaryLabel: 'Delete',
-          onPrimaryAction: () => {
-            deleteEnvironment(tabItem.id);
+          onPrimaryAction: async () => {
+            await deleteEnvironment(tabItem.id);
           },
         });
       }
@@ -136,10 +136,10 @@ function EnvironmentsSidebar() {
         content: 'Duplicate',
         props: {
           className: 'text-sm',
-          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              cloneEnvironment(item.id);
+              await cloneEnvironment(item.id);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -159,8 +159,8 @@ function EnvironmentsSidebar() {
               header: `Delete "${item.name}"`,
               message: `Are you sure you want to delete "${item.name}"?`,
               primaryLabel: 'Delete',
-              onPrimaryAction: () => {
-                deleteEnvironment(item.id);
+              onPrimaryAction: async () => {
+                await deleteEnvironment(item.id);
               },
             });
           },

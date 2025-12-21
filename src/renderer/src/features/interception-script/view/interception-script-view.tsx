@@ -34,7 +34,9 @@ function InterceptionScriptView() {
         <Toggle
           data-state={script.enabled ? 'on' : 'off'}
           variant="ghost"
-          onClick={() => updateInterceptionScript({ ...script, enabled: !script.enabled })}
+          onClick={async () =>
+            await updateInterceptionScript({ ...script, enabled: !script.enabled }, { persist: true })
+          }
           className="w-24 h-6"
         >
           {script.enabled ? 'Enabled' : 'Disabled'}

@@ -22,71 +22,6 @@ const nextSeq = () => ++seq;
 
 const stompClients: Record<string, Client> = {};
 
-chrolloEngine.load(`
-    chrollo.stomp.onPreConnect(({ connection }) => {
-      const clientSessionId = chrollo.utils.randomId();
-      const key = 'clientSessionId' + '-' + connection.id;
-      chrollo.variables.set(key, clientSessionId);
-      connection.connectHeaders.push({
-          id: chrollo.utils.randomId(),
-          key: '_clientSessionId',
-          value: clientSessionId,
-          enabled: true,
-      }) 
-    });
-
-    chrollo.stomp.onPreSubscribe(({ connectionId, subscriptionId, topic, subscribe, disableDefault }) => {
-      disableDefault();
-      const key = 'clientSessionId' + '-' + connectionId;
-      const clientSessionId = chrollo.variables.get(key);
-    
-      const broadcastId = subscriptionId + '-broadcast';  
-      const broadcastTopic = '/topic/' + topic + "/broadcast/";
-      subscribe(connectionId, broadcastId, broadcastTopic);
-
-      const clientBroadcastId = subscriptionId + '-client-broadcast';  
-      const clientBroadcastTopic = '/topic/' + topic + "/" + clientSessionId + "/broadcast/";
-      subscribe(connectionId, clientBroadcastId, clientBroadcastTopic);
-
-      const clientId = subscriptionId + '-client';  
-      const clientTopic = '/topic/' + topic + "/" + clientSessionId;
-      subscribe(connectionId, clientId, clientTopic);
-    });
-
-    chrollo.stomp.onPreUnsubscribe(({ connectionId, subscriptionId, topic, unsubscribe, disableDefault }) => {
-      disableDefault();
-      const key = 'clientSessionId' + '-' + connectionId;
-      const clientSessionId = chrollo.variables.get(key);
-    
-      const broadcastId = subscriptionId + '-broadcast';  
-      const broadcastTopic = '/topic/' + topic + "/broadcast/";
-      unsubscribe(connectionId, broadcastId, broadcastTopic);
-
-      const clientBroadcastId = subscriptionId + '-client-broadcast';  
-      const clientBroadcastTopic = '/topic/' + topic + "/" + clientSessionId + "/broadcast/";
-      unsubscribe(connectionId, clientBroadcastId, clientBroadcastTopic);
-
-      const clientId = subscriptionId + '-client';  
-      const clientTopic = '/topic/' + topic + "/" + clientSessionId;
-      unsubscribe(connectionId, clientId, clientTopic);
-    });
-
-    chrollo.stomp.onPreSend(({ connectionId, request }) => {
-      const key = 'clientSessionId' + '-' + connectionId;
-      const clientSessionId = chrollo.variables.get(key);
-      const requestId = chrollo.utils.randomId();
-      request.destination = '/app/secure/' + requestId + '/' + request.destination;
-      request.headers.push({
-          id: chrollo.utils.randomId(),
-          key: 'clientSessionId',
-          value: clientSessionId,
-          enabled: true,
-      })
-    });
-`);
-
-const runtime = chrolloEngine.getRuntime();
-
 function subscribeInternal(connectionId: string, subscriptionId: string, topic: string) {
   const mainWindow = getMainWindow();
   const client = stompClients[connectionId];
@@ -165,6 +100,8 @@ export function initStompIpc() {
   // CONNECT
   // ------------------------------
   ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
+    const runtime = chrolloEngine.getRuntime();
+
     const ctx = { connection };
     runtime.stomp.runPreConnect(ctx);
 
@@ -305,6 +242,7 @@ export function initStompIpc() {
   // SUBSCRIBE
   // ------------------------------
   ipcMain.on('stomp:subscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
+    const runtime = chrolloEngine.getRuntime();
     const { connectionId, subscriptionId, topic } = data;
     const ctx = {
       connectionId,
@@ -321,6 +259,8 @@ export function initStompIpc() {
   // UNSUBSCRIBE
   // ------------------------------
   ipcMain.on('stomp:unsubscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
+    const runtime = chrolloEngine.getRuntime();
+
     const { connectionId, subscriptionId, topic } = data;
     const ctx = {
       connectionId,
@@ -337,6 +277,7 @@ export function initStompIpc() {
   // SEND
   // ------------------------------
   ipcMain.on('stomp:send', (_, id: string, request: Request) => {
+    const runtime = chrolloEngine.getRuntime();
     const ctx = { connectionId: id, request };
     runtime.stomp.runPreSend(ctx);
     const client = stompClients[id];

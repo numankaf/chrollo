@@ -8,16 +8,16 @@ interface InterceptionScriptStore {
   interceptionScripts: InterceptionScript[];
   initInterceptionScriptStore: (interceptionScripts: InterceptionScript[]) => Promise<void>;
   getInterceptionScript: (id: string) => InterceptionScript | undefined;
-  createInterceptionScript: (interceptionScript: InterceptionScript) => InterceptionScript;
+  createInterceptionScript: (interceptionScript: InterceptionScript) => Promise<InterceptionScript>;
   updateInterceptionScript: (
     interceptionScript: InterceptionScript,
     options?: {
       persist?: boolean;
     }
-  ) => InterceptionScript;
-  deleteInterceptionScript: (id: string) => void;
-  cloneInterceptionScript: (id: string) => InterceptionScript;
-  saveInterceptionScript: (interceptionScript: InterceptionScript) => InterceptionScript;
+  ) => Promise<InterceptionScript>;
+  deleteInterceptionScript: (id: string) => Promise<void>;
+  cloneInterceptionScript: (id: string) => Promise<InterceptionScript>;
+  saveInterceptionScript: (interceptionScript: InterceptionScript) => Promise<InterceptionScript>;
 }
 
 const useInterceptionScriptStore = create<InterceptionScriptStore>((set, get) => ({
@@ -29,49 +29,46 @@ const useInterceptionScriptStore = create<InterceptionScriptStore>((set, get) =>
   getInterceptionScript: (id: string) => {
     return get().interceptionScripts.find((e) => e.id === id)!;
   },
-  createInterceptionScript: (interceptionScript) => {
+  createInterceptionScript: async (interceptionScript) => {
     const newInterceptionScript = { ...interceptionScript, id: nanoid() };
 
     set((state) => ({
       interceptionScripts: [...state.interceptionScripts, newInterceptionScript],
     }));
 
-    window.api.interceptionScript.save(newInterceptionScript);
+    await window.api.interceptionScript.save(newInterceptionScript);
 
     return newInterceptionScript;
   },
-  updateInterceptionScript: (interceptionScript, options = { persist: false }) => {
-    let updatedInterceptionScript = interceptionScript;
+  updateInterceptionScript: async (interceptionScript, options = { persist: false }) => {
+    const state = get();
+    const existing = state.interceptionScripts.find((e) => e.id === interceptionScript.id);
 
-    set((state) => {
-      const existing = state.interceptionScripts.find((e) => e.id === interceptionScript.id);
+    const updatedInterceptionScript = existing ? { ...existing, ...interceptionScript } : interceptionScript;
 
-      if (existing) {
-        updatedInterceptionScript = { ...existing, ...interceptionScript };
-      }
-
-      return {
-        interceptionScripts: state.interceptionScripts.map((e) =>
-          e.id === interceptionScript.id ? updatedInterceptionScript : e
-        ),
-      };
+    set({
+      interceptionScripts: state.interceptionScripts.map((e) =>
+        e.id === updatedInterceptionScript.id ? updatedInterceptionScript : e
+      ),
     });
 
-    if (options.persist) window.api.interceptionScript.save(updatedInterceptionScript);
+    if (options.persist) {
+      await window.api.interceptionScript.save(updatedInterceptionScript);
+      useTabsStore.getState().setDirtyBeforeSaveByTab(updatedInterceptionScript.id, false);
+    }
 
     return updatedInterceptionScript;
   },
 
-  deleteInterceptionScript: (id) => {
+  deleteInterceptionScript: async (id) => {
     const newInterceptionScripts = get().interceptionScripts.filter((e) => e.id !== id);
 
+    await window.api.interceptionScript.delete(id);
     useTabsStore.getState().closeTab(id);
-
-    window.api.interceptionScript.delete(id);
     set({ interceptionScripts: newInterceptionScripts });
   },
 
-  cloneInterceptionScript: (id: string) => {
+  cloneInterceptionScript: async (id: string) => {
     const state = get();
     const interceptionScripts = state.interceptionScripts;
     const index = interceptionScripts.findIndex((c) => c.id === id);
@@ -93,7 +90,7 @@ const useInterceptionScriptStore = create<InterceptionScriptStore>((set, get) =>
       ...interceptionScripts.slice(index + 1),
     ];
 
-    window.api.interceptionScript.save(newInterceptionScript);
+    await window.api.interceptionScript.save(newInterceptionScript);
 
     set({ interceptionScripts: newInterceptionScripts });
 
@@ -101,11 +98,11 @@ const useInterceptionScriptStore = create<InterceptionScriptStore>((set, get) =>
     return newInterceptionScript;
   },
 
-  saveInterceptionScript: (interceptionScript) => {
+  saveInterceptionScript: async (interceptionScript) => {
     const exists = get().interceptionScripts.some((e) => e.id === interceptionScript.id);
     const updatedInterceptionScript = exists
-      ? get().updateInterceptionScript(interceptionScript, { persist: true })
-      : get().createInterceptionScript(interceptionScript);
+      ? await get().updateInterceptionScript(interceptionScript, { persist: true })
+      : await get().createInterceptionScript(interceptionScript);
     return updatedInterceptionScript;
   },
 }));
