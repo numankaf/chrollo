@@ -1,11 +1,14 @@
 import { use, useLayoutEffect, useState } from 'react';
 import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
+import { chrolloCompletions } from '@/utils/chrollo-completions';
 import { getEditorTheme } from '@/utils/editor-util';
-import { esLint, javascript } from '@codemirror/lang-javascript';
+import { autocompletion } from '@codemirror/autocomplete';
+import { indentWithTab } from '@codemirror/commands';
+import { esLint, javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { linter, lintGutter } from '@codemirror/lint';
-import CodeMirror, { EditorView } from '@uiw/react-codemirror';
-import * as eslint from 'eslint-linter-browserify';
+import CodeMirror, { EditorView, keymap } from '@uiw/react-codemirror';
+import { Linter } from 'eslint-linter-browserify';
 import globals from 'globals';
 import { useTheme } from 'next-themes';
 
@@ -45,7 +48,12 @@ function CodeEditor({ readOnly, height, bodyType, ...props }: CodeEditorProps) {
           },
           rules: {},
         };
-        return [javascript(), linter(esLint(new eslint.Linter(), config))];
+        return [
+          javascript(),
+          javascriptLanguage.data.of({ autocomplete: chrolloCompletions }),
+          linter(esLint(new Linter(), config)),
+          autocompletion(),
+        ];
       }
 
       case EDITOR_BODY_TYPE.TEXT:
@@ -65,7 +73,12 @@ function CodeEditor({ readOnly, height, bodyType, ...props }: CodeEditorProps) {
   return (
     <CodeMirror
       readOnly={readOnly}
-      extensions={[lineWrap, ...getExtensionsWithBodyType(bodyType), readOnly ? [] : lintGutter()]}
+      extensions={[
+        lineWrap,
+        ...getExtensionsWithBodyType(bodyType),
+        readOnly ? [] : lintGutter(),
+        keymap.of([indentWithTab]),
+      ]}
       theme={editorTheme}
       height={height || 'auto'}
       {...props}
