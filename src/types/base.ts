@@ -8,6 +8,7 @@ export const BASE_MODEL_TYPE = {
   CONNECTION: 'CONNECTION',
   COLLECTION: 'COLLECTION',
   REQUEST_HISTORY: 'REQUEST_HISTORY',
+  SCRIPT: 'SCRIPT',
 } as const;
 
 export type BaseModelType = (typeof BASE_MODEL_TYPE)[keyof typeof BASE_MODEL_TYPE];

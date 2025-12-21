@@ -77,7 +77,7 @@ function SaveItemButton() {
   }, [activeTab, item]);
 
   useEffect(() => {
-    const unsubscribeSave = commandBus.on(COMMANDS.REQUEST_SAVE, () => {
+    const unsubscribeSave = commandBus.on(COMMANDS.ITEM_SAVE, () => {
       save();
     });
     return () => {

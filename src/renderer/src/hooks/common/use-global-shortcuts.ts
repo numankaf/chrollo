@@ -40,7 +40,6 @@ export function useGlobalShortcuts() {
       const shortcut = normalizeShortcut(e);
       const command = SHORTCUT_TO_COMMAND[shortcut];
       if (!applicationSettings.shortcutsEnabled || !command) return;
-
       e.preventDefault();
       commandBus.emit(command);
     }
