@@ -2,9 +2,9 @@ import { formatCode } from '@/utils/editor-util';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import { REQUEST_BODY_TYPE } from '@/types/collection';
-import { Button } from '@/components/common/button';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
+import { BeautifyButton } from '@/components/app/button/beautify-button';
 import CodeEditor from '@/components/app/editor/code-editor';
 
 const BODY_TYPE_PROPERTY_KEY = 'body.type';
@@ -53,9 +53,7 @@ function RequestBody() {
       <div className="flex items-center justify-end gap-2 mx-2 mb-1 ">
         <p className="text-muted-foreground my-1 flex-1">Body</p>
         <BodyTypeSelector />
-        <Button size="sm" className="h-6" variant="outline" type="button" onClick={formatRequestData}>
-          Beautify
-        </Button>
+        <BeautifyButton onClick={formatRequestData} />
       </div>
       <div className="flex-1 mx-2 mb-2 border rounded-lg" style={{ height: 'calc(100% - 6rem)' }}>
         <ScrollArea className="p-0.5 min-h-full h-full">

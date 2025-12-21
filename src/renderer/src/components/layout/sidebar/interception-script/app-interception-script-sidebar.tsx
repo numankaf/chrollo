@@ -10,6 +10,7 @@ import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
+import { BASE_MODEL_TYPE } from '@/types/base';
 import { COMMANDS } from '@/types/command';
 import type { InterceptionScript } from '@/types/interception-script';
 import { commandBus } from '@/lib/command-bus';
@@ -75,8 +76,8 @@ function AppInterceptionScriptSidebar() {
         id: nanoid(),
         name: values.name,
         workspaceId: activeWorkspaceId,
-        modelType: 'INTERCEPTION_SCRIPT',
-        enabled: true,
+        modelType: BASE_MODEL_TYPE.INTERCEPTION_SCRIPT,
+        enabled: false,
         script: '',
       };
       const newScript = saveInterceptionScript(scriptPayload);

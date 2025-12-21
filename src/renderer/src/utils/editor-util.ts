@@ -1,5 +1,6 @@
 import { cssVar } from '@/utils/css-util';
 import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
+import { js_beautify } from 'js-beautify';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
 
@@ -19,19 +20,18 @@ export function getEditorTheme(theme: string | undefined) {
   return theme === 'dark' ? vscodeDarkInit({ settings }) : vscodeLightInit({ settings });
 }
 
-// old js-beautify code
-// export function formatJson(text: string) {
-//   try {
-//     return beautify(text, {
-//       indent_size: 2,
-//       space_in_empty_paren: true,
-//       e4x: false,
-//       end_with_newline: true,
-//     });
-//   } catch {
-//     return text;
-//   }
-// }
+export function formatJs(text: string) {
+  try {
+    return js_beautify(text, {
+      indent_size: 2,
+      space_in_empty_paren: true,
+      e4x: false,
+      end_with_newline: true,
+    });
+  } catch {
+    return text;
+  }
+}
 
 export function formatJson(text: string): string {
   try {
