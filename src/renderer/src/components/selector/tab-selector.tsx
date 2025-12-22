@@ -1,29 +1,58 @@
-import { Button } from '@/components/common/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
-import { ScrollArea } from '@/components/common/scroll-area';
-import { SearchBar } from '@/components/common/search-input';
-import TabItemContent from '@/components/tab/tab-item-content';
+import { useEffect, useState } from 'react';
+import useTabsStore from '@/store/tab-store';
+import useWorkspaceStore from '@/store/workspace-store';
+import { applyTextSearch } from '@/utils/search-util';
+import { confirmTabClose, getTabItem } from '@/utils/tab-util';
 import { ChevronDown, X } from 'lucide-react';
-import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { useTabNavigation } from '../../hooks/use-tab-navigation';
-import useTabsStore from '../../store/tab-store';
-import { applyTextSearch } from '../../utils/search-util';
 
-const TabSelector = () => {
-  const { tabs } = useTabsStore(
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
+import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
+import { Button } from '@/components/common/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/common/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
+import TabItemContent from '@/components/tab/tab-item-content';
+
+function TabSelector() {
+  const [open, setOpen] = useState(false);
+  const tabs = useWorkspaceTabs();
+  const [search, setSearch] = useState('');
+  const filteredTabs = applyTextSearch(tabs, search, (tab) => getTabItem(tab)!.name);
+  const { updateWorkspaceSelection } = useWorkspaceStore(
     useShallow((state) => ({
-      tabs: state.tabs,
+      updateWorkspaceSelection: state.updateWorkspaceSelection,
     }))
   );
-  const [search, setSearch] = useState('');
-  const filteredTabs = applyTextSearch(tabs, search, (tab) => tab.item.name);
+  const { dirtyBeforeSaveByTab } = useTabsStore(
+    useShallow((state) => ({
+      dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
+    }))
+  );
 
-  const { setActiveTabAndNavigate, closeTabAndNavigate } = useTabNavigation();
+  useEffect(() => {
+    const unsubscribeTabSearch = commandBus.on(COMMANDS.TAB_SEARCH, () => {
+      setOpen(true);
+      setSearch('');
+    });
+
+    return () => {
+      unsubscribeTabSearch();
+    };
+  }, []);
   return (
     <Popover
-      onOpenChange={(open) => {
-        if (open) setSearch('');
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (nextOpen) setSearch('');
       }}
     >
       <PopoverTrigger>
@@ -31,40 +60,41 @@ const TabSelector = () => {
           <ChevronDown />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[240px] p-2!">
-        <div className="flex items-center justify-between p-1 gap-1">
-          <SearchBar placeholder="Search tabs" className="flex-1" onSearchChange={(value) => setSearch(value)} />
-        </div>
-        <div className="mt-3 space-y-1 text-xs">
-          <ScrollArea>
-            <div className="max-h-[300px]!">
-              {filteredTabs.length === 0 && <p className="px-1 text-muted-foreground">No tabs found</p>}
+      <PopoverContent align="end" className="w-70 p-0!">
+        <Command shouldFilter={false}>
+          <CommandInput value={search} onValueChange={setSearch} placeholder="Search tabs..." className="h-9" />
+          <CommandList>
+            <CommandEmpty>No tabs found.</CommandEmpty>
+            <CommandGroup>
               {filteredTabs?.map((tab) => (
-                <Button
-                  variant="ghost"
+                <CommandItem
                   key={tab.id}
-                  className=" w-full justify-between gap-2 pr-0.5 [&:hover>span]:opacity-100"
-                  size="sm"
-                  onClick={() => setActiveTabAndNavigate(tab.id)}
+                  value={tab.id}
+                  className="gap-2 py-1! pr-0.5 [&:hover>span]:opacity-100"
+                  onSelect={() => updateWorkspaceSelection({ activeTabId: tab.id })}
                 >
-                  <TabItemContent {...tab.item} />
+                  <div className="flex-1 truncate">
+                    <TabItemContent tab={tab} />
+                  </div>
+                  {dirtyBeforeSaveByTab[tab.id] && <div className="w-1.5 h-1.5 rounded-full bg-accent" />}
+
                   <span
-                    className="opacity-0 p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
+                    className="opacity-0 p-1 rounded-sm hover:bg-accent! text-muted-foreground hover:text-accent-foreground dark:hover:bg-accent/50"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTabAndNavigate(tab.id);
+                      confirmTabClose(tab.id);
                     }}
                   >
-                    <X />
+                    <X size={12} />
                   </span>
-                </Button>
+                </CommandItem>
               ))}
-            </div>
-          </ScrollArea>
-        </div>
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );
-};
+}
 
 export default TabSelector;

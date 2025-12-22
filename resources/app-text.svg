@@ -1,0 +1,12 @@
+<svg width="350" height="120" viewBox="0 0 350 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="chrolloOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="45%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+  </defs>
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="url(#chrolloOrange)" font-size="72" font-weight="700" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif">
+    CHROLLO
+  </text>
+</svg>

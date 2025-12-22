@@ -1,21 +1,79 @@
-import { Button } from '@/components/common/button';
-import { Separator } from '@/components/common/separator';
-import TabSelector from '@/components/selector/tab-selector';
-import TabItemContent from '@/components/tab/tab-item-content';
+import { useEffect, useRef, useState } from 'react';
+import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
+import useCollectionItemStore from '@/store/collection-item-store';
+import useTabsStore from '@/store/tab-store';
+import useWorkspaceStore from '@/store/workspace-store';
+import { confirmTabClose, getNextTab, getPreviousTab } from '@/utils/tab-util';
 import { Plus, X } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { useEffect, useRef, useState } from 'react';
-import { SIDEBAR_WORKSPACE_OFFSET } from '../../constants/layout-constants';
-import { useTabNavigation } from '../../hooks/use-tab-navigation';
-import useTabsStore from '../../store/tab-store';
-import EnvironmentSelector from '../selector/enviroment-selector';
+import { useShallow } from 'zustand/react/shallow';
 
-const AppTabs = () => {
-  const { tabs, activeTab } = useTabsStore();
-  const { addAndNavigateToTab, closeTabAndNavigate } = useTabNavigation();
+import { NULL_PARENT_ID, REQUEST_DEFAULT_VALUES, type Request } from '@/types/collection';
+import { COMMANDS } from '@/types/command';
+import { commandBus } from '@/lib/command-bus';
+import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
+import { Button } from '@/components/common/button';
+import { Separator } from '@/components/common/separator';
+import EnvironmentSelector from '@/components/selector/environment-selector';
+import TabSelector from '@/components/selector/tab-selector';
+import TabItemContent from '@/components/tab/tab-item-content';
+
+function AppTabs() {
+  const { activeWorkspaceId } = useWorkspaceStore(
+    useShallow((state) => ({
+      activeWorkspaceId: state.activeWorkspaceId,
+    }))
+  );
+
+  const { saveCollectionItem } = useCollectionItemStore(
+    useShallow((state) => ({
+      saveCollectionItem: state.saveCollectionItem,
+    }))
+  );
+
+  const { addTab, openTab, dirtyBeforeSaveByTab } = useTabsStore(
+    useShallow((state) => ({
+      addTab: state.addTab,
+      openTab: state.openTab,
+      dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
+    }))
+  );
+
+  const { activeTab } = useActiveItem();
+
+  const tabs = useWorkspaceTabs();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const { openAndNavigateToTab } = useTabNavigation();
+
+  useEffect(() => {
+    const unsubscribeTabClose = commandBus.on(COMMANDS.TAB_CLOSE, () => {
+      if (activeTab) confirmTabClose(activeTab.id);
+    });
+    const unsubscribeTabNext = commandBus.on(COMMANDS.TAB_NEXT, () => {
+      if (!activeTab) return;
+
+      const nextTab = getNextTab(tabs, activeTab.id);
+      if (nextTab) {
+        openTab(nextTab);
+      }
+    });
+
+    const unsubscribeTabPrevious = commandBus.on(COMMANDS.TAB_PREVIOUS, () => {
+      if (!activeTab) return;
+
+      const prevTab = getPreviousTab(tabs, activeTab.id);
+      if (prevTab) {
+        openTab(prevTab);
+      }
+    });
+
+    return () => {
+      unsubscribeTabClose?.();
+      unsubscribeTabNext?.();
+      unsubscribeTabPrevious?.();
+    };
+  }, [activeTab, openTab, tabs]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -51,22 +109,23 @@ const AppTabs = () => {
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  const handleAddTab = () => {
-    addAndNavigateToTab({
-      id: nanoid(8),
-      name: 'New Request',
-      commandType: 'command',
-      type: 'request',
-      path: '',
-    });
+  const handleAddTab = async () => {
+    if (activeWorkspaceId) {
+      const requestPayload: Request = {
+        id: nanoid(),
+        name: 'New Request',
+        workspaceId: activeWorkspaceId,
+        parentId: NULL_PARENT_ID,
+        ...REQUEST_DEFAULT_VALUES,
+      };
+      const newRequest = await saveCollectionItem(requestPayload);
+      addTab(newRequest);
+    }
   };
 
   return (
-    <div
-      style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }}
-      className="w-full top-[var(--sidebar-top-offset)] border-b-1 px-1"
-    >
-      <div className="flex h-full items-center justify-between">
+    <div style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }} className="w-full top-(--sidebar-top-offset) border-b px-1">
+      <div style={{ height: `${SIDEBAR_WORKSPACE_OFFSET}` }} className="flex items-center justify-between">
         <div
           ref={scrollRef}
           className="overflow-x-auto no-scrollbar select-none w-full inline-flex h-full items-center justify-start gap-1.5 whitespace-nowrap"
@@ -77,19 +136,22 @@ const AppTabs = () => {
             return (
               <div className="h-full flex" key={tab.id} data-tab-id={tab.id}>
                 <div
-                  className={`w-[160px] p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1.5 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
+                  className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1 rounded-md whitespace-nowrap border border-transparent hover:text-accent-foreground 
                   ${isActive ? 'border-b-primary text-foreground' : 'text-muted-foreground '}`}
                   onClick={() => {
-                    openAndNavigateToTab(tab.item);
+                    openTab(tab);
                   }}
                   onMouseDown={(e) => {
                     if (e.button === 1) {
                       e.preventDefault();
-                      openAndNavigateToTab(tab.item);
+                      confirmTabClose(tab.id);
                     }
                   }}
                 >
-                  <TabItemContent {...tab.item} />
+                  <div className="flex-1 truncate">
+                    <TabItemContent tab={tab} />
+                  </div>
+                  {dirtyBeforeSaveByTab[tab.id] && <div className="w-1.5 h-1.5 rounded-full bg-accent" />}
                   <Button
                     id="tabs-close"
                     variant="ghost"
@@ -97,10 +159,10 @@ const AppTabs = () => {
                     size="xs"
                     onClick={(e) => {
                       e.stopPropagation();
-                      closeTabAndNavigate(tab.id);
+                      confirmTabClose(tab.id);
                     }}
                   >
-                    <X className="w-4 h-4" />
+                    <X size={16} />
                   </Button>
                 </div>
                 {index !== tabs.length - 1 && (
@@ -111,13 +173,13 @@ const AppTabs = () => {
           })}
 
           {!isOverflowing && (
-            <Button variant="ghost" size="sm" className="text-muted-foreground flex-shrink-0" onClick={handleAddTab}>
+            <Button variant="ghost" size="sm" className="text-muted-foreground shrink-0" onClick={handleAddTab}>
               <Plus />
             </Button>
           )}
         </div>
 
-        <div className="flex items-center gap-1 h-full flex-shrink-0">
+        <div className="flex items-center gap-1 h-full shrink-0">
           {isOverflowing && (
             <>
               <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={handleAddTab}>
@@ -133,6 +195,6 @@ const AppTabs = () => {
       </div>
     </div>
   );
-};
+}
 
 export default AppTabs;

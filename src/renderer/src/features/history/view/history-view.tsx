@@ -1,5 +1,5 @@
-const HistoryView = () => {
+function HistoryView() {
   return <div>History View</div>;
-};
+}
 
 export default HistoryView;

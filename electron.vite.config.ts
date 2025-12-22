@@ -1,43 +1,63 @@
+import path, { resolve } from 'path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import ReactCompiler from 'babel-plugin-react-compiler';
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
-import path, { resolve } from 'path';
-import packageJson from './package.json';
-const DEFAULT_PORT = '3000';
+import { defineConfig, externalizeDepsPlugin, loadEnv } from 'electron-vite';
+import svgr from 'vite-plugin-svgr';
 
-export default defineConfig({
-  main: {
-    plugins: [externalizeDepsPlugin()],
-  },
-  preload: {
-    plugins: [externalizeDepsPlugin()],
-  },
-  renderer: {
-    resolve: {
-      alias: {
-        '@renderer': resolve('src/renderer/src'),
-        '@': path.resolve(__dirname, 'src/renderer/src'),
-      },
-    },
-    server: {
-      host: true,
-      port: parseInt(process.env.VITE_PORT ?? DEFAULT_PORT),
-      watch: {
-        usePolling: true,
-      },
-    },
-    define: {
-      global: 'globalThis',
-      APP_VERSION: JSON.stringify(packageJson.version),
-    },
-    plugins: [
-      react({
-        babel: {
-          plugins: [ReactCompiler],
+import packageJson from './package.json';
+
+const DEFAULT_PORT = 3000;
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+
+  return {
+    main: {
+      plugins: [externalizeDepsPlugin()],
+      resolve: {
+        alias: {
+          '@/types': resolve('src/types'),
+          '@/main': resolve('src/main'),
         },
-      }),
-      tailwindcss(),
-    ],
-  },
+      },
+    },
+    preload: {
+      plugins: [externalizeDepsPlugin()],
+      resolve: {
+        alias: {
+          '@/types': resolve('src/types'),
+        },
+      },
+    },
+    renderer: {
+      resolve: {
+        alias: {
+          '@/resources': path.resolve(__dirname, 'resources'),
+          '@/types': path.resolve(__dirname, 'src/types'),
+          '@': path.resolve(__dirname, 'src/renderer/src'),
+        },
+      },
+      server: {
+        host: true,
+        port: Number(env.VITE_PORT ?? DEFAULT_PORT),
+        watch: {
+          usePolling: true,
+        },
+      },
+      define: {
+        global: 'globalThis',
+        APP_VERSION: JSON.stringify(packageJson.version),
+      },
+      plugins: [
+        react({
+          babel: {
+            plugins: [ReactCompiler],
+          },
+        }),
+        tailwindcss(),
+        svgr(),
+      ],
+    },
+  };
 });

@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/main/*": ["src/main/*"],
+      "@/types/*": ["src/types/*"],
+      "@/resources/*": ["resources/*"]
+    },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2023",
     "lib": ["ES2023"],
@@ -21,5 +27,12 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["electron.vite.config.*", "src/main/**/*", "src/preload/**/*", "src/renderer/src/env.d.ts"]
+  "include": [
+    "electron.vite.config.*",
+    "src/main/**/*",
+    "src/types/**/*",
+    "src/preload/**/*",
+    "src/renderer/src/env.d.ts",
+    "resources/**/*"
+  ]
 }

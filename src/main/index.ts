@@ -1,15 +1,31 @@
+import fs from 'fs';
+import https from 'https';
+import { join } from 'path';
+import { initCollectionIpc } from '@/main/collection/collection-ipc';
+import { initConnectionIpc } from '@/main/connection/connection-ipc';
+import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
+import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
+import { initInterceptionScriptIpc } from '@/main/interception-script/interception-script-ipc';
+import { initStompIpc } from '@/main/socket/stomp-ipc';
+import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
-import { join } from 'path';
+
 import icon from '../../resources/app-logo.png?asset';
-import { initStompIpc } from './ipc-socket';
+
+//Disable https certificate validation
+https.globalAgent.options.rejectUnauthorized = false;
+
+if (!fs.existsSync(BASE_STORAGE_DIR)) {
+  fs.mkdirSync(BASE_STORAGE_DIR, { recursive: true });
+}
 
 let mainWindow: BrowserWindow;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 1350,
-    height: 800,
+    width: 1500,
+    height: 850,
     minWidth: 800,
     minHeight: 600,
     show: false,
@@ -63,11 +79,28 @@ app.whenReady().then(() => {
     if (win) win.minimize();
   });
 
-  ipcMain.on('window:maximize', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender);
-    if (win) {
-      win.isMaximized() ? win.unmaximize() : win.maximize();
+  ipcMain.on('window:maximize', () => {
+    if (!mainWindow.isMaximized()) {
+      mainWindow.maximize();
     }
+  });
+
+  ipcMain.on('window:unmaximize', () => {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    }
+  });
+
+  ipcMain.handle('window:isMaximized', () => {
+    return mainWindow.isMaximized();
+  });
+
+  mainWindow.on('maximize', () => {
+    mainWindow.webContents.send('window:maximize-changed', true);
+  });
+
+  mainWindow.on('unmaximize', () => {
+    mainWindow.webContents.send('window:maximize-changed', false);
   });
 
   ipcMain.on('window:close', (event) => {
@@ -80,13 +113,36 @@ app.whenReady().then(() => {
     if (win) win.reload();
   });
 
+  ipcMain.on('devtools:toggle', (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+
+    if (win.webContents.isDevToolsOpened()) {
+      win.webContents.closeDevTools();
+    } else {
+      win.webContents.openDevTools({ mode: 'detach' });
+    }
+  });
+
   initStompIpc();
+  initWorkspaceIpc();
+  initConnectionIpc();
+  initCollectionIpc();
+  initEnvironmentIpc();
+  initInterceptionScriptIpc();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+app.on('before-quit', () => {
+  // We can't directly access renderer state here, need to ask renderer
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('app:shutdown');
+  }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
