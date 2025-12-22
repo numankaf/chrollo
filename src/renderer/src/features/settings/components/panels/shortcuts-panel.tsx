@@ -1,9 +1,13 @@
+import { useAppConfigStore } from '@/store/app-config-store';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { SHORTCUTS } from '@/types/command';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/common/item';
 import { Kbd, KbdGroup } from '@/components/common/kbd';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Separator } from '@/components/common/separator';
+import { Switch } from '@/components/common/switch';
 
 interface ShortcutGroup {
   title: string;
@@ -65,8 +69,28 @@ function getKeyContent(key: string) {
 }
 
 function ShortcutsPanel() {
+  const { applicationSettings, updateApplicationSetting } = useAppConfigStore(
+    useShallow((state) => ({
+      applicationSettings: state.applicationSettings,
+      updateApplicationSetting: state.updateApplicationSetting,
+    }))
+  );
+
   return (
     <ScrollArea className="h-[calc(100%-2rem)]">
+      <Item>
+        <ItemContent>
+          <ItemTitle>Keyboard Shortcuts</ItemTitle>
+          <ItemDescription>Enable or disable keyboard shortcuts</ItemDescription>
+        </ItemContent>
+
+        <ItemActions>
+          <Switch
+            checked={applicationSettings['shortcutsEnabled']}
+            onCheckedChange={(value) => updateApplicationSetting('shortcutsEnabled', value)}
+          />
+        </ItemActions>
+      </Item>
       <div className="flex flex-col gap-6 p-4">
         {SHORTCUT_GROUPS.map((group) => (
           <div key={group.title} className="flex flex-col gap-2">
