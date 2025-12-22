@@ -5,6 +5,8 @@ import ReactCompiler from 'babel-plugin-react-compiler';
 import { defineConfig, externalizeDepsPlugin, loadEnv } from 'electron-vite';
 import svgr from 'vite-plugin-svgr';
 
+import packageJson from './package.json';
+
 const DEFAULT_PORT = 3000;
 
 export default defineConfig(({ mode }) => {
@@ -45,7 +47,7 @@ export default defineConfig(({ mode }) => {
       },
       define: {
         global: 'globalThis',
-        APP_VERSION: JSON.stringify(env.VITE_APP_VERSION) ?? 'dev',
+        APP_VERSION: JSON.stringify(packageJson.version),
       },
       plugins: [
         react({

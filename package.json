@@ -2,7 +2,7 @@
   "name": "chrollo",
   "description": "A Postman-like tool for inspecting, testing, and debugging WebSocket APIs.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.1",
   "type": "module",
   "main": "./out/main/index.js",
   "scripts": {

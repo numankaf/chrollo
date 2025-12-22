@@ -32,16 +32,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Set VITE_APP_VERSION
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "VITE_APP_VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          else
-            VERSION=$(node -p "require('./package.json').version")
-            echo "VITE_APP_VERSION=${VERSION}" >> $GITHUB_ENV
-          fi
-
       - name: Build app
         run: pnpm build
 
@@ -78,16 +68,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Set VITE_APP_VERSION
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "VITE_APP_VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          else
-            VERSION=$(node -p "require('./package.json').version")
-            echo "VITE_APP_VERSION=${VERSION}" >> $GITHUB_ENV
-          fi
-
       - name: Build app
         run: pnpm build
 
@@ -123,16 +103,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Set VITE_APP_VERSION
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "VITE_APP_VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          else
-            VERSION=$(node -p "require('./package.json').version")
-            echo "VITE_APP_VERSION=${VERSION}" >> $GITHUB_ENV
-          fi
 
       - name: Build app
         run: pnpm build
