@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { TIME_FORMAT_HH_MM_SS_MMM } from '@/constants/date-constants';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { formatCode } from '@/utils/editor-util';
@@ -28,7 +28,21 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
     }))
   );
 
-  const [bodyType, setBodyType] = useState<RequestBodyType>(getMessageContentType(message?.meta?.headers));
+  const headers = message?.meta?.headers || {};
+
+  const bodyTypeRetrieved = getMessageContentType(headers);
+
+  const [bodyType, setBodyType] = useState<RequestBodyType>(bodyTypeRetrieved);
+
+  const updateBodyType = useEffectEvent((c: RequestBodyType) => {
+    setBodyType(c);
+  });
+
+  useEffect(() => {
+    if (message) {
+      updateBodyType(bodyTypeRetrieved);
+    }
+  }, [bodyTypeRetrieved, message]);
 
   if (!message) return null;
 
@@ -36,7 +50,6 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
     bodyType === REQUEST_BODY_TYPE.JSON
       ? JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses))
       : message.data;
-  const headers = message.meta?.headers || {};
 
   return (
     <Dialog open={!!message} onOpenChange={onOpenChange}>
