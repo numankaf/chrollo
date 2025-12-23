@@ -34,6 +34,7 @@ export function deepParseJson<T extends JsonValue>(input: T, deepParseEnabled?: 
 const IGNORED_KEYS = new Set([
   'id',
   'name',
+  'parentId',
   'children',
   'modelType',
   'createdDate',

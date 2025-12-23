@@ -43,8 +43,19 @@ import NoCollectionFound from '@/components/app/empty/no-collection-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 import { CollectionItemIcon } from '@/components/icon/collection-item-icon';
 
-function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<CollectionItem>) {
+interface EmptyPlaceholder {
+  id: string;
+  name?: string;
+  isEmptyPlaceholder: true;
+  parentId: string;
+  parentType: string;
+}
+
+type TreeDataItem = CollectionItem | EmptyPlaceholder;
+
+function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeDataItem>) {
   const item = node.data;
+
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -69,48 +80,9 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
   const [addFolderDialogOpen, setAddFolderDialogOpen] = useState<boolean>(false);
   const [addRequestDialogOpen, setAddRequestDialogOpen] = useState<boolean>(false);
 
-  async function onAddFolderSubmit(values: { name: string }) {
-    if (!activeWorkspaceId) {
-      return;
-    }
-    try {
-      const folderPayload: Folder = {
-        id: nanoid(),
-        name: values.name,
-        workspaceId: activeWorkspaceId,
-        parentId: item.id,
-        ...FOLDER_DEFAULT_VALUES,
-      };
-      const newFolder = await saveCollectionItem(folderPayload);
-      openTab(newFolder);
-      setAddFolderDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit collection:', error);
-      toast.error('Failed to submit collection.');
-    }
-  }
-
-  async function onAddRequestSubmit(values: { name: string }) {
-    if (!activeWorkspaceId) {
-      return;
-    }
-    try {
-      const requestPayload: Request = {
-        id: nanoid(),
-        name: values.name,
-        workspaceId: activeWorkspaceId,
-        parentId: item.id,
-        ...REQUEST_DEFAULT_VALUES,
-      };
-      const newRequest = await saveCollectionItem(requestPayload);
-      openTab(newRequest);
-      setAddRequestDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit collection:', error);
-      toast.error('Failed to submit collection.');
-    }
-  }
   useEffect(() => {
+    if (!item || 'isEmptyPlaceholder' in item) return;
+
     const unsubscribeItemRename = commandBus.on(COMMANDS.ITEM_RENAME, () => {
       if (activeTab?.id !== item.id) return;
       node.edit();
@@ -139,6 +111,62 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
       unsubscribeItemDelete?.();
     };
   }, [item, cloneCollectionItem, deleteCollectionItem, node, activeTab]);
+
+  if (!item) return null;
+
+  if ('isEmptyPlaceholder' in item) {
+    const isCollection = item.parentType === COLLECTION_TYPE.COLLECTION;
+    return (
+      <div
+        style={style}
+        className="flex items-center h-full ml-8 text-sm text-muted-foreground select-none pointer-events-none"
+      >
+        This {isCollection ? 'collection' : 'folder'} is empty.
+      </div>
+    );
+  }
+
+  async function onAddFolderSubmit(values: { name: string }) {
+    if (!activeWorkspaceId || !('id' in item)) {
+      return;
+    }
+    try {
+      const folderPayload: Folder = {
+        id: nanoid(),
+        name: values.name,
+        workspaceId: activeWorkspaceId,
+        parentId: item.id,
+        ...FOLDER_DEFAULT_VALUES,
+      };
+      const newFolder = await saveCollectionItem(folderPayload);
+      openTab(newFolder);
+      setAddFolderDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to submit collection:', error);
+      toast.error('Failed to submit collection.');
+    }
+  }
+
+  async function onAddRequestSubmit(values: { name: string }) {
+    if (!activeWorkspaceId || !('id' in item)) {
+      return;
+    }
+    try {
+      const requestPayload: Request = {
+        id: nanoid(),
+        name: values.name,
+        workspaceId: activeWorkspaceId,
+        parentId: item.id,
+        ...REQUEST_DEFAULT_VALUES,
+      };
+      const newRequest = await saveCollectionItem(requestPayload);
+      openTab(newRequest);
+      setAddRequestDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to submit collection:', error);
+      toast.error('Failed to submit collection.');
+    }
+  }
 
   function getOperationItems(item: CollectionItem): OperationButtonItem[] {
     const operationItems = [
@@ -220,6 +248,8 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
     return operationItems;
   }
 
+  const collectionItem = item as CollectionItem;
+
   return (
     <>
       {addRequestDialogOpen && (
@@ -248,7 +278,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
           onSubmit={onAddFolderSubmit}
         />
       )}
-      <div ref={dragHandle} style={style} className="flex items-center justify-between">
+      <div ref={dragHandle} style={style} className="flex items-center justify-between group">
         <div className="flex items-center w-full h-7 text-sm gap-1 px-2 py-1">
           {!node.isLeaf && (
             <ChevronRight
@@ -265,21 +295,21 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
 
           <div
             className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block focus-visible:outline-none focus-visible:ring-0"
-            key={item.id}
+            key={collectionItem.id}
             onClick={() => {
-              openTab(item);
+              openTab(collectionItem);
             }}
           >
-            <CollectionItemIcon size={14} collectionType={item.collectionItemType} />
+            <CollectionItemIcon size={14} collectionType={collectionItem.collectionItemType} />
             <InlineEditText
-              value={item.name}
+              value={collectionItem.name}
               editing={node.isEditing}
               onComplete={(value) => {
-                updateCollectionItem({ ...item, name: value }, { persist: true });
+                updateCollectionItem({ ...collectionItem, name: value }, { persist: true });
                 node.reset();
               }}
             />
-            <OperationsButton items={getOperationItems(item)} />
+            <OperationsButton items={getOperationItems(collectionItem)} />
           </div>
         </div>
       </div>
@@ -323,15 +353,20 @@ function CollectionTreeCursor({ top }: CursorProps) {
   );
 }
 
-function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
+function CollectionSidebarItem(props: RowRendererProps<TreeDataItem>) {
   const { node, innerRef, attrs, children } = props;
   const { activeTab } = useActiveItem();
+
+  const isEmptyPlaceholder = node.data && 'isEmptyPlaceholder' in node.data;
+  const isActive = !isEmptyPlaceholder && activeTab?.id === node.data?.id;
 
   return (
     <div
       {...attrs}
       ref={innerRef}
-      className={`${activeTab?.id === node.data.id && 'bg-sidebar-accent'} h-7! cursor-pointer rounded-md hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-0`}
+      className={`${isActive ? 'bg-sidebar-accent' : ''} ${
+        isEmptyPlaceholder ? 'cursor-default' : 'cursor-pointer hover:bg-sidebar-accent'
+      } h-7! rounded-md focus-visible:outline-none focus-visible:ring-0`}
     >
       {children}
     </div>
@@ -339,7 +374,7 @@ function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
 }
 
 export default function CollectionSidebar() {
-  const [tree, setTree] = useState<TreeApi<CollectionItem> | null | undefined>(null);
+  const [tree, setTree] = useState<TreeApi<TreeDataItem> | null | undefined>(null);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, 300);
   const [count, setCount] = useState(0);
@@ -363,15 +398,32 @@ export default function CollectionSidebar() {
 
     return Array.from(collectionItemMap.values()).filter(
       (item) => item.collectionItemType === COLLECTION_TYPE.COLLECTION
-    );
+    ) as TreeDataItem[];
   }, [collectionItemMap]);
+
   const childrenAccessor = useCallback(
-    (nodeData: CollectionItem) => {
+    (nodeData: TreeDataItem) => {
+      if (!nodeData) return null;
+
+      if ('isEmptyPlaceholder' in nodeData) return null;
+
       if (!hasChildren(nodeData)) return null;
 
-      if (!nodeData.children || nodeData.children.length === 0) return null;
+      const childrenIds = nodeData.children ?? [];
+      const children = childrenIds.map((childId) => collectionItemMap.get(childId)).filter(Boolean) as CollectionItem[];
 
-      return nodeData.children.map((childId) => collectionItemMap.get(childId)).filter(Boolean) as CollectionItem[];
+      if (children.length === 0) {
+        return [
+          {
+            id: `${nodeData.id}-empty`,
+            isEmptyPlaceholder: true,
+            parentId: nodeData.id,
+            parentType: nodeData.collectionItemType,
+          } as EmptyPlaceholder,
+        ];
+      }
+
+      return children;
     },
     [collectionItemMap]
   );
@@ -447,7 +499,7 @@ export default function CollectionSidebar() {
         <SidebarGroupContent>
           {roots.length === 0 && <NoCollectionFound />}
           {roots.length !== 0 && count === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
-          <Tree<CollectionItem>
+          <Tree<TreeDataItem>
             ref={(t) => setTree(t)}
             data={roots}
             width="100%"
@@ -458,16 +510,26 @@ export default function CollectionSidebar() {
               dragIds.forEach((id) => moveCollectionItem(id, parentId, index));
             }}
             searchTerm={debouncedSearch}
-            searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
+            searchMatch={(node, term) => {
+              if (!node.data || 'isEmptyPlaceholder' in node.data) return false;
+              const collectionItem = node.data as CollectionItem;
+              return collectionItem.name?.toLowerCase().includes(term.toLowerCase()) ?? false;
+            }}
             rowClassName="hover:bg-sidebar-accent rounded-lg"
             className="app-scroll"
             renderDragPreview={CollectionDragPreview}
             renderCursor={CollectionTreeCursor}
-            disableDrag={(node) => node.collectionItemType === COLLECTION_TYPE.COLLECTION}
+            disableDrag={(data) =>
+              !data ||
+              'isEmptyPlaceholder' in data ||
+              (data as CollectionItem).collectionItemType === COLLECTION_TYPE.COLLECTION
+            }
             disableDrop={({ parentNode }) =>
               !parentNode ||
-              (parentNode.data.collectionItemType !== COLLECTION_TYPE.FOLDER &&
-                parentNode.data.collectionItemType !== COLLECTION_TYPE.COLLECTION)
+              !parentNode.data ||
+              'isEmptyPlaceholder' in parentNode.data ||
+              ((parentNode.data as CollectionItem).collectionItemType !== COLLECTION_TYPE.FOLDER &&
+                (parentNode.data as CollectionItem).collectionItemType !== COLLECTION_TYPE.COLLECTION)
             }
             renderRow={CollectionSidebarItem}
           >
