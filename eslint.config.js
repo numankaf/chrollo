@@ -55,8 +55,6 @@ export default defineConfig([
       'react/react-in-jsx-scope': 'off',
       'react/jsx-closing-bracket-location': ['error', { selfClosing: 'line-aligned', nonEmpty: 'line-aligned' }],
       'react/jsx-closing-tag-location': 'error',
-      'react/jsx-closing-bracket-location': ['error', { selfClosing: 'line-aligned', nonEmpty: 'line-aligned' }],
-      'react/jsx-closing-tag-location': 'error',
       'jsx-quotes': ['error', 'prefer-double'],
 
       // Spacing in self-closing tags

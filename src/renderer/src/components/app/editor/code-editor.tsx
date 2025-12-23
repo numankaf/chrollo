@@ -1,4 +1,4 @@
-import { use, useLayoutEffect, useState } from 'react';
+import { use, useLayoutEffect, useMemo, useState } from 'react';
 import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
 import { chrolloCompletions } from '@/utils/chrollo-completions';
 import { getEditorTheme } from '@/utils/editor-util';
@@ -30,10 +30,16 @@ function CodeEditor({ readOnly, height, bodyType, ...props }: CodeEditorProps) {
   const { resolvedTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
 
-  function getExtensionsWithBodyType(bodyType: EditorBodyType) {
+  const extensions = useMemo(() => {
+    const _extensions = [lineWrap, keymap.of([indentWithTab])];
+    if (!readOnly) {
+      _extensions.push(lintGutter());
+    }
+
     switch (bodyType) {
       case EDITOR_BODY_TYPE.JSON:
-        return [json(), linter(jsonParseLinter())];
+        _extensions.push(json(), linter(jsonParseLinter()));
+        break;
 
       case EDITOR_BODY_TYPE.JAVASCRIPT: {
         const config = {
@@ -48,19 +54,21 @@ function CodeEditor({ readOnly, height, bodyType, ...props }: CodeEditorProps) {
           },
           rules: {},
         };
-        return [
+        _extensions.push(
           javascript(),
           javascriptLanguage.data.of({ autocomplete: chrolloCompletions }),
           linter(esLint(new Linter(), config)),
-          autocompletion(),
-        ];
+          autocompletion()
+        );
+        break;
       }
 
       case EDITOR_BODY_TYPE.TEXT:
       default:
-        return [];
+        break;
     }
-  }
+    return _extensions;
+  }, [bodyType, readOnly]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;
@@ -72,13 +80,9 @@ function CodeEditor({ readOnly, height, bodyType, ...props }: CodeEditorProps) {
 
   return (
     <CodeMirror
+      key={bodyType}
       readOnly={readOnly}
-      extensions={[
-        lineWrap,
-        ...getExtensionsWithBodyType(bodyType),
-        readOnly ? [] : lintGutter(),
-        keymap.of([indentWithTab]),
-      ]}
+      extensions={extensions}
       theme={editorTheme}
       height={height || 'auto'}
       {...props}
