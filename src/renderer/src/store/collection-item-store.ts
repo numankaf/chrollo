@@ -2,7 +2,7 @@ import useTabsStore from '@/store/tab-store';
 import { cloneCollectionItemDeep, deleteItemAndChildren, hasChildren, hasParent } from '@/utils/collection-util';
 import { create } from 'zustand';
 
-import { type Collection, type CollectionItem, type Folder } from '@/types/collection';
+import { type Collection, type CollectionItem, type Folder, type Request } from '@/types/collection';
 
 interface CollectionItemStore {
   collectionItemMap: Map<string, CollectionItem>;
@@ -17,6 +17,7 @@ interface CollectionItemStore {
   deleteCollectionItem: (id: string) => Promise<void>;
   cloneCollectionItem: (id: string) => Promise<CollectionItem>;
   saveCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
+  moveCollectionItem: (id: string, parentId: string | null, index: number) => Promise<void>;
 }
 
 const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
@@ -158,6 +159,62 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
       : await get().createCollectionItem(collection);
 
     return updatedCollection;
+  },
+
+  moveCollectionItem: async (id: string, parentId: string | null, index: number) => {
+    const itemsToSave: CollectionItem[] = [];
+
+    set((state) => {
+      const newMap = new Map(state.collectionItemMap);
+      const item = newMap.get(id);
+      if (!item) return state;
+
+      const oldParentId = hasParent(item) ? item.parentId : null;
+
+      // 1. Remove from old parent
+      if (oldParentId) {
+        const oldParent = newMap.get(oldParentId);
+        if (oldParent && hasChildren(oldParent)) {
+          const children = (oldParent.children || []).filter((cid) => cid !== id);
+          const updatedOldParent = { ...oldParent, children };
+          newMap.set(oldParentId, updatedOldParent);
+          itemsToSave.push(updatedOldParent);
+        }
+      }
+
+      // 2. Update item's parentId if it's a type that has a parent
+      const updatedItem = { ...item };
+      if (hasParent(updatedItem)) {
+        if (parentId) {
+          (updatedItem as Folder | Request).parentId = parentId;
+        }
+        newMap.set(id, updatedItem);
+        itemsToSave.push(updatedItem);
+      }
+
+      // 3. Add to new parent
+      if (parentId) {
+        const newParent = newMap.get(parentId);
+        if (newParent && hasChildren(newParent)) {
+          const children = [...(newParent.children || [])];
+          // Remove if already there (shouldn't be, but safe)
+          const existingIndex = children.indexOf(id);
+          if (existingIndex !== -1) {
+            children.splice(existingIndex, 1);
+          }
+          children.splice(index, 0, id);
+          const updatedNewParent = { ...newParent, children };
+          newMap.set(parentId, updatedNewParent);
+          itemsToSave.push(updatedNewParent);
+        }
+      }
+
+      return { collectionItemMap: newMap };
+    });
+
+    for (const itemToSave of itemsToSave) {
+      await window.api.collection.save(itemToSave);
+    }
   },
 }));
 
