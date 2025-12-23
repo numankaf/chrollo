@@ -6,7 +6,14 @@ import useWorkspaceStore from '@/store/workspace-store';
 import { hasChildren } from '@/utils/collection-util';
 import { ChevronRight, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { Tree, TreeApi, type NodeRendererProps, type RowRendererProps } from 'react-arborist';
+import {
+  Tree,
+  TreeApi,
+  type CursorProps,
+  type DragPreviewProps,
+  type NodeRendererProps,
+  type RowRendererProps,
+} from 'react-arborist';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -280,18 +287,48 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<Colle
   );
 }
 
+function CollectionDragPreview({ mouse, dragIds }: DragPreviewProps) {
+  const collectionItemMap = useWorkspaceCollectionItemMap();
+  const draggedItemId = dragIds[0];
+  const draggedItem = draggedItemId ? collectionItemMap.get(draggedItemId) : null;
+
+  if (!mouse || !draggedItem) return null;
+
+  return (
+    <div
+      className="flex items-center gap-2 px-3 py-1.5 bg-sidebar-accent border border-sidebar-border rounded shadow-lg pointer-events-none opacity-80"
+      style={{
+        position: 'fixed',
+        left: mouse.x + 10,
+        top: mouse.y + 10,
+        zIndex: 1000,
+      }}
+    >
+      <CollectionItemIcon size={14} collectionType={draggedItem.collectionItemType} />
+      <span className="text-sm truncate max-w-40">{draggedItem.name}</span>
+    </div>
+  );
+}
+
+function CollectionTreeCursor({ top }: CursorProps) {
+  return (
+    <div
+      className="absolute h-0.5 bg-primary rounded-full z-50 pointer-events-none"
+      style={{
+        top: top - 1,
+        left: 0,
+        right: 0,
+      }}
+    />
+  );
+}
+
 function CollectionSidebarItem(props: RowRendererProps<CollectionItem>) {
   const { node, innerRef, attrs, children } = props;
   const { activeTab } = useActiveItem();
 
   return (
     <div
-      onKeyDown={(e) => {
-        // Prevent space and enter from expanding/collapsing
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.stopPropagation();
-        }
-      }}
       {...attrs}
       ref={innerRef}
       className={`${activeTab?.id === node.data.id && 'bg-sidebar-accent'} h-7! cursor-pointer rounded-md hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-0`}
@@ -349,9 +386,10 @@ export default function CollectionSidebar() {
       openTab: state.openTab,
     }))
   );
-  const { saveCollectionItem } = useCollectionItemStore(
+  const { saveCollectionItem, moveCollectionItem } = useCollectionItemStore(
     useShallow((state) => ({
       saveCollectionItem: state.saveCollectionItem,
+      moveCollectionItem: state.moveCollectionItem,
     }))
   );
 
@@ -416,12 +454,21 @@ export default function CollectionSidebar() {
             height={count === 0 ? 0 : height}
             childrenAccessor={childrenAccessor}
             rowHeight={30}
+            onMove={({ dragIds, parentId, index }) => {
+              dragIds.forEach((id) => moveCollectionItem(id, parentId, index));
+            }}
             searchTerm={debouncedSearch}
             searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
-            disableDrag
-            disableDrop
             rowClassName="hover:bg-sidebar-accent rounded-lg"
             className="app-scroll"
+            renderDragPreview={CollectionDragPreview}
+            renderCursor={CollectionTreeCursor}
+            disableDrag={(node) => node.collectionItemType === COLLECTION_TYPE.COLLECTION}
+            disableDrop={({ parentNode }) =>
+              !parentNode ||
+              (parentNode.data.collectionItemType !== COLLECTION_TYPE.FOLDER &&
+                parentNode.data.collectionItemType !== COLLECTION_TYPE.COLLECTION)
+            }
             renderRow={CollectionSidebarItem}
           >
             {CollectionItemNode}
