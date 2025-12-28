@@ -19,6 +19,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import {
   COLLECTION_DEFAULT_VALUES,
+  COLLECTION_TREE_OPEN_STATE_KEY,
   COLLECTION_TYPE,
   FOLDER_DEFAULT_VALUES,
   REQUEST_DEFAULT_VALUES,
@@ -467,6 +468,29 @@ export default function CollectionSidebar() {
 
   const { ref, height } = useResizeObserver();
 
+  const initialOpenState = useMemo(() => {
+    try {
+      const saved = localStorage.getItem(COLLECTION_TREE_OPEN_STATE_KEY);
+      return saved ? (JSON.parse(saved) as Record<string, boolean>) : {};
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const onToggle = (id: string) => {
+    if (search) return;
+
+    const node = tree?.get(id);
+    if (!node) return;
+
+    const isOpen = node.isOpen;
+    const saved = localStorage.getItem(COLLECTION_TREE_OPEN_STATE_KEY);
+    const openMap = saved ? (JSON.parse(saved) as Record<string, boolean>) : {};
+    openMap[id] = isOpen;
+
+    localStorage.setItem(COLLECTION_TREE_OPEN_STATE_KEY, JSON.stringify(openMap));
+  };
+
   return (
     <SidebarContent className="h-full">
       <SidebarHeader className="m-0! p-0!">
@@ -532,6 +556,8 @@ export default function CollectionSidebar() {
                 (parentNode.data as CollectionItem).collectionItemType !== COLLECTION_TYPE.COLLECTION)
             }
             renderRow={CollectionSidebarItem}
+            initialOpenState={initialOpenState}
+            onToggle={onToggle}
           >
             {CollectionItemNode}
           </Tree>
