@@ -103,3 +103,5 @@ export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId'
     postRequest: '',
   },
 };
+
+export const COLLECTION_TREE_OPEN_STATE_KEY = 'collection-tree-open-state';
