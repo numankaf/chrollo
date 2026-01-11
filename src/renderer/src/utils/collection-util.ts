@@ -4,6 +4,7 @@ import {
   COLLECTION_TYPE,
   type Collection,
   type CollectionItem,
+  type ExportableCollectionItem,
   type Folder,
   type Request,
   type RequestResponse,
@@ -96,10 +97,6 @@ export function cloneCollectionItemDeep(
 
   return { newMap, clonedRootId };
 }
-
-export type ExportableCollectionItem = CollectionItem & {
-  children?: ExportableCollectionItem[];
-};
 
 export function getCollectionItemWithChildren(
   map: Map<string, CollectionItem>,

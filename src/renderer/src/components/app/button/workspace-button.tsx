@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import useTabsStore from '@/store/tab-store';
 import { ArrowRight, Download, Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
@@ -11,10 +12,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
 import { SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from '@/components/common/sidebar';
+import { ImportItemDialog } from '@/components/app/dialog/import-item-dialog';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 function WorkspaceButton() {
   const { activeWorkspace } = useActiveItem();
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -53,13 +56,15 @@ function WorkspaceButton() {
               <Plus />
               New
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-sm">
+            <DropdownMenuItem className="text-sm" onClick={() => setImportDialogOpen(true)}>
               <Download />
               Import
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ImportItemDialog open={importDialogOpen} onOpenChange={setImportDialogOpen} />
     </>
   );
 }
