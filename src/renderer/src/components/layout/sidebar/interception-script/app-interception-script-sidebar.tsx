@@ -3,6 +3,7 @@ import { confirmDialog } from '@/store/confirm-dialog-store';
 import useInterceptionScriptStore from '@/store/interception-script-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
+import { exportAsJson } from '@/utils/download-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getTabItem } from '@/utils/tab-util';
 import { CircleCheck, FileCode, Plus } from 'lucide-react';
@@ -150,6 +151,17 @@ function AppInterceptionScriptSidebar() {
                 toast.error(error?.message);
               }
             }
+          },
+        },
+      },
+      {
+        id: 'export',
+        content: 'Export',
+        props: {
+          className: 'text-sm',
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            e.stopPropagation();
+            exportAsJson(item, item.name);
           },
         },
       },

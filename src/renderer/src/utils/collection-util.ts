@@ -96,3 +96,27 @@ export function cloneCollectionItemDeep(
 
   return { newMap, clonedRootId };
 }
+
+export type ExportableCollectionItem = CollectionItem & {
+  children?: ExportableCollectionItem[];
+};
+
+export function getCollectionItemWithChildren(
+  map: Map<string, CollectionItem>,
+  id: string
+): ExportableCollectionItem | null {
+  const item = map.get(id);
+  if (!item) return null;
+
+  const itemData = { ...item } as ExportableCollectionItem;
+
+  if (hasChildren(item)) {
+    if (item.children) {
+      itemData.children = item.children
+        .map((childId) => getCollectionItemWithChildren(map, childId))
+        .filter((child): child is ExportableCollectionItem => child !== null);
+    }
+  }
+
+  return itemData;
+}
