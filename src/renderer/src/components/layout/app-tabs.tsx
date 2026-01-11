@@ -52,7 +52,7 @@ function SortableTabItem({ tab, isActive, dirtyBeforeSave, onOpenTab, onCloseTab
     <div ref={setNodeRef} style={style} className="h-full flex items-center">
       <div
         className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1 rounded-lg whitespace-nowrap border border-transparent hover:text-accent-foreground hover:bg-card
-        ${isActive ? 'border-primary/30! bg-primary/10 hover:bg-primary/10 text-foreground' : 'text-muted-foreground '}`}
+        ${isActive ? 'text-primary hover:text-primary border-primary/30! bg-primary/10 hover:bg-primary/10' : 'text-muted-foreground '}`}
         onClick={() => onOpenTab(tab)}
         onMouseDown={(e) => {
           if (e.button === 1) {
