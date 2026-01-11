@@ -11,14 +11,7 @@ import { saveItem } from '@/utils/save-registry-util';
 import { toast } from 'sonner';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import {
-  COLLECTION_TYPE,
-  NULL_PARENT_ID,
-  type CollectionItem,
-  type Folder,
-  type Request,
-  type RequestResponse,
-} from '@/types/collection';
+import { COLLECTION_TYPE, NULL_PARENT_ID, type CollectionItem } from '@/types/collection';
 import { COMMANDS } from '@/types/command';
 import { CONNECTION_TYPE } from '@/types/connection';
 import type { Tab, TabItem } from '@/types/layout';
@@ -175,7 +168,8 @@ export function confirmTabClose(tabId: string) {
 
         if (
           tabItem.modelType === BASE_MODEL_TYPE.COLLECTION &&
-          (tabItem as Folder | Request | RequestResponse).parentId === NULL_PARENT_ID
+          hasParent(tabItem) &&
+          tabItem.parentId === NULL_PARENT_ID
         ) {
           commandBus.emit(COMMANDS.ITEM_REQUEST_SAVE_TO_COLLECTION);
           return;

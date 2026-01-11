@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import useTabsStore from '@/store/tab-store';
+import { hasParent } from '@/utils/collection-util';
 import { saveItem } from '@/utils/save-registry-util';
 import { getPersistedTabItem } from '@/utils/tab-util';
 import deepEqual from 'fast-deep-equal';
@@ -8,7 +9,7 @@ import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { NULL_PARENT_ID, type Folder, type Request, type RequestResponse } from '@/types/collection';
+import { NULL_PARENT_ID } from '@/types/collection';
 import { COMMANDS } from '@/types/command';
 import type { TabItem } from '@/types/layout';
 import { commandBus } from '@/lib/command-bus';
@@ -69,10 +70,7 @@ function SaveItemButton() {
   const save = useCallback(async () => {
     if (!activeTab || !item) return;
 
-    if (
-      item.modelType === BASE_MODEL_TYPE.COLLECTION &&
-      (item as Folder | Request | RequestResponse).parentId === NULL_PARENT_ID
-    ) {
+    if (item.modelType === BASE_MODEL_TYPE.COLLECTION && hasParent(item) && item.parentId === NULL_PARENT_ID) {
       setSaveDialogOpen(true);
       return;
     }
