@@ -104,15 +104,14 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
   },
 
   deleteCollectionItem: async (id: string) => {
-    set((state) => {
-      const newMap = new Map(state.collectionItemMap);
+    const currentMap = new Map(get().collectionItemMap);
+    const deletedIds = await deleteItemAndChildren(currentMap, id);
 
-      deleteItemAndChildren(newMap, id);
+    set({ collectionItemMap: currentMap });
 
-      return { collectionItemMap: newMap };
-    });
-
-    useTabsStore.getState().closeTab(id);
+    for (const deletedId of deletedIds) {
+      useTabsStore.getState().closeTab(deletedId);
+    }
   },
 
   cloneCollectionItem: async (id: string) => {
