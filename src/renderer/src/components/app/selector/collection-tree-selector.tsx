@@ -14,7 +14,12 @@ interface CollectionTreeSelectorProps {
   height?: number;
 }
 
-function SelectorNode({ node, style, dragHandle }: NodeRendererProps<CollectionItem>) {
+function SelectorNode({
+  node,
+  style,
+  dragHandle,
+  isSelected,
+}: NodeRendererProps<CollectionItem> & { isSelected?: boolean }) {
   const item = node.data;
   return (
     <div
@@ -22,7 +27,7 @@ function SelectorNode({ node, style, dragHandle }: NodeRendererProps<CollectionI
       style={style}
       className={cn(
         'flex items-center gap-1 px-2 py-1 h-full cursor-pointer rounded-md transition-colors text-foreground',
-        node.isSelected ? 'bg-primary/10 text-primary' : 'hover:bg-sidebar-accent'
+        (isSelected ?? node.isSelected) ? 'bg-primary/10 text-primary' : 'hover:bg-sidebar-accent'
       )}
       onClick={() => {
         node.select();
@@ -83,6 +88,13 @@ export function CollectionTreeSelector({ selectedId, onSelect, height = 300 }: C
     [collectionItemMap]
   );
 
+  const nodeRenderer = useCallback(
+    (props: NodeRendererProps<CollectionItem>) => {
+      return <SelectorNode {...props} isSelected={props.node.id === selectedId} />;
+    },
+    [selectedId]
+  );
+
   return (
     <div className="border rounded-md bg-card overflow-hidden flex flex-col gap-1 p-1">
       <SearchBar
@@ -110,7 +122,7 @@ export function CollectionTreeSelector({ selectedId, onSelect, height = 300 }: C
         renderRow={SelectorRow}
         className="app-scroll"
       >
-        {SelectorNode}
+        {nodeRenderer}
       </Tree>
     </div>
   );

@@ -267,7 +267,7 @@ export function ImportItemDialog({ open, onOpenChange }: ImportItemDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             {importStage === IMPORT_STAGE.FILE_SELECTION ? (
