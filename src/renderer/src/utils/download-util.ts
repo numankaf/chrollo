@@ -1,6 +1,6 @@
-import type { BaseModel } from '@/types/base';
+import type { BaseItem } from '@/types/base';
 
-export const exportAsJson = (data: BaseModel, filename: string) => {
+export const exportAsJson = (data: BaseItem, filename: string) => {
   const jsonString = JSON.stringify(data, null, 2);
   const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
