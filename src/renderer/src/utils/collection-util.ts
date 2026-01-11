@@ -21,13 +21,16 @@ export function hasParent(item: CollectionItem): item is Folder | Request | Requ
   );
 }
 
-export async function deleteItemAndChildren(map: Map<string, CollectionItem>, id: string) {
+export async function deleteItemAndChildren(map: Map<string, CollectionItem>, id: string): Promise<string[]> {
   const item = map.get(id);
-  if (!item) return;
+  if (!item) return [];
+
+  let deletedIds = [id];
 
   // Delete all children recursively if item has children
   if (hasChildren(item) && item.children?.length) {
-    item.children.forEach((childId) => deleteItemAndChildren(map, childId));
+    const childrenDeletedIds = await Promise.all(item.children.map((childId) => deleteItemAndChildren(map, childId)));
+    deletedIds = deletedIds.concat(childrenDeletedIds.flat());
   }
 
   // Remove this item from its parent's children
@@ -43,6 +46,8 @@ export async function deleteItemAndChildren(map: Map<string, CollectionItem>, id
   //Delete this item from map
   map.delete(id);
   await window.api.collection.delete(id);
+
+  return deletedIds;
 }
 
 export function cloneCollectionItemDeep(
