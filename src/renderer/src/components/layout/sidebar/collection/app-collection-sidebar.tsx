@@ -3,7 +3,8 @@ import useCollectionItemStore from '@/store/collection-item-store';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { hasChildren } from '@/utils/collection-util';
+import { getCollectionItemWithChildren, hasChildren } from '@/utils/collection-util';
+import { exportAsJson } from '@/utils/download-util';
 import { ChevronRight, Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import {
@@ -81,6 +82,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
   const [addFolderDialogOpen, setAddFolderDialogOpen] = useState<boolean>(false);
   const [addRequestDialogOpen, setAddRequestDialogOpen] = useState<boolean>(false);
   const [operationsMenuOpen, setOperationsMenuOpen] = useState<boolean>(false);
+  const collectionItemMap = useWorkspaceCollectionItemMap();
 
   useEffect(() => {
     if (!item || 'isEmptyPlaceholder' in item) return;
@@ -196,6 +198,20 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
               if (error instanceof Error) {
                 toast.error(error?.message);
               }
+            }
+          },
+        },
+      },
+      {
+        id: 'export',
+        content: 'Export',
+        props: {
+          className: 'text-sm',
+          onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            e.stopPropagation();
+            const data = getCollectionItemWithChildren(collectionItemMap, item.id);
+            if (data) {
+              exportAsJson(data, item.name);
             }
           },
         },
