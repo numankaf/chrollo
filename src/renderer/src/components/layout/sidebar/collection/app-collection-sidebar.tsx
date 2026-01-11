@@ -80,6 +80,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
   const { activeTab } = useActiveItem();
   const [addFolderDialogOpen, setAddFolderDialogOpen] = useState<boolean>(false);
   const [addRequestDialogOpen, setAddRequestDialogOpen] = useState<boolean>(false);
+  const [operationsMenuOpen, setOperationsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!item || 'isEmptyPlaceholder' in item) return;
@@ -295,10 +296,14 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
           )}
 
           <div
-            className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block focus-visible:outline-none focus-visible:ring-0"
+            className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>.operations-trigger]:block [&>.operations-trigger[data-state=open]]:inline-block focus-visible:outline-none focus-visible:ring-0"
             key={collectionItem.id}
             onClick={() => {
               openTab(collectionItem);
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setOperationsMenuOpen(true);
             }}
           >
             <CollectionItemIcon size={14} collectionType={collectionItem.collectionItemType} />
@@ -310,7 +315,11 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
                 node.reset();
               }}
             />
-            <OperationsButton items={getOperationItems(collectionItem)} />
+            <OperationsButton
+              open={operationsMenuOpen}
+              onOpenChange={setOperationsMenuOpen}
+              items={getOperationItems(collectionItem)}
+            />
           </div>
         </div>
       </div>

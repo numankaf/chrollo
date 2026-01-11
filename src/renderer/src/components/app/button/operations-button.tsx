@@ -19,20 +19,20 @@ export type OperationButtonItem = {
 };
 
 type OperationsButtonProps = {
-  id?: string;
   items: OperationButtonItem[];
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-function OperationsButton({ id = 'operations-trigger', items }: OperationsButtonProps) {
+function OperationsButton({ items, open, onOpenChange }: OperationsButtonProps) {
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild className="">
         <Button
           asChild
           size="icon"
           variant="secondary"
-          className="w-5! h-5! p-0.5 rounded-md  bg-transparent hidden"
-          id={id}
+          className="w-5! h-5! p-0.5 rounded-md bg-transparent hidden operations-trigger"
         >
           <Ellipsis />
         </Button>

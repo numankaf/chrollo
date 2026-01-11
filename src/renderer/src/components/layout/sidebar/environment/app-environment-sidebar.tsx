@@ -36,6 +36,7 @@ import NoResultsFound from '@/components/app/empty/no-results-found';
 
 function EnvironmentsSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [operationsMenuOpenItemId, setOperationsMenuOpenItemId] = useState<string | null>(null);
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -207,10 +208,14 @@ function EnvironmentsSidebar() {
               {filteredEnvironments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
-                  className="[&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
+                  className="[&:hover>.operations-trigger]:block [&>.operations-trigger[data-state=open]]:inline-block"
                   isActive={item.id === activeTab?.id}
                   key={item.id}
                   size="sm"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setOperationsMenuOpenItemId(item.id);
+                  }}
                 >
                   <Container size={16} />
                   <InlineEditText
@@ -221,7 +226,11 @@ function EnvironmentsSidebar() {
                       setEditingItemId(null);
                     }}
                   />
-                  <OperationsButton items={getOperationItems(item)} />
+                  <OperationsButton
+                    open={operationsMenuOpenItemId === item.id}
+                    onOpenChange={(open) => setOperationsMenuOpenItemId(open ? item.id : null)}
+                    items={getOperationItems(item)}
+                  />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

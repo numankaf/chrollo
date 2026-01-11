@@ -43,6 +43,8 @@ function AppInterceptionScriptSidebar() {
   );
   const { activeTab } = useActiveItem();
 
+  const [operationsMenuOpenItemId, setOperationsMenuOpenItemId] = useState<string | null>(null);
+
   const interceptionScripts = useWorkspaceInterceptionScripts();
 
   const [search, setSearch] = useState('');
@@ -211,7 +213,11 @@ function AppInterceptionScriptSidebar() {
               {filteredInterceptionScripts.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
-                  className="[&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setOperationsMenuOpenItemId(item.id);
+                  }}
+                  className="[&:hover>.operations-trigger]:block [&>.operations-trigger[data-state=open]]:inline-block"
                   isActive={item.id === activeTab?.id}
                   key={item.id}
                   size="sm"
@@ -226,7 +232,11 @@ function AppInterceptionScriptSidebar() {
                     }}
                   />
                   {item.enabled && <CircleCheck size={12} color="var(--primary)" />}
-                  <OperationsButton items={getOperationItems(item)} />
+                  <OperationsButton
+                    open={operationsMenuOpenItemId === item.id}
+                    onOpenChange={(open) => setOperationsMenuOpenItemId(open ? item.id : null)}
+                    items={getOperationItems(item)}
+                  />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>

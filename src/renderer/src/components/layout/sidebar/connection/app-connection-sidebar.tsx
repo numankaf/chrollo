@@ -33,6 +33,7 @@ import { ConnectionIcon } from '@/components/icon/connection-icon';
 
 function ConnectionSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [operationsMenuOpenItemId, setOperationsMenuOpenItemId] = useState<string | null>(null);
   const { openTab } = useTabsStore(
     useShallow((state) => ({
       openTab: state.openTab,
@@ -161,10 +162,14 @@ function ConnectionSidebar() {
               {filteredConnections.map((item) => (
                 <SidebarMenuButton
                   size="sm"
-                  className="[&:hover>#operations-trigger]:block [&>#operations-trigger[data-state=open]]:inline-block"
+                  className="[&:hover>.operations-trigger]:block [&>.operations-trigger[data-state=open]]:inline-block"
                   isActive={item.id === activeTab?.id}
                   key={item.id}
                   onClick={() => openTab(item)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setOperationsMenuOpenItemId(item.id);
+                  }}
                 >
                   <ConnectionIcon connectionType={item.connectionType} />
                   <ConnectionStatusBadge connectionId={item.id} />
@@ -176,7 +181,11 @@ function ConnectionSidebar() {
                       setEditingItemId(null);
                     }}
                   />
-                  <OperationsButton items={getOperationItems(item)} />
+                  <OperationsButton
+                    open={operationsMenuOpenItemId === item.id}
+                    onOpenChange={(open) => setOperationsMenuOpenItemId(open ? item.id : null)}
+                    items={getOperationItems(item)}
+                  />
                 </SidebarMenuButton>
               ))}
             </SidebarMenu>
