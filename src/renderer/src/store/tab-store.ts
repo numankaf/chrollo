@@ -15,6 +15,7 @@ interface TabsStore {
   addTab: (item: Tab) => Tab;
   openTab: (item: Tab) => Tab;
   closeTab: (id: string) => Tab | null;
+  moveTabItem: (activeId: string, overId: string) => void;
   dirtyBeforeSaveByTab: Record<string, boolean>;
   setDirtyBeforeSaveByTab: (tabId: string, dirty: boolean) => void;
 }
@@ -118,6 +119,21 @@ const useTabsStore = create<TabsStore>()(
         set({ tabs: mergedTabs });
 
         return mergedTabs.find((t) => t.id === newActiveTabId) ?? null;
+      },
+
+      moveTabItem: (activeId, overId) => {
+        set((state) => {
+          const oldIndex = state.tabs.findIndex((t) => t.id === activeId);
+          const newIndex = state.tabs.findIndex((t) => t.id === overId);
+
+          if (oldIndex !== -1 && newIndex !== -1) {
+            const newTabs = [...state.tabs];
+            const [removed] = newTabs.splice(oldIndex, 1);
+            newTabs.splice(newIndex, 0, removed);
+            return { tabs: newTabs };
+          }
+          return state;
+        });
       },
     }),
     {
