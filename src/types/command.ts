@@ -44,6 +44,8 @@ export const COMMANDS = {
   CLEAR_REQUEST_CONSOLE: 'request.console.clear',
   TOGGLE_REQUEST_CONSOLE: 'request.console.toggle',
   TOGGLE_CONSOLE: 'console.toggle',
+
+  ITEM_REQUEST_SAVE_TO_COLLECTION: 'item.request_save_to_collection',
 } as const;
 
 export type Command = (typeof COMMANDS)[keyof typeof COMMANDS];
