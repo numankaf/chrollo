@@ -1,18 +1,29 @@
 import { useMemo } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useFormContext } from 'react-hook-form';
 
 import type { Header } from '@/types/common';
+import { useColumnVisibility } from '@/hooks/common/use-column-visibility';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/common/dropdown-menu';
 import { EditableTextCell } from '@/components/common/table';
 import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
 const PROPERTY_KEY = 'connectHeaders';
+const COLUMN_VISIBILITY_STORAGE_KEY = 'stomp-headers-column-visibility';
 
 function StompHeaders({ headers }: { headers: Header[] }) {
   const form = useFormContext();
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility(COLUMN_VISIBILITY_STORAGE_KEY);
   const columns = useMemo(
     () => [
       {
@@ -84,7 +95,49 @@ function StompHeaders({ headers }: { headers: Header[] }) {
       },
       {
         accessorKey: 'delete',
-        header: '',
+        header: ({ table }) => (
+          <div className="flex items-center justify-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="w-6 h-6 border-none bg-muted/50 hover:bg-muted">
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuLabel className="text-sm px-2 py-1">Show columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                  .getAllLeafColumns()
+                  .filter((column) => ['value', 'description'].includes(column.id))
+                  .map((column) => {
+                    return (
+                      <DropdownMenuItem
+                        key={column.id}
+                        className="flex items-center gap-2 px-2 py-1 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          column.toggleVisibility(!column.getIsVisible());
+                        }}
+                      >
+                        <Checkbox
+                          id={`col-${column.id}`}
+                          checked={column.getIsVisible()}
+                          className="size-3.5"
+                          onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                        />
+                        <label
+                          htmlFor={`col-${column.id}`}
+                          className="text-sm capitalize flex-1 cursor-pointer select-none"
+                        >
+                          {column.id}
+                        </label>
+                      </DropdownMenuItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ),
         size: 40,
         cell: ({ row, table }) => {
           return (
@@ -124,7 +177,13 @@ function StompHeaders({ headers }: { headers: Header[] }) {
   return (
     <div className="mx-4 pb-2">
       <p className="text-muted-foreground my-1">Connect Headers</p>
-      <TanstackDataTable<Header> data={headers} columns={columns} meta={{ updateData, deleteRow, addRow }} />
+      <TanstackDataTable<Header>
+        data={headers}
+        columns={columns}
+        meta={{ updateData, deleteRow, addRow }}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
+      />
     </div>
   );
 }

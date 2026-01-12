@@ -1,4 +1,11 @@
-import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  type ColumnDef,
+  type OnChangeFn,
+  type VisibilityState,
+} from '@tanstack/react-table';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/table';
 
@@ -10,15 +17,27 @@ interface TanstackDataTableProps<T> {
     deleteRow: (rowIndex: number) => void;
     addRow: () => void;
   };
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: OnChangeFn<VisibilityState>;
 }
 
-export function TanstackDataTable<T extends { id: string }>({ data, columns, meta }: TanstackDataTableProps<T>) {
+export function TanstackDataTable<T extends { id: string }>({
+  data,
+  columns,
+  meta,
+  columnVisibility,
+  onColumnVisibilityChange,
+}: TanstackDataTableProps<T>) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => row.id,
+    onColumnVisibilityChange,
+    state: {
+      columnVisibility,
+    },
     meta: {
       updateData: meta.updateData,
       deleteRow: meta.deleteRow,
