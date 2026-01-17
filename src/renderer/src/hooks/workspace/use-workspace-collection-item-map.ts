@@ -1,9 +1,5 @@
-import { useMemo } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
-import useWorkspaceStore from '@/store/workspace-store';
 import { useShallow } from 'zustand/react/shallow';
-
-import type { CollectionItem } from '@/types/collection';
 
 export function useWorkspaceCollectionItemMap() {
   const { collectionItemMap } = useCollectionItemStore(
@@ -11,23 +7,6 @@ export function useWorkspaceCollectionItemMap() {
       collectionItemMap: state.collectionItemMap,
     }))
   );
-  const { activeWorkspaceId } = useWorkspaceStore(
-    useShallow((state) => ({
-      activeWorkspaceId: state.activeWorkspaceId,
-    }))
-  );
 
-  return useMemo(() => {
-    if (!activeWorkspaceId) return new Map();
-
-    const filtered = new Map<string, CollectionItem>();
-
-    for (const [key, item] of collectionItemMap.entries()) {
-      if (item.workspaceId === activeWorkspaceId) {
-        filtered.set(key, item);
-      }
-    }
-
-    return filtered;
-  }, [collectionItemMap, activeWorkspaceId]);
+  return collectionItemMap;
 }

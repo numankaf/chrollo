@@ -33,10 +33,11 @@ async function deleteEnvironment(id: string): Promise<void> {
   }
 }
 
-async function loadEnvironments(): Promise<Environment[]> {
+async function loadEnvironments(workspaceId: string): Promise<Environment[]> {
   const results: Environment[] = [];
 
   for await (const [, value] of environmentDb.iterator()) {
+    if (value.workspaceId !== workspaceId) continue;
     results.push(value);
   }
   return sortByDate(results, 'createdDate');
@@ -63,8 +64,8 @@ export function initEnvironmentIpc() {
     return await deleteEnvironment(id);
   });
 
-  ipcMain.handle('environments:load', async () => {
-    return await loadEnvironments();
+  ipcMain.handle('environments:load', async (_, workspaceId) => {
+    return await loadEnvironments(workspaceId);
   });
 
   ipcMain.handle('environments:clear', async () => {

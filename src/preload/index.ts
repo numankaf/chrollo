@@ -61,7 +61,7 @@ const api = {
     save: (connection: Connection) => ipcRenderer.invoke('connections:save', connection) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('connections:get', id) as Promise<Connection | undefined>,
     delete: (id: string) => ipcRenderer.invoke('connections:delete', id) as Promise<void>,
-    load: () => ipcRenderer.invoke('connections:load') as Promise<Connection[]>,
+    load: (workspaceId: string) => ipcRenderer.invoke('connections:load', workspaceId) as Promise<Connection[]>,
     clear: () => ipcRenderer.invoke('connections:clear') as Promise<void>,
   },
 
@@ -69,7 +69,7 @@ const api = {
     save: (collectionItem: CollectionItem) => ipcRenderer.invoke('collections:save', collectionItem) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('collections:get', id) as Promise<CollectionItem | undefined>,
     delete: (id: string) => ipcRenderer.invoke('collections:delete', id) as Promise<void>,
-    load: () => ipcRenderer.invoke('collections:load') as Promise<CollectionItem[]>,
+    load: (workspaceId: string) => ipcRenderer.invoke('collections:load', workspaceId) as Promise<CollectionItem[]>,
     clear: () => ipcRenderer.invoke('collections:clear') as Promise<void>,
   },
 
@@ -77,7 +77,7 @@ const api = {
     save: (environment: Environment) => ipcRenderer.invoke('environments:save', environment) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('environments:get', id) as Promise<Environment | undefined>,
     delete: (id: string) => ipcRenderer.invoke('environments:delete', id) as Promise<void>,
-    load: () => ipcRenderer.invoke('environments:load') as Promise<Environment[]>,
+    load: (workspaceId: string) => ipcRenderer.invoke('environments:load', workspaceId) as Promise<Environment[]>,
     clear: () => ipcRenderer.invoke('environments:clear') as Promise<void>,
   },
 
@@ -86,7 +86,8 @@ const api = {
       ipcRenderer.invoke('interception-script:save', interceptionScript) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('interception-script:get', id) as Promise<InterceptionScript | undefined>,
     delete: (id: string) => ipcRenderer.invoke('interception-script:delete', id) as Promise<void>,
-    load: () => ipcRenderer.invoke('interception-script:load') as Promise<InterceptionScript[]>,
+    load: (workspaceId: string) =>
+      ipcRenderer.invoke('interception-script:load', workspaceId) as Promise<InterceptionScript[]>,
     clear: () => ipcRenderer.invoke('interception-script:clear') as Promise<void>,
   },
 };

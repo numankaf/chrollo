@@ -14,7 +14,7 @@ function HomeView() {
   return (
     <div className="flex h-full items-center justify-center p-6">
       <div className="w-full max-w-3xl flex flex-col h-full overflow-hidden">
-        <div className="flex flex-col items-center shrink-0 mb-8 animate-in slide-in-from-top-4 duration-700">
+        <div className="flex flex-col items-center shrink-0 mb-8 animate-in slide-in-from-top-4 duration-300">
           <div className="flex items-center gap-1 shrink-0">
             <img className="w-14 h-14 shrink-0 shadow-lg rounded-xl" src={AppLogo} alt="App Logo" />
             <img className="h-14 shrink-0" src={AppText} alt="App Text" />

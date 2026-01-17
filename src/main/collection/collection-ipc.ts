@@ -33,10 +33,11 @@ async function deleteCollectionItem(id: string): Promise<void> {
   }
 }
 
-async function loadCollectionItems(): Promise<CollectionItem[]> {
+async function loadCollectionItems(workspaceId: string): Promise<CollectionItem[]> {
   const results: CollectionItem[] = [];
 
   for await (const [, value] of collectionItemDb.iterator()) {
+    if (value.workspaceId !== workspaceId) continue;
     results.push(value);
   }
 
@@ -64,8 +65,8 @@ export function initCollectionIpc() {
     return await deleteCollectionItem(id);
   });
 
-  ipcMain.handle('collections:load', async () => {
-    return await loadCollectionItems();
+  ipcMain.handle('collections:load', async (_, workspaceId) => {
+    return await loadCollectionItems(workspaceId);
   });
 
   ipcMain.handle('collections:clear', async () => {

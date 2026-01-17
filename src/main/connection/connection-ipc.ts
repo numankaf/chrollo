@@ -33,10 +33,11 @@ async function deleteConnection(id: string): Promise<void> {
   }
 }
 
-async function loadConnections(): Promise<Connection[]> {
+async function loadConnections(workspaceId: string): Promise<Connection[]> {
   const results: Connection[] = [];
 
   for await (const [, value] of connectionDb.iterator()) {
+    if (value.workspaceId !== workspaceId) continue;
     results.push(value);
   }
 
@@ -64,8 +65,8 @@ export function initConnectionIpc() {
     return await deleteConnection(id);
   });
 
-  ipcMain.handle('connections:load', async () => {
-    return await loadConnections();
+  ipcMain.handle('connections:load', async (_, workspaceId) => {
+    return await loadConnections(workspaceId);
   });
 
   ipcMain.handle('connections:clear', async () => {
