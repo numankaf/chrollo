@@ -9,18 +9,19 @@ interface WorkspaceStore {
   workspaceSelection: WorkspaceSelection;
 
   setWorkspaces: (workspaces: Workspace[]) => void;
-  createWorkspace: (workspace: Workspace) => void;
-  updateWorkspace: (workspace: Workspace) => void;
-  deleteWorkspace: (id: string) => void;
-  setActiveWorkspace: (id: string | undefined) => void;
+  createWorkspace: (workspace: Workspace) => Promise<Workspace>;
+  updateWorkspace: (workspace: Workspace, options?: { persist?: boolean }) => Promise<Workspace>;
+  deleteWorkspace: (id: string) => Promise<void>;
+  setActiveWorkspace: (id: string | undefined) => Promise<void>;
 
   initWorkspaceStore: (workspaceFile: WorkspaceFile) => Promise<void>;
   updateWorkspaceSelection: (values: Partial<WorkspaceSelectionValue>) => void;
+  saveWorkspace: (workspace: Workspace) => Promise<Workspace>;
 }
 
 const useWorkspaceStore = create<WorkspaceStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       workspaces: [],
       activeWorkspaceId: undefined,
 
@@ -31,27 +32,57 @@ const useWorkspaceStore = create<WorkspaceStore>()(
           workspaces,
         })),
 
-      createWorkspace: (workspace) =>
+      createWorkspace: async (workspace) => {
         set((state) => ({
           workspaces: [...state.workspaces, workspace],
-        })),
+        }));
+        await window.api.workspace.save(workspace);
+        return workspace;
+      },
 
-      updateWorkspace: (workspace) =>
-        set((state) => ({
-          workspaces: state.workspaces.map((e) => (e.id === workspace.id ? { ...e, ...workspace } : e)),
-        })),
+      updateWorkspace: async (workspace, options = { persist: false }) => {
+        let updatedWorkspace = workspace;
+        set((state) => {
+          const existing = state.workspaces.find((e) => e.id === workspace.id);
+          if (existing) {
+            updatedWorkspace = { ...existing, ...workspace };
+          }
+          return {
+            workspaces: state.workspaces.map((e) => (e.id === workspace.id ? updatedWorkspace : e)),
+          };
+        });
+        if (options.persist) {
+          await window.api.workspace.save(updatedWorkspace);
+        }
+        return updatedWorkspace;
+      },
 
-      deleteWorkspace: (id) =>
+      saveWorkspace: async (workspace) => {
+        const exists = get().workspaces.some((e) => e.id === workspace.id);
+        if (exists) {
+          return await get().updateWorkspace(workspace, { persist: true });
+        } else {
+          return await get().createWorkspace(workspace);
+        }
+      },
+
+      deleteWorkspace: async (id) => {
+        await window.api.workspace.delete(id);
         set((state) => {
           return {
             workspaces: state.workspaces.filter((e) => e.id !== id),
           };
-        }),
+        });
+      },
 
-      setActiveWorkspace: (id) =>
+      setActiveWorkspace: async (id) => {
+        if (id) {
+          await window.api.workspace.setActive(id);
+        }
         set(() => ({
           activeWorkspaceId: id,
-        })),
+        }));
+      },
 
       initWorkspaceStore: async (workspaceFile) => {
         return new Promise((resolve) => {

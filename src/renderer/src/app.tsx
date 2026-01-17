@@ -6,6 +6,7 @@ import EnvironmentView from '@/features/environment/view/environment-view';
 import HistoryView from '@/features/history/view/history-view';
 import HomeView from '@/features/home/view/home-view';
 import InterceptionScriptView from '@/features/interception-script/view/interception-script-view';
+import CreateWorkspaceView from '@/features/workspaces/create/view/create-workspace-view';
 import EmptyView from '@/features/workspaces/empty/view/empty-view';
 import WorkspaceView from '@/features/workspaces/workspace/view/workspace-view';
 import AppConsoleLayout from '@/layout/app-console-layout';
@@ -70,6 +71,10 @@ function App() {
         {
           path: '/home',
           element: <HomeView />,
+        },
+        {
+          path: '/workspace/create',
+          element: <CreateWorkspaceView />,
         },
       ],
     },
