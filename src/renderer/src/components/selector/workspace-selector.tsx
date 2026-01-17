@@ -2,15 +2,17 @@ import { useState } from 'react';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { Check, ChevronDown, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/common/button';
-import { Label } from '@/components/common/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/components/common/popover';
+import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 function WorkspaceSelector() {
+  const navigate = useNavigate();
   const { workspaces, activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
       workspaces: state.workspaces,
@@ -25,16 +27,18 @@ function WorkspaceSelector() {
 
   return (
     <Popover>
-      <PopoverTrigger>
+      <PopoverTrigger asChild>
         <Button variant="ghost">
           Workspaces <ChevronDown />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[320px] p-2!">
+      <PopoverContent align="start" className="w-[320px] p-1!">
         <div className="flex items-center justify-between p-1 gap-1">
-          <Button size="sm" variant="ghost">
-            <Plus size={16} />
-          </Button>
+          <PopoverClose asChild>
+            <Button size="sm" variant="ghost" onClick={() => navigate('/workspace/create')}>
+              <Plus size={16} />
+            </Button>
+          </PopoverClose>
           <SearchBar
             placeholder="Search workspaces"
             className="flex-1"
@@ -42,22 +46,27 @@ function WorkspaceSelector() {
           />
         </div>
         <div className="mt-3 space-y-1">
-          <Label className="text-muted-foreground text-sm m-1"> Recently Visited</Label>
-          {filteredWorkspaces.map((workspace) => (
-            <Button
-              onClick={() => setActiveWorkspace(workspace.id)}
-              variant="ghost"
-              key={workspace.id}
-              className=" w-full justify-between gap-2 text-sm"
-              size="sm"
-            >
-              <div className="flex gap-2">
-                <WorkspaceTypeIcon workspaceType={workspace.type} size={16} />
-                {workspace.name}
-              </div>
-              {workspace.id === activeWorkspaceId && <Check size={16} />}
-            </Button>
-          ))}
+          <ScrollArea className="px-4">
+            <div className="max-h-[300px]">
+              {filteredWorkspaces.map((workspace) => (
+                <Button
+                  onClick={async () => {
+                    await setActiveWorkspace(workspace.id);
+                    navigate('/main/workspace/' + workspace.id);
+                  }}
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-sm"
+                  size="sm"
+                >
+                  <WorkspaceTypeIcon workspaceType={workspace.type} size={16} className="shrink-0" />
+                  <span className="truncate flex-1 text-left">{workspace.name}</span>
+                  <div className="w-4 shrink-0 flex items-center justify-center">
+                    {workspace.id === activeWorkspaceId && <Check size={16} />}
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
         </div>
       </PopoverContent>
     </Popover>
