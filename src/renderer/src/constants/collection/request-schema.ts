@@ -22,6 +22,7 @@ const REQUEST_VALIDATION_SCHEMA = z.object({
     preRequest: z.string(),
     postRequest: z.string(),
   }),
+  documentation: z.string().optional(),
 });
 
 export { REQUEST_VALIDATION_SCHEMA };

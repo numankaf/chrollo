@@ -1,0 +1,58 @@
+@reference "@/index.css";
+
+.tiptap {
+  @apply outline-none min-h-[150px] p-4;
+}
+
+.tiptap p {
+  @apply mb-2;
+}
+
+.tiptap h1 {
+  @apply text-2xl font-bold mb-4;
+}
+
+.tiptap h2 {
+  @apply text-xl font-bold mb-3;
+}
+
+.tiptap h3 {
+  @apply text-lg font-bold mb-2;
+}
+
+.tiptap ul {
+  @apply list-disc list-outside mb-4 ml-4;
+}
+
+.tiptap ol {
+  @apply list-decimal list-outside mb-4 ml-4;
+}
+
+.tiptap blockquote {
+  @apply border-l-4 border-primary pl-4 italic mb-4;
+}
+
+.tiptap code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.tiptap pre {
+  @apply bg-muted p-4 rounded-md font-mono text-sm overflow-x-auto mb-4;
+}
+
+.tiptap pre code {
+  @apply bg-transparent p-0;
+}
+
+.tiptap hr {
+  @apply border-t border-border my-6;
+}
+
+.tiptap a {
+  @apply text-primary underline underline-offset-4 cursor-pointer;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-muted-foreground float-left h-0 pointer-events-none;
+}

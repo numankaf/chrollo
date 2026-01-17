@@ -13,6 +13,7 @@ import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
+import { RichTextEditor } from '@/components/app/editor/rich-text-editor';
 import ComingSoon from '@/components/app/empty/coming-soon';
 
 function RequestView() {
@@ -38,7 +39,7 @@ function RequestView() {
   useEffect(() => {
     const dirtyKeys = Object.keys(dirtyFields);
     if (!watchedValues || dirtyKeys.length === 0) return;
-    const shouldDebounce = dirtyKeys.some((key) => ['destination', 'body'].includes(key));
+    const shouldDebounce = dirtyKeys.some((key) => ['destination', 'body', 'documentation'].includes(key));
     if (shouldDebounce) {
       const t = setTimeout(() => {
         updateCollectionItem(watchedValues as Request);
@@ -64,8 +65,15 @@ function RequestView() {
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
             <div style={{ height: 'calc(100% - 6rem)', minHeight: 'calc(100% - 6rem)' }}>
-              <TabsContent value="docs">
-                <ComingSoon />
+              <TabsContent value="docs" className="h-full">
+                <div className="p-2 h-full overflow-y-auto">
+                  <RichTextEditor
+                    content={form.getValues('documentation') || ''}
+                    onContentChange={(val) => form.setValue('documentation', val, { shouldDirty: true })}
+                    placeholder="Enter request documentation..."
+                    className="h-full"
+                  />
+                </div>
               </TabsContent>
               <TabsContent value="headers" className="h-full">
                 <ScrollArea className="h-full">
