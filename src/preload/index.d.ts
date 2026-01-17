@@ -49,28 +49,28 @@ declare global {
         save: (connection: Connection) => Promise<void>;
         get: (id: string) => Promise<Connection | undefined>;
         delete: (id: string) => Promise<void>;
-        load: () => Promise<Connection[]>;
+        load: (workspaceId: string) => Promise<Connection[]>;
         clear: () => Promise<void>;
       };
       collection: {
         save: (collectionItem: CollectionItem) => Promise<void>;
         get: (id: string) => Promise<CollectionItem | undefined>;
         delete: (id: string) => Promise<void>;
-        load: () => Promise<CollectionItem[]>;
+        load: (workspaceId: string) => Promise<CollectionItem[]>;
         clear: () => Promise<void>;
       };
       environment: {
         save: (environment: Environment) => Promise<void>;
         get: (id: string) => Promise<Environment | undefined>;
         delete: (id: string) => Promise<void>;
-        load: () => Promise<Environment[]>;
+        load: (workspaceId: string) => Promise<Environment[]>;
         clear: () => Promise<void>;
       };
       interceptionScript: {
         save: (interceptionScript: InterceptionScript) => Promise<void>;
         get: (id: string) => Promise<InterceptionScript | undefined>;
         delete: (id: string) => Promise<void>;
-        load: () => Promise<InterceptionScript[]>;
+        load: (workspaceId: string) => Promise<InterceptionScript[]>;
         clear: () => Promise<void>;
       };
     };

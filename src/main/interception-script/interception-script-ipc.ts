@@ -37,10 +37,11 @@ async function deleteInterceptionScript(id: string): Promise<void> {
   }
 }
 
-async function loadInterceptionScripts(): Promise<InterceptionScript[]> {
+async function loadInterceptionScripts(workspaceId: string): Promise<InterceptionScript[]> {
   const results: InterceptionScript[] = [];
 
   for await (const [, value] of interceptionScriptDb.iterator()) {
+    if (value.workspaceId !== workspaceId) continue;
     results.push(value);
   }
   return sortByDate(results, 'createdDate');
@@ -54,9 +55,8 @@ async function loadEngineScripts(workspaceId?: string) {
   const activeWorkspaceId = workspaceId || (await getActiveWorkspaceId());
   if (!activeWorkspaceId) return;
 
-  const allScripts = await loadInterceptionScripts();
-  const workspaceScripts = allScripts.filter((s) => s.workspaceId === activeWorkspaceId && s.enabled);
-  const userScripts = workspaceScripts.map((s) => s.script);
+  const workspaceScripts = await loadInterceptionScripts(activeWorkspaceId);
+  const userScripts = workspaceScripts.filter((s) => s.enabled).map((s) => s.script);
 
   chrolloEngine.reloadScripts(userScripts);
 }
@@ -94,8 +94,8 @@ export function initInterceptionScriptIpc() {
     }
   });
 
-  ipcMain.handle('interception-script:load', async () => {
-    return await loadInterceptionScripts();
+  ipcMain.handle('interception-script:load', async (_, workspaceId) => {
+    return await loadInterceptionScripts(workspaceId);
   });
 
   ipcMain.handle('interception-script:clear', async () => {
