@@ -1,5 +1,6 @@
 import '@/components/app/editor/tiptap/tiptap.css';
 
+import { useEffect } from 'react';
 import { Color } from '@tiptap/extension-color';
 import FontFamily from '@tiptap/extension-font-family';
 import { Highlight } from '@tiptap/extension-highlight';
@@ -62,6 +63,12 @@ export function RichTextEditor({
       onContentChange(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content, { emitUpdate: false });
+    }
+  }, [content, editor]);
 
   return (
     <div className={cn('flex flex-col border rounded-md overflow-hidden bg-background', className)}>

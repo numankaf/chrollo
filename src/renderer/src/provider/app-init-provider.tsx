@@ -34,7 +34,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setLoadingText('Loading workspaces...');
         const workspaceData = await window.api.workspace.load();
         await useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
-        setAppLoaded(true);
       } catch (err) {
         console.error('Failed to init workspaces:', err);
       }

@@ -185,7 +185,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 min-w-[6.5rem] justify-between text-sm px-2">
+                <Button variant="outline" size="sm" className="h-7">
                   <span className="truncate">{state.heading}</span>
                   <ChevronDown className="h-3 w-3 opacity-50 shrink-0" />
                 </Button>
@@ -222,17 +222,15 @@ export function Toolbar({ editor }: { editor: Editor }) {
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 px-2 h-7 min-w-[8.5rem] justify-between text-sm">
+                <Button variant="outline" size="sm" className="h-7">
                   <div className="flex items-center gap-2 truncate">
                     {state.activeList ? (
                       <>
                         <state.activeList.icon className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{state.activeList.label}</span>
                       </>
                     ) : (
                       <>
                         <List className="h-4 w-4 shrink-0" />
-                        <span>Lists</span>
                       </>
                     )}
                   </div>
@@ -268,7 +266,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 min-w-[6rem] justify-between text-sm px-2">
+                <Button variant="outline" size="sm" className="h-7">
                   <span className="truncate">{getFontLabel()}</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
@@ -369,14 +367,30 @@ export function Toolbar({ editor }: { editor: Editor }) {
         >
           <Code2 size={16} />
         </ToolbarToggle>
+        <ToolbarToggle
+          tooltip="Inline Code"
+          pressed={state.isCode}
+          onPressedChange={() => editor.chain().focus().toggleCode().run()}
+        >
+          <Code size={16} />
+        </ToolbarToggle>
+        <ToolbarToggle
+          tooltip="Highlight"
+          pressed={state.isHighlight}
+          onPressedChange={() => editor.chain().focus().toggleHighlight().run()}
+        >
+          <Highlighter size={16} />
+        </ToolbarToggle>
       </ButtonGroup>
+
+      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
 
       <ButtonGroup>
         <Popover modal={false}>
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="icon-sm" className="bg-transparent!">
+                <Button variant="outline" size="icon-sm">
                   <Link size={16} />
                 </Button>
               </PopoverTrigger>
@@ -406,25 +420,6 @@ export function Toolbar({ editor }: { editor: Editor }) {
             </form>
           </PopoverContent>
         </Popover>
-        <ToolbarToggle
-          tooltip="Highlight"
-          pressed={state.isHighlight}
-          onPressedChange={() => editor.chain().focus().toggleHighlight().run()}
-        >
-          <Highlighter size={16} />
-        </ToolbarToggle>
-        <ToolbarToggle
-          tooltip="Inline Code"
-          pressed={state.isCode}
-          onPressedChange={() => editor.chain().focus().toggleCode().run()}
-        >
-          <Code size={16} />
-        </ToolbarToggle>
-      </ButtonGroup>
-
-      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
-
-      <ButtonGroup>
         <ToolbarButton tooltip="Horizontal Rule" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
           <Minus size={16} />
         </ToolbarButton>
