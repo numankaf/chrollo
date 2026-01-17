@@ -81,7 +81,7 @@
     "sockjs-client": "^1.6.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },
