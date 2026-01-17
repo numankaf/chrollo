@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { REQUEST_VALIDATION_SCHEMA } from '@/constants/collection/request-schema';
 import RequestBody from '@/features/collections/components/request/request-body';
+import RequestDocs from '@/features/collections/components/request/request-docs';
 import RequestHeaders from '@/features/collections/components/request/request-headers';
 import RequestViewHeader from '@/features/collections/components/request/request-view-header';
 import useCollectionItemStore from '@/store/collection-item-store';
@@ -13,7 +14,6 @@ import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
-import { RichTextEditor } from '@/components/app/editor/rich-text-editor';
 import ComingSoon from '@/components/app/empty/coming-soon';
 
 function RequestView() {
@@ -66,14 +66,7 @@ function RequestView() {
             </TabsList>
             <div style={{ height: 'calc(100% - 6rem)', minHeight: 'calc(100% - 6rem)' }}>
               <TabsContent value="docs" className="h-full">
-                <div className="p-2 h-full overflow-y-auto">
-                  <RichTextEditor
-                    content={form.getValues('documentation') || ''}
-                    onContentChange={(val) => form.setValue('documentation', val, { shouldDirty: true })}
-                    placeholder="Enter request documentation..."
-                    className="h-full"
-                  />
-                </div>
+                <RequestDocs key={request.id} />
               </TabsContent>
               <TabsContent value="headers" className="h-full">
                 <ScrollArea className="h-full">
