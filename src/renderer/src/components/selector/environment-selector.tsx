@@ -74,9 +74,9 @@ function EnvironmentSelector() {
                       : updateWorkspaceSelection({ activeEnvironmentId: environment.id })
                   }
                 >
-                  {environment.id === activeEnvironment?.id || (!activeEnvironment && environment.id === 'none') ? (
-                    <Check className="h-4 w-4" />
-                  ) : null}
+                  {(environment.id === activeEnvironment?.id || (!activeEnvironment && environment.id === 'none')) && (
+                    <Check size={16} />
+                  )}
                   <p className={environment.id === 'none' ? 'text-muted-foreground' : undefined}>{environment.name}</p>
                 </Button>
               ))}

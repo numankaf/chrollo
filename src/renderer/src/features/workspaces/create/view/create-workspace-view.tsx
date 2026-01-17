@@ -64,7 +64,7 @@ export default function CreateWorkspaceView() {
   };
 
   return (
-    <div className="flex h-full items-center justify-center p-6 bg-background overflow-y-auto">
+    <div className="flex h-full items-center justify-center p-6 bg-background overflow-y-auto animate-in zoom-in-95 duration-300">
       <div className="w-full max-w-2xl">
         <Button variant="ghost" size="sm" className="mb-4 px-0" onClick={() => navigate('/home')}>
           <ChevronLeft className="mr-2 h-4 w-4" />
