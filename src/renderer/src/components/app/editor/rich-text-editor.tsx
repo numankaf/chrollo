@@ -1,3 +1,5 @@
+import '@/components/app/editor/tiptap/tiptap.css';
+
 import { Color } from '@tiptap/extension-color';
 import FontFamily from '@tiptap/extension-font-family';
 import { Highlight } from '@tiptap/extension-highlight';
@@ -10,12 +12,10 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import ImageResize from 'tiptap-extension-resize-image';
 
 import { cn } from '@/lib/utils';
-
-import './tiptap/tiptap.css';
-
-import { Toolbar } from './tiptap/toolbar';
+import { Toolbar } from '@/components/app/editor/tiptap/toolbar';
 
 interface RichTextEditorProps {
   content: string;
@@ -33,6 +33,15 @@ export function RichTextEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Placeholder.configure({
+        placeholder,
+      }),
+      TextStyle,
+      FontFamily,
+      TextAlign.configure({
+        types: ['heading', 'paragraph', 'image'],
+        alignments: ['left', 'center', 'right', 'justify'],
+      }),
       Underline,
       Link.configure({
         openOnClick: false,
@@ -40,17 +49,9 @@ export function RichTextEditor({
           class: 'cursor-pointer text-primary underline',
         },
       }),
-      Placeholder.configure({
-        placeholder,
-      }),
-      TextStyle,
-      FontFamily,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-        alignments: ['left', 'center', 'right', 'justify'],
-      }),
       Color,
       Highlight,
+      ImageResize,
       TaskList,
       TaskItem.configure({
         nested: true,

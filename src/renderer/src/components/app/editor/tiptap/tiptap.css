@@ -4,32 +4,28 @@
   @apply outline-none min-h-[150px] p-4;
 }
 
-.tiptap p {
-  @apply mb-2;
-}
-
 .tiptap h1 {
-  @apply text-2xl font-bold mb-4;
+  @apply text-2xl font-bold mb-3;
 }
 
 .tiptap h2 {
-  @apply text-xl font-bold mb-3;
+  @apply text-xl font-bold mb-2;
 }
 
 .tiptap h3 {
-  @apply text-lg font-bold mb-2;
+  @apply text-lg font-bold mb-1;
 }
 
 .tiptap ul {
-  @apply list-disc list-outside mb-4 ml-4;
+  @apply list-disc list-outside mb-4 ml-2;
 }
 
 .tiptap ol {
-  @apply list-decimal list-outside mb-4 ml-4;
+  @apply list-decimal list-outside mb-4 ml-2;
 }
 
 .tiptap blockquote {
-  @apply border-l-4 border-primary pl-4 italic mb-4;
+  @apply border-l-4 border-primary pl-4 italic mb-2;
 }
 
 .tiptap code {
@@ -37,7 +33,7 @@
 }
 
 .tiptap pre {
-  @apply bg-muted p-4 rounded-md font-mono text-sm overflow-x-auto mb-4;
+  @apply bg-muted p-4 rounded-md font-mono text-sm overflow-x-auto mb-2;
 }
 
 .tiptap pre code {
