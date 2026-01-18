@@ -1,6 +1,7 @@
 import '@/components/app/editor/tiptap/tiptap.css';
 
 import { useEffect, useRef, useState } from 'react';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import FontFamily from '@tiptap/extension-font-family';
 import { Highlight } from '@tiptap/extension-highlight';
@@ -9,13 +10,47 @@ import { TaskItem } from '@tiptap/extension-task-item';
 import { TaskList } from '@tiptap/extension-task-list';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import bash from 'highlight.js/lib/languages/bash';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+import csharp from 'highlight.js/lib/languages/csharp';
+import css from 'highlight.js/lib/languages/css';
+import go from 'highlight.js/lib/languages/go';
+import java from 'highlight.js/lib/languages/java';
+import js from 'highlight.js/lib/languages/javascript';
+import json from 'highlight.js/lib/languages/json';
+import python from 'highlight.js/lib/languages/python';
+import rust from 'highlight.js/lib/languages/rust';
+import sql from 'highlight.js/lib/languages/sql';
+import ts from 'highlight.js/lib/languages/typescript';
+import html from 'highlight.js/lib/languages/xml';
+import yaml from 'highlight.js/lib/languages/yaml';
+import { createLowlight } from 'lowlight';
 import ImageResize from 'tiptap-extension-resize-image';
 
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/common/scroll-area';
+import { CodeBlockView } from '@/components/app/editor/tiptap/code-block-view';
 import { Toolbar } from '@/components/app/editor/tiptap/toolbar';
+
+const lowlight = createLowlight();
+lowlight.register('html', html);
+lowlight.register('css', css);
+lowlight.register('javascript', js);
+lowlight.register('typescript', ts);
+lowlight.register('json', json);
+lowlight.register('python', python);
+lowlight.register('rust', rust);
+lowlight.register('go', go);
+lowlight.register('sql', sql);
+lowlight.register('bash', bash);
+lowlight.register('c', c);
+lowlight.register('cpp', cpp);
+lowlight.register('csharp', csharp);
+lowlight.register('java', java);
+lowlight.register('yaml', yaml);
 
 interface RichTextEditorProps {
   content: string;
@@ -39,9 +74,17 @@ export function RichTextEditor({
     editable: !readonly && isEditing,
     extensions: [
       StarterKit.configure({
+        codeBlock: false,
         link: {
           openOnClick: true,
         },
+      }),
+      CodeBlockLowlight.extend({
+        addNodeView() {
+          return ReactNodeViewRenderer(CodeBlockView);
+        },
+      }).configure({
+        lowlight,
       }),
       Placeholder.configure({
         placeholder,
