@@ -97,7 +97,9 @@ export function RichTextEditor({
         alignments: ['left', 'center', 'right', 'justify'],
       }),
       Color,
-      Highlight,
+      Highlight.configure({
+        multicolor: true,
+      }),
       ImageResize.configure({
         allowBase64: true,
         resize: {
