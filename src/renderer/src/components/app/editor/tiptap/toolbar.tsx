@@ -170,7 +170,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 p-1 border-b">
+    <div className="flex flex-wrap items-center gap-2 p-1 border-b h-10">
       <ButtonGroup>
         <ToolbarButton tooltip="Undo" onClick={() => editor.chain().focus().undo().run()} disabled={!state.canUndo}>
           <Undo size={16} />
@@ -185,9 +185,13 @@ export function Toolbar({ editor }: { editor: Editor }) {
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7">
+                <Button variant="outline" size="sm" className="h-7 gap-2">
+                  {(() => {
+                    const Icon = HEADINGS.find((h) => h.label === state.heading)?.icon || Pilcrow;
+                    return <Icon size={16} className="shrink-0" />;
+                  })()}
                   <span className="truncate">{state.heading}</span>
-                  <ChevronDown className="h-3 w-3 opacity-50 shrink-0" />
+                  <ChevronDown size={12} className="opacity-50 shrink-0" />
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
@@ -195,12 +199,12 @@ export function Toolbar({ editor }: { editor: Editor }) {
               Text Style
             </TooltipContent>
           </Tooltip>
-          <DropdownMenuContent align="start" className="min-w-48" onCloseAutoFocus={(e) => e.preventDefault()}>
+          <DropdownMenuContent align="start" className="min-w-36" onCloseAutoFocus={(e) => e.preventDefault()}>
             <DropdownMenuItem
               onClick={() => editor.chain().focus().setParagraph().run()}
               className={cn('text-sm', state.heading === 'Paragraph' && 'bg-accent')}
             >
-              <Pilcrow className="h-4 w-4 mr-2" />
+              <Pilcrow size={16} />
               Paragraph
             </DropdownMenuItem>
             {HEADINGS.map(({ level, label, icon: Icon }) => (
@@ -209,7 +213,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 onClick={() => editor.chain().focus().toggleHeading({ level: level }).run()}
                 className={cn('text-sm', state.heading === label && 'bg-accent')}
               >
-                <Icon className="h-4 w-4 mr-2" />
+                <Icon size={16} />
                 {label}
               </DropdownMenuItem>
             ))}
@@ -226,15 +230,15 @@ export function Toolbar({ editor }: { editor: Editor }) {
                   <div className="flex items-center gap-2 truncate">
                     {state.activeList ? (
                       <>
-                        <state.activeList.icon className="h-4 w-4 shrink-0" />
+                        <state.activeList.icon size={16} className="shrink-0" />
                       </>
                     ) : (
                       <>
-                        <List className="h-4 w-4 shrink-0" />
+                        <List size={16} className="shrink-0" />
                       </>
                     )}
                   </div>
-                  <ChevronDown className="h-3 w-3 opacity-50 shrink-0" />
+                  <ChevronDown size={12} className="opacity-50 shrink-0" />
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
@@ -253,7 +257,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 }}
                 className={cn('text-sm', state.activeList?.name === name && 'bg-accent')}
               >
-                <Icon className="h-4 w-4 mr-2" />
+                <Icon size={16} />
                 {label}
               </DropdownMenuItem>
             ))}
@@ -268,7 +272,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-7">
                   <span className="truncate">{getFontLabel()}</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
+                  <ChevronDown size={12} className="opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
