@@ -13,7 +13,7 @@ function RequestDocs() {
         render={({ field }) => (
           <RichTextEditor
             key={id}
-            content={field.value || ''}
+            content={field.value}
             onContentChange={(val) => field.onChange(val)}
             placeholder="Enter request documentation..."
             className="h-full"

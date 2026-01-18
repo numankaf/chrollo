@@ -45,6 +45,7 @@ export function RichTextEditor({
       }),
       Placeholder.configure({
         placeholder,
+        showOnlyWhenEditable: false,
       }),
       TextStyle,
       FontFamily,
@@ -54,7 +55,13 @@ export function RichTextEditor({
       }),
       Color,
       Highlight,
-      ImageResize,
+      ImageResize.configure({
+        allowBase64: true,
+        resize: {
+          enabled: true,
+          alwaysPreserveAspectRatio: true,
+        },
+      }),
       TaskList,
       TaskItem.configure({
         nested: true,

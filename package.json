@@ -59,7 +59,6 @@
     "@tiptap/extension-color": "^3.15.3",
     "@tiptap/extension-font-family": "^3.15.3",
     "@tiptap/extension-highlight": "^3.15.3",
-    "@tiptap/extension-image": "^3.15.3",
     "@tiptap/extension-placeholder": "^3.15.3",
     "@tiptap/extension-task-item": "^3.15.3",
     "@tiptap/extension-task-list": "^3.15.3",
