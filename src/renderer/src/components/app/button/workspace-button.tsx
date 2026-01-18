@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useTabsStore from '@/store/tab-store';
-import { ArrowRight, Download, Plus } from 'lucide-react';
+import { ArrowRight, Download } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useActiveItem } from '@/hooks/app/use-active-item';
@@ -32,7 +32,9 @@ function WorkspaceButton() {
           <SidebarMenuItem>
             <SidebarMenuButton className="flex flex-col items-center h-auto">
               <WorkspaceTypeIcon workspaceType={activeWorkspace?.type} size={16} />
-              <span className="text-xs truncate">{activeWorkspace?.name || 'No Workspace Selected'}</span>
+              <span className="text-xs text-center! whitespace-normal!">
+                {activeWorkspace?.name || 'No Workspace Selected'}
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </DropdownMenuTrigger>
@@ -51,10 +53,6 @@ function WorkspaceButton() {
             >
               <ArrowRight />
               Open
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-sm">
-              <Plus />
-              New
             </DropdownMenuItem>
             <DropdownMenuItem className="text-sm" onClick={() => setImportDialogOpen(true)}>
               <Download />
