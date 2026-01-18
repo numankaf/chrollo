@@ -53,30 +53,30 @@ function RequestView() {
 
   if (!request) return <></>;
   return (
-    <div className="max-h-full h-full flex flex-col">
+    <div className="h-full flex flex-col">
       <FormProvider {...form}>
-        <form className="h-full" noValidate>
+        <form className="h-full flex flex-col overflow-hidden" noValidate>
           <RequestViewHeader />
-          <Tabs defaultValue="body" className="w-full mt-3 h-full flex-1" variant="link">
-            <TabsList className="mx-2">
+          <Tabs defaultValue="body" className="w-full mt-3 flex-1 min-h-0 flex flex-col" variant="link">
+            <TabsList className="mx-2 shrink-0">
               <TabsTrigger value="docs">Docs</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
             </TabsList>
-            <div style={{ height: 'calc(100% - 6rem)', minHeight: 'calc(100% - 6rem)' }}>
-              <TabsContent value="docs" className="h-full">
+            <div className="flex-1 min-h-0 relative">
+              <TabsContent value="docs" className="h-full absolute inset-0">
                 <RequestDocs key={request.id} />
               </TabsContent>
-              <TabsContent value="headers" className="h-full">
+              <TabsContent value="headers" className="h-full absolute inset-0">
                 <ScrollArea className="h-full">
                   <RequestHeaders headers={request.headers} />
                 </ScrollArea>
               </TabsContent>
-              <TabsContent className="h-full" value="body">
+              <TabsContent className="h-full absolute inset-0" value="body">
                 <RequestBody />
               </TabsContent>
-              <TabsContent value="scripts">
+              <TabsContent value="scripts" className="h-full absolute inset-0">
                 <ComingSoon />
               </TabsContent>
             </div>

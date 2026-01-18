@@ -93,6 +93,7 @@ export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId'
   collectionItemType: COLLECTION_TYPE.REQUEST,
   children: [],
   destination: '',
+  documentation: '',
   body: {
     data: '',
     type: REQUEST_BODY_TYPE.JSON,
