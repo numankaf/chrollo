@@ -1,19 +1,21 @@
+import WorkspaceOverview from '@/features/workspaces/workspace/components/workspace-overview';
+import WorkspaceSettings from '@/features/workspaces/workspace/components/workspace-settings';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
-import ComingSoon from '@/components/app/empty/coming-soon';
 
 function WorkspaceView() {
   return (
-    <div className="m-2">
-      <Tabs defaultValue="overview" className="w-full" variant="link" style={{ height: 'calc(100% - 6.5rem)' }}>
+    <div className="m-2 h-full overflow-hidden">
+      <Tabs defaultValue="overview" className="w-full h-full" variant="link">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <ComingSoon />
+          <WorkspaceOverview />
         </TabsContent>
         <TabsContent value="settings">
-          <ComingSoon />
+          <WorkspaceSettings />
         </TabsContent>
       </Tabs>
     </div>
