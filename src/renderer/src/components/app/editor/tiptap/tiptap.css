@@ -60,3 +60,78 @@
   content: attr(data-placeholder);
   @apply text-muted-foreground float-left h-0 pointer-events-none;
 }
+
+.tiptap pre {
+  background: #1e1e1e;
+  border-radius: 0.25rem;
+  color: #d4d4d4;
+  font-family: 'JetBrainsMono', 'Fira Code', monospace;
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow-x: auto;
+
+  code {
+    background: none;
+    color: inherit;
+    font-size: 0.85rem;
+    padding: 0;
+  }
+
+  /* VS Code Dark+ Theme */
+  .hljs-comment,
+  .hljs-quote {
+    color: #6a9955;
+    font-style: italic;
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-section,
+  .hljs-name,
+  .hljs-meta {
+    color: #569cd6;
+  }
+
+  .hljs-string,
+  .hljs-symbol,
+  .hljs-bullet,
+  .hljs-addition {
+    color: #ce9178;
+  }
+
+  .hljs-number,
+  .hljs-literal,
+  .hljs-type,
+  .hljs-built_in,
+  .hljs-builtin-name {
+    color: #b5cea8;
+  }
+
+  .hljs-title,
+  .hljs-function,
+  .hljs-attr,
+  .hljs-property,
+  .hljs-attribute {
+    color: #dcdcaa;
+  }
+
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-selector-id,
+  .hljs-selector-class,
+  .hljs-params {
+    color: #9cdcfe;
+  }
+
+  .hljs-emphasis {
+    font-style: italic;
+  }
+
+  .hljs-strong {
+    font-weight: 700;
+  }
+
+  .hljs-deletion {
+    color: #f44336;
+  }
+}
