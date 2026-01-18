@@ -6,7 +6,7 @@ function RequestDocs() {
   const form = useFormContext();
   const id = useWatch({ name: 'id', control: form.control });
   return (
-    <div className="p-2 h-full overflow-y-auto">
+    <div className="p-2 h-full ">
       <Controller
         name="documentation"
         control={form.control}

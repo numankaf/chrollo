@@ -1,7 +1,7 @@
 @reference "@/index.css";
 
 .tiptap {
-  @apply outline-none min-h-[150px] p-4;
+  @apply outline-none min-h-[50px];
 }
 
 .tiptap p {
@@ -53,7 +53,7 @@
 }
 
 .tiptap a {
-  @apply text-primary underline underline-offset-4 cursor-pointer;
+  @apply text-blue-600 hover:text-blue-800 underline underline-offset-4 cursor-pointer;
 }
 
 .tiptap p.is-editor-empty:first-child::before {

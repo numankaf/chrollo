@@ -79,11 +79,12 @@ export function CollectionTreeSelector({ selectedId, onSelect, height = 300 }: C
       const childrenIds = (nodeData as Collection | Folder).children ?? [];
       return childrenIds
         .map((childId: string) => collectionItemMap.get(childId))
-        .filter(Boolean)
         .filter(
-          (item: CollectionItem) =>
-            item.collectionItemType === COLLECTION_TYPE.COLLECTION || item.collectionItemType === COLLECTION_TYPE.FOLDER
-        ) as CollectionItem[];
+          (item): item is CollectionItem =>
+            !!item &&
+            (item.collectionItemType === COLLECTION_TYPE.COLLECTION ||
+              item.collectionItemType === COLLECTION_TYPE.FOLDER)
+        );
     },
     [collectionItemMap]
   );
