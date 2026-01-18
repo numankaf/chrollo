@@ -5,6 +5,7 @@ import {
   AlignJustify,
   AlignLeft,
   AlignRight,
+  Baseline,
   Bold,
   ChevronDown,
   Code,
@@ -13,7 +14,6 @@ import {
   Heading2,
   Heading3,
   Heading4,
-  Highlighter,
   Image as ImageIcon,
   Italic,
   Link,
@@ -21,6 +21,7 @@ import {
   ListChecks,
   ListOrdered,
   Minus,
+  PaintBucket,
   Pilcrow,
   Quote,
   Redo,
@@ -32,6 +33,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/common/button';
 import { ButtonGroup } from '@/components/common/button-group';
+import { ColorPicker } from '@/components/common/color-picker';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -141,8 +143,12 @@ export function Toolbar({ editor }: { editor: Editor }) {
       isCode: ctx.editor.isActive('code'),
       isImage: ctx.editor.isActive('image'),
       linkUrl: ctx.editor.getAttributes('link').href || '',
+      textColor: ctx.editor.getAttributes('textStyle').color || '#000000',
+      highlightColor: ctx.editor.getAttributes('highlight').color || '#ffff00',
     }),
   });
+
+  const [activePicker, setActivePicker] = React.useState<'text' | 'highlight' | null>(null);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -378,13 +384,86 @@ export function Toolbar({ editor }: { editor: Editor }) {
         >
           <Code size={16} />
         </ToolbarToggle>
-        <ToolbarToggle
-          tooltip="Highlight"
-          pressed={state.isHighlight}
-          onPressedChange={() => editor.chain().focus().toggleHighlight().run()}
+      </ButtonGroup>
+
+      <ButtonGroup>
+        <Popover
+          modal={false}
+          open={activePicker === 'text'}
+          onOpenChange={(open) => setActivePicker(open ? 'text' : null)}
         >
-          <Highlighter size={16} />
-        </ToolbarToggle>
+          <Tooltip delayDuration={1000}>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  className={cn(state.textColor !== '#000000' && 'border-primary')}
+                >
+                  <Baseline size={16} />
+                </Button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+              Text Color
+            </TooltipContent>
+          </Tooltip>
+          <PopoverContent
+            className="w-64 p-0 "
+            align="start"
+            sideOffset={8}
+            onPointerDown={(e) => e.stopPropagation()}
+            onInteractOutside={(e) => {
+              if ((e.target as HTMLElement)?.closest('.tiptap')) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <ColorPicker
+              color={state.textColor}
+              onChange={(color) => {
+                editor.chain().focus().setColor(color).run();
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+
+        <Popover
+          modal={false}
+          open={activePicker === 'highlight'}
+          onOpenChange={(open) => setActivePicker(open ? 'highlight' : null)}
+        >
+          <Tooltip delayDuration={1000}>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="icon-sm" className={cn(state.isHighlight && 'bg-accent')}>
+                  <PaintBucket size={16} />
+                </Button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+              Highlight Color
+            </TooltipContent>
+          </Tooltip>
+          <PopoverContent
+            className="w-64 p-0 "
+            align="start"
+            sideOffset={8}
+            onPointerDown={(e) => e.stopPropagation()}
+            onInteractOutside={(e) => {
+              if ((e.target as HTMLElement)?.closest('.tiptap')) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <ColorPicker
+              color={state.highlightColor}
+              onChange={(color) => {
+                editor.chain().focus().setHighlight({ color }).run();
+              }}
+            />
+          </PopoverContent>
+        </Popover>
       </ButtonGroup>
 
       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
