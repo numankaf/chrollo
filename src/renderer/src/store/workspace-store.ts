@@ -68,8 +68,14 @@ const useWorkspaceStore = create<WorkspaceStore>()(
       },
 
       deleteWorkspace: async (id) => {
+        const isActive = get().activeWorkspaceId === id;
         await window.api.workspace.delete(id);
         useTabsStore.getState().deleteTabsByWorkspaceId(id);
+
+        if (isActive) {
+          await get().setActiveWorkspace(undefined);
+        }
+
         set((state) => {
           return {
             workspaces: state.workspaces.filter((e) => e.id !== id),
@@ -78,9 +84,7 @@ const useWorkspaceStore = create<WorkspaceStore>()(
       },
 
       setActiveWorkspace: async (id) => {
-        if (id) {
-          await window.api.workspace.setActive(id);
-        }
+        await window.api.workspace.setActive(id);
         set(() => ({
           activeWorkspaceId: id,
         }));

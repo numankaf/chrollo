@@ -42,7 +42,7 @@ declare global {
         get: (id: string) => Promise<Workspace | undefined>;
         delete: (id: string) => Promise<void>;
         load: () => Promise<WorkspaceFile>;
-        setActive: (workspaceId: string) => Promise<void>;
+        setActive: (workspaceId: string | undefined) => Promise<void>;
         getActive: () => Promise<string | undefined>;
       };
       connection: {

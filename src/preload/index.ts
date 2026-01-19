@@ -53,7 +53,8 @@ const api = {
     get: (id: string) => ipcRenderer.invoke('workspaces:get', id) as Promise<Workspace | undefined>,
     delete: (id: string) => ipcRenderer.invoke('workspaces:delete', id) as Promise<void>,
     load: () => ipcRenderer.invoke('workspaces:load') as Promise<WorkspaceFile>,
-    setActive: (workspaceId: string) => ipcRenderer.invoke('workspaces:setActive', workspaceId) as Promise<void>,
+    setActive: (workspaceId: string | undefined) =>
+      ipcRenderer.invoke('workspaces:setActive', workspaceId) as Promise<void>,
     getActive: () => ipcRenderer.invoke('workspaces:getActive') as Promise<string | undefined>,
   },
 

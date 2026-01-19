@@ -48,6 +48,16 @@ async function clearConnections(): Promise<void> {
   await connectionDb.clear();
 }
 
+export async function deleteWorkspaceConnections(workspaceId: string): Promise<void> {
+  const batch = connectionDb.batch();
+  for await (const [key, value] of connectionDb.iterator()) {
+    if (value.workspaceId === workspaceId) {
+      batch.del(key);
+    }
+  }
+  await batch.write();
+}
+
 export function initConnectionIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;

@@ -1,20 +1,17 @@
 import EventEmitter from 'events';
 import path from 'path';
+import { deleteWorkspaceCollections } from '@/main/collection/collection-ipc';
+import { deleteWorkspaceConnections } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
+import { deleteWorkspaceEnvironments } from '@/main/environment/environment-ipc';
 import { getMainWindow } from '@/main/index';
+import { deleteWorkspaceInterceptionScripts } from '@/main/interception-script/interception-script-ipc';
 import { applyAuditFields } from '@/main/utils/audit-util';
 import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
 import { Level } from 'level';
 
-import { BASE_MODEL_TYPE } from '@/types/base';
-import {
-  ACTIVE_WORKSPACE_ID_KEY,
-  DEFAULT_WORKSPACE_ID,
-  WORKSPACE_TYPE,
-  type Workspace,
-  type WorkspaceFile,
-} from '@/types/workspace';
+import { ACTIVE_WORKSPACE_ID_KEY, type Workspace, type WorkspaceFile } from '@/types/workspace';
 
 const workspaceDatabasePath = path.join(BASE_STORAGE_DIR, 'workspace');
 
@@ -45,7 +42,12 @@ async function getWorkspace(id: string): Promise<Workspace | undefined> {
 
 async function deleteWorkspace(id: string): Promise<void> {
   try {
-    await workspaceDb.del(id);
+    await deleteWorkspaceConnections(id);
+    await deleteWorkspaceEnvironments(id);
+    await deleteWorkspaceCollections(id);
+    await deleteWorkspaceInterceptionScripts(id);
+
+    await workspaceDataDb.del(id);
   } catch (error: unknown) {
     console.error(error);
     return;
@@ -53,35 +55,30 @@ async function deleteWorkspace(id: string): Promise<void> {
 }
 
 async function loadWorkspaces(): Promise<WorkspaceFile> {
-  const now = new Date().toISOString();
   const results: Workspace[] = [];
 
   for await (const [, value] of workspaceDataDb.iterator()) {
     results.push(value);
   }
 
-  if (results.length === 0) {
-    const defaultWorkspace: Workspace = {
-      id: DEFAULT_WORKSPACE_ID,
-      modelType: BASE_MODEL_TYPE.WORKSPACE,
-      name: 'My Workspace',
-      type: WORKSPACE_TYPE.INTERNAL,
-      description: null,
-      createdDate: now,
-      updatedDate: now,
-    };
-    results.push(defaultWorkspace);
-    saveWorkspace(defaultWorkspace);
-    setActiveWorkspace(DEFAULT_WORKSPACE_ID);
-  }
+  const activeWorkspaceId = await getActiveWorkspace();
+
   return {
     workspaces: sortByDate(results, 'createdDate'),
-    activeWorkspaceId: DEFAULT_WORKSPACE_ID,
+    activeWorkspaceId,
   };
 }
 
-async function setActiveWorkspace(id: string) {
-  await workspaceMetaDb.put(ACTIVE_WORKSPACE_ID_KEY, id);
+async function setActiveWorkspace(id: string | undefined) {
+  if (id) {
+    await workspaceMetaDb.put(ACTIVE_WORKSPACE_ID_KEY, id);
+  } else {
+    try {
+      await workspaceMetaDb.del(ACTIVE_WORKSPACE_ID_KEY);
+    } catch {
+      // Ignored if key doesn't exist
+    }
+  }
   workspaceEvents.emit('active-workspace-changed', id);
 }
 
@@ -97,7 +94,7 @@ export async function getActiveWorkspaceId() {
   return await getActiveWorkspace();
 }
 
-export function onWorkspaceChanged(callback: (workspaceId: string) => void) {
+export function onWorkspaceChanged(callback: (workspaceId: string | undefined) => void) {
   workspaceEvents.on('active-workspace-changed', callback);
 }
 

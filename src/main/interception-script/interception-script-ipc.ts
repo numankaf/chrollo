@@ -65,6 +65,16 @@ onWorkspaceChanged((workspaceId) => {
   loadEngineScripts(workspaceId);
 });
 
+export async function deleteWorkspaceInterceptionScripts(workspaceId: string): Promise<void> {
+  const batch = interceptionScriptDb.batch();
+  for await (const [key, value] of interceptionScriptDb.iterator()) {
+    if (value.workspaceId === workspaceId) {
+      batch.del(key);
+    }
+  }
+  await batch.write();
+}
+
 export function initInterceptionScriptIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
