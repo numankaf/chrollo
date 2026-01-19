@@ -10,6 +10,7 @@ import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
 import type { Tab, TabItem } from '@/types/layout';
+import type { Workspace } from '@/types/workspace';
 
 export async function saveItem(item: TabItem) {
   switch (item.modelType) {
@@ -25,6 +26,9 @@ export async function saveItem(item: TabItem) {
     case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
       return await useInterceptionScriptStore.getState().saveInterceptionScript(item as InterceptionScript);
 
+    case BASE_MODEL_TYPE.WORKSPACE:
+      return await useWorkspaceStore.getState().saveWorkspace(item as Workspace);
+
     default:
       return Promise.resolve(undefined);
   }
@@ -37,6 +41,7 @@ export function isSaveButtonVisible(item: Tab) {
       BASE_MODEL_TYPE.ENVIRONMENT,
       BASE_MODEL_TYPE.COLLECTION,
       BASE_MODEL_TYPE.INTERCEPTION_SCRIPT,
+      BASE_MODEL_TYPE.WORKSPACE,
     ] as BaseModelType[]
   ).includes(item.modelType);
 }

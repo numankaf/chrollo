@@ -18,6 +18,7 @@ interface TabsStore {
   moveTabItem: (activeId: string, overId: string) => void;
   dirtyBeforeSaveByTab: Record<string, boolean>;
   setDirtyBeforeSaveByTab: (tabId: string, dirty: boolean) => void;
+  deleteTabsByWorkspaceId: (workspaceId: string) => void;
 }
 
 const useTabsStore = create<TabsStore>()(
@@ -134,6 +135,17 @@ const useTabsStore = create<TabsStore>()(
           }
           return state;
         });
+      },
+
+      deleteTabsByWorkspaceId: (workspaceId) => {
+        set((state) => ({
+          tabs: state.tabs.filter((tab) => {
+            if (tab.modelType === BASE_MODEL_TYPE.WORKSPACE) {
+              return tab.id !== workspaceId;
+            }
+            return tab.workspaceId !== workspaceId;
+          }),
+        }));
       },
     }),
     {

@@ -32,9 +32,7 @@ function WorkspaceButton() {
           <SidebarMenuItem>
             <SidebarMenuButton className="flex flex-col items-center h-auto">
               <WorkspaceTypeIcon workspaceType={activeWorkspace?.type} size={16} />
-              <span className="text-xs text-center! whitespace-normal!">
-                {activeWorkspace?.name || 'No Workspace Selected'}
-              </span>
+              <span className="text-xs truncate">{activeWorkspace?.name || 'No Workspace Selected'}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </DropdownMenuTrigger>
