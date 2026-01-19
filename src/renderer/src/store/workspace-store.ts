@@ -1,3 +1,4 @@
+import useTabsStore from '@/store/tab-store';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -68,6 +69,7 @@ const useWorkspaceStore = create<WorkspaceStore>()(
 
       deleteWorkspace: async (id) => {
         await window.api.workspace.delete(id);
+        useTabsStore.getState().deleteTabsByWorkspaceId(id);
         set((state) => {
           return {
             workspaces: state.workspaces.filter((e) => e.id !== id),
