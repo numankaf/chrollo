@@ -1,4 +1,4 @@
-import { type BaseAuditModel } from '@/types/base';
+import { BASE_MODEL_TYPE, type BaseAuditModel } from '@/types/base';
 
 export const ACTIVE_WORKSPACE_ID_KEY = 'activeWorkspaceIdKey';
 
@@ -35,4 +35,9 @@ export type WorkspaceSelection = Record<string, WorkspaceSelectionValue>;
 export type WorkspaceFile = {
   workspaces: Workspace[];
   activeWorkspaceId: string | undefined;
+};
+
+export const WORKSPACE_DEFAULT_VALUES: Omit<Workspace, 'id' | 'name' | 'type'> = {
+  modelType: BASE_MODEL_TYPE.WORKSPACE,
+  description: '',
 };
