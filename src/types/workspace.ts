@@ -1,6 +1,5 @@
 import { type BaseAuditModel } from '@/types/base';
 
-export const DEFAULT_WORKSPACE_ID = 'defaultWorkspaceId';
 export const ACTIVE_WORKSPACE_ID_KEY = 'activeWorkspaceIdKey';
 
 export const WORKSPACE_TYPE = {

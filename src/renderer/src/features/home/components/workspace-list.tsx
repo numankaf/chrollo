@@ -116,7 +116,6 @@ export function WorkspaceList() {
               />
               <ItemContent>
                 <ItemTitle className="group-hover/ws-item:text-primary transition-colors">{ws.name}</ItemTitle>
-                {ws.description && <p className="text-xs text-muted-foreground line-clamp-1">{ws.description}</p>}
               </ItemContent>
               <ItemActions>
                 <Button

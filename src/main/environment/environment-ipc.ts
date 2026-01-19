@@ -47,6 +47,16 @@ async function clearEnvironments(): Promise<void> {
   await environmentDb.clear();
 }
 
+export async function deleteWorkspaceEnvironments(workspaceId: string): Promise<void> {
+  const batch = environmentDb.batch();
+  for await (const [key, value] of environmentDb.iterator()) {
+    if (value.workspaceId === workspaceId) {
+      batch.del(key);
+    }
+  }
+  await batch.write();
+}
+
 export function initEnvironmentIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;

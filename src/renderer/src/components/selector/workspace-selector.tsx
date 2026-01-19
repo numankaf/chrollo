@@ -50,6 +50,7 @@ function WorkspaceSelector() {
             <div className="max-h-[300px]">
               {filteredWorkspaces.map((workspace) => (
                 <Button
+                  key={workspace.id}
                   onClick={async () => {
                     await setActiveWorkspace(workspace.id);
                     navigate('/main/workspace/' + workspace.id);

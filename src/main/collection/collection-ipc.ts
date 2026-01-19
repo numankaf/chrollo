@@ -48,6 +48,16 @@ async function clearCollectionItems(): Promise<void> {
   await collectionItemDb.clear();
 }
 
+export async function deleteWorkspaceCollections(workspaceId: string): Promise<void> {
+  const batch = collectionItemDb.batch();
+  for await (const [key, value] of collectionItemDb.iterator()) {
+    if (value.workspaceId === workspaceId) {
+      batch.del(key);
+    }
+  }
+  await batch.write();
+}
+
 export function initCollectionIpc() {
   const mainWindow = getMainWindow();
   if (!mainWindow) return;
