@@ -26,7 +26,7 @@ function WorkspaceView() {
         </TabsList>
         <div className="flex-1 min-h-0 relative">
           <TabsContent value="overview" className="h-full absolute inset-0">
-            <WorkspaceOverview />
+            <WorkspaceOverview key={workspace.id} />
           </TabsContent>
           <TabsContent value="settings" className="h-full absolute inset-0">
             <WorkspaceSettings />

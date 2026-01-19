@@ -7,8 +7,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
-import { BASE_MODEL_TYPE } from '@/types/base';
-import { WORKSPACE_TYPE, type Workspace } from '@/types/workspace';
+import { WORKSPACE_DEFAULT_VALUES, WORKSPACE_TYPE, type Workspace } from '@/types/workspace';
 import { Button } from '@/components/common/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/common/card';
 import { Field, FieldError, FieldLabel } from '@/components/common/field';
@@ -46,10 +45,9 @@ export default function CreateWorkspaceView() {
     try {
       const workspace: Workspace = {
         id: nanoid(),
-        modelType: BASE_MODEL_TYPE.WORKSPACE,
         name: values.name,
         type: values.type,
-        description: values.description || null,
+        ...WORKSPACE_DEFAULT_VALUES,
       };
 
       await createWorkspace(workspace);
