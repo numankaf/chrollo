@@ -34,6 +34,10 @@ mac:
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  hardenedRuntime: false
+  entitlements: null
+  entitlementsInherit: null
+  sign: false
   notarize: false
 dmg:
   artifactName: ${name}-${version}.${ext}
