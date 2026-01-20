@@ -9,22 +9,26 @@ import { useActiveItem } from '@/hooks/app/use-active-item';
 
 export function useAppSubscriptions() {
   const navigate = useNavigate();
-  const { appLoaded } = use(AppContext);
+  const { workspacesLoaded, appLoaded } = use(AppContext);
 
   const { activeTab, activeWorkspace } = useActiveItem();
 
   useEffect(() => {
+    if (!workspacesLoaded) return;
+
+    if (!activeWorkspace) {
+      navigate(`/home`);
+      return;
+    }
+
     if (!appLoaded) return;
+
     if (activeTab) {
       navigate(getTabRoute(activeTab));
     } else {
-      if (!activeWorkspace) {
-        navigate(`/home`);
-        return;
-      }
       navigate('/main/empty');
     }
-  }, [appLoaded, activeTab, activeWorkspace, navigate]);
+  }, [workspacesLoaded, appLoaded, activeTab, activeWorkspace, navigate]);
 
   useEffect(() => {
     const unsubscribeConsoleLog = window.listener.console.log((data) => {

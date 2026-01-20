@@ -14,7 +14,7 @@ import ConnectionSelector from '@/components/selector/connection-selector';
 import WorkspaceSelector from '@/components/selector/workspace-selector';
 
 function Topbar() {
-  const { appLoaded } = use(AppContext);
+  const { appLoaded, workspacesLoaded } = use(AppContext);
   const { activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
       setActiveWorkspace: state.setActiveWorkspace,
@@ -36,7 +36,7 @@ function Topbar() {
           <img className="h-8 shrink-0" src={AppText} alt="App Text" />
         </div>
 
-        {appLoaded && (
+        {workspacesLoaded && (
           <Button
             variant="ghost"
             onClick={() => {
@@ -46,11 +46,11 @@ function Topbar() {
             Home
           </Button>
         )}
-        {appLoaded && <WorkspaceSelector />}
+        {workspacesLoaded && <WorkspaceSelector />}
         {appLoaded && activeWorkspaceId && <ConnectionSelector />}
       </div>
 
-      {appLoaded && (
+      {workspacesLoaded && (
         <div className="flex items-center justify-center flex-1 draggable">
           <Button variant="outline" className="bg-background! hover:border-primary!">
             <Search />
