@@ -38,8 +38,7 @@ mac:
   entitlementsInherit: null
   sign: false
   notarize: false
-  gatekeeperAssess: false
-  codeSign: false
+
 dmg:
   artifactName: ${name}-${version}.${ext}
 
