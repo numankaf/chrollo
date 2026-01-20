@@ -9,12 +9,12 @@ import { formatCode } from '@/utils/editor-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Maximize2, Trash2 } from 'lucide-react';
+import { ChevronDown, Maximize2, Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
 import { COMMANDS } from '@/types/command';
-import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
+import { SOCKET_MESSAGE_TYPE, type SocketMessage, type SocketMessageType } from '@/types/socket';
 import { commandBus } from '@/lib/command-bus';
 import { deepParseJson } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
@@ -22,6 +22,13 @@ import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useConnectionMessages } from '@/hooks/socket/use-connection-messages';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/common/accordion';
 import { Button } from '@/components/common/button';
+import { Checkbox } from '@/components/common/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/common/dropdown-menu';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
@@ -173,29 +180,45 @@ function ConsoleMessage({
   onShowDetail: (msg: SocketMessage) => void;
 }) {
   const isReqRes = message.type === SOCKET_MESSAGE_TYPE.SENT || message.type === SOCKET_MESSAGE_TYPE.RECEIVED;
+  const { removeMessage } = useSocketMessageStatusStore();
 
   return (
     <AccordionItem value={message.id.toString()}>
       <AccordionTrigger className="rounded-xs hover:bg-secondary hover:no-underline p-0 px-2 [&>svg]:h-full">
-        <div className="p-2.5 flex w-full items-center gap-4 group">
+        <div className="p-2.5 flex w-full items-center gap-4 group relative">
           <SocketConsoleMessageIcon messageType={message.type} size={18} />
           <span className="flex-1 truncate w-0 text-start">{message.data}</span>
-          <div className="flex items-center gap-1">
-            {isReqRes && (
-              <Button
-                asChild
-                variant="ghost"
-                size="icon"
-                className="hidden group-hover:flex size-4 rounded-md p-0.5"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onShowDetail(message);
-                }}
-              >
-                <Maximize2 />
+
+          <div className="flex items-center gap-1 shrink-0">
+            <div className="hidden group-hover:flex items-center gap-1 h-4">
+              {isReqRes && (
+                <Button asChild variant="ghost" size="icon" className="size-6 rounded-md">
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onShowDetail(message);
+                    }}
+                  >
+                    <Maximize2 className="size-4" />
+                  </span>
+                </Button>
+              )}
+              <Button asChild variant="ghost" size="icon" className="size-6 rounded-md hover:text-destructive">
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeMessage(message.connectionId, message.id);
+                  }}
+                >
+                  <Trash2 className="size-4" />
+                </span>
               </Button>
-            )}
-            <span className="text-muted-foreground min-w-20 text-end">
+            </div>
+            <span className="text-muted-foreground min-w-16 text-end text-xs">
               {new Date(message.timestamp).toLocaleTimeString([], TIME_FORMAT_HH_MM_SS_MMM)}
             </span>
           </div>
@@ -222,8 +245,16 @@ function SocketMessageConsole() {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue<string>(search, 300);
   const [detailMessage, setDetailMessage] = useState<SocketMessage | null>(null);
+  const [selectedTypes, setSelectedTypes] = useState<SocketMessageType[]>([]);
 
-  const filteredMessages = applyTextSearch(messages, debouncedSearch, (message) => message.data);
+  const toggleType = (type: SocketMessageType) => {
+    setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
+  };
+
+  const filteredMessages = applyTextSearch(messages, debouncedSearch, (message) => message.data).filter((message) => {
+    if (selectedTypes.length === 0) return true;
+    return selectedTypes.includes(message.type);
+  });
   const { variant } = getConnectionButtonVariant(status);
 
   const parentRef = useRef<HTMLDivElement>(null);
@@ -269,6 +300,31 @@ function SocketMessageConsole() {
                 setSearch(e.target.value);
               }}
             />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 px-3 border-muted-foreground/20 hover:bg-accent/50">
+                  Type <ChevronDown className="ml-2 size-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-auto p-1">
+                {Object.values(SOCKET_MESSAGE_TYPE).map((type) => (
+                  <DropdownMenuItem
+                    key={type}
+                    className="flex items-center gap-2 cursor-pointer h-7"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleType(type);
+                    }}
+                  >
+                    <Checkbox checked={selectedTypes.includes(type)} className="pointer-events-none" />
+                    <div className="flex items-center gap-2">
+                      <SocketConsoleMessageIcon messageType={type} size={14} />
+                      <span className="capitalize">{type.toLowerCase()}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="sm"

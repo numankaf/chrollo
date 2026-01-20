@@ -6,6 +6,7 @@ interface SocketMessageStatusStore {
   messageMap: Record<string, SocketMessage[]>;
 
   addMessage: (msg: SocketMessage) => void;
+  removeMessage: (connectionId: string, messageId: number) => void;
   clearMessages: (connectionId: string) => void;
   clearAll: () => void;
 }
@@ -20,6 +21,17 @@ const useSocketMessageStatusStore = create<SocketMessageStatusStore>((set) => ({
         messageMap: {
           ...state.messageMap,
           [msg.connectionId]: [...existing, msg],
+        },
+      };
+    }),
+
+  removeMessage: (connectionId, messageId) =>
+    set((state) => {
+      const existing = state.messageMap[connectionId] ?? [];
+      return {
+        messageMap: {
+          ...state.messageMap,
+          [connectionId]: existing.filter((m) => m.id !== messageId),
         },
       };
     }),
