@@ -3,6 +3,7 @@ import type { CellContext } from '@tanstack/react-table';
 
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/common/input';
+import { VariableInput } from '@/components/common/variable-input';
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
@@ -93,10 +94,49 @@ function EditableTextCell<T>({ getValue, row, column, table }: CellContext<T, un
   );
 }
 
+function EditableVariableTextCell<T>({ getValue, row, column, table }: CellContext<T, unknown>) {
+  const initialValue = getValue() as string;
+  const [value, setValue] = React.useState(initialValue);
+  const onBlur = () => {
+    table.options.meta?.updateData(row.index, column.id, value);
+  };
+
+  React.useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  const placeholder = (column.columnDef.meta as { placeholder?: string } | undefined)?.placeholder;
+
+  return (
+    <VariableInput
+      value={value}
+      onChange={(e) => {
+        setValue(e.target.value);
+      }}
+      containerClassName="rounded-none"
+      className=" px-2 py-1 h-8 w-full border border-transparent rounded-none text-sm "
+      onBlur={onBlur}
+      placeholder={placeholder}
+      aria-label="editable-variable-text-input"
+    />
+  );
+}
+
 function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
   return (
     <caption data-slot="table-caption" className={cn('text-muted-foreground mt-4 text-sm', className)} {...props} />
   );
 }
 
-export { EditableTextCell, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow };
+export {
+  EditableTextCell,
+  EditableVariableTextCell,
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+};

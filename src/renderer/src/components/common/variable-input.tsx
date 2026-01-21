@@ -11,7 +11,11 @@ import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
 
-function VariableInput({ className, value, onChange, ...props }: React.ComponentProps<'input'>) {
+interface VariableInputProps extends React.ComponentProps<'input'> {
+  containerClassName?: string;
+}
+
+function VariableInput({ className, containerClassName, value, onChange, ...props }: VariableInputProps) {
   const currentText = String(value || '');
   const { activeEnvironment } = useActiveItem();
   const updateEnvironment = useEnvironmentStore((s) => s.updateEnvironment);
@@ -106,7 +110,7 @@ function VariableInput({ className, value, onChange, ...props }: React.Component
 
   return (
     <TooltipProvider delayDuration={500}>
-      <div className="relative flex-1 h-9 group overflow-hidden">
+      <div className={cn('relative flex-1 group overflow-hidden caret-foreground rounded-md', containerClassName)}>
         <div
           className={cn(
             'absolute inset-0 flex items-center bg-transparent px-3 py-1 pointer-events-none overflow-hidden h-full select-none',

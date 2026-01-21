@@ -13,8 +13,7 @@ import {
 } from '@/components/common/dialog';
 import { Field, FieldError, FieldLabel } from '@/components/common/field';
 import { Input } from '@/components/common/input';
-
-import { CollectionTreeSelector } from '../selector/collection-tree-selector';
+import { CollectionTreeSelector } from '@/components/app/selector/collection-tree-selector';
 
 interface SaveRequestDialogProps {
   open: boolean;

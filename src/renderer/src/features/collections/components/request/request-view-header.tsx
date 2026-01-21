@@ -33,6 +33,7 @@ function RequestViewHeader() {
           render={({ field, fieldState }) => (
             <InputGroup>
               <VariableInput
+                className="text-sm"
                 placeholder="Enter a request path or paste text"
                 aria-invalid={fieldState.invalid}
                 value={field.value || ''}

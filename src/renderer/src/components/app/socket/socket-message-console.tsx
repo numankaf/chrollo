@@ -36,9 +36,8 @@ import CodeEditor from '@/components/app/editor/code-editor';
 import NoActiveConnectionFound from '@/components/app/empty/no-active-connection-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 import NoSocketMessageFound from '@/components/app/empty/no-socket-message-found';
+import { SocketMessageDetailDialog } from '@/components/app/socket/socket-message-detail-dialog';
 import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-message-icon';
-
-import { SocketMessageDetailDialog } from './socket-message-detail-dialog';
 
 function MessageMetaInfo({ headers }: { headers?: Record<string, unknown> }) {
   if (!headers || Object.keys(headers).length === 0) return null;

@@ -18,8 +18,7 @@ import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useTabItem } from '@/hooks/app/use-tab-item';
 import { Button } from '@/components/common/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/common/tooltip';
-
-import { SaveRequestDialog } from '../dialog/save-request-dialog';
+import { SaveRequestDialog } from '@/components/app/dialog/save-request-dialog';
 
 function SaveItemButton() {
   const { activeTab } = useActiveItem();
