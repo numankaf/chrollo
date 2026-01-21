@@ -1,8 +1,11 @@
+import { resolveEnvironmentVariables, resolveObjectVariables } from '@/utils/environment-util';
+
 import type { Request } from '@/types/collection';
 import type { StompConnection } from '@/types/connection';
 
 export function connectStomp(connection: StompConnection) {
-  window.api.stomp.connect(connection);
+  const resolvedConnection = resolveObjectVariables(connection);
+  window.api.stomp.connect(resolvedConnection);
 }
 
 export function disconnectStomp(connectionId: string) {
@@ -10,13 +13,16 @@ export function disconnectStomp(connectionId: string) {
 }
 
 export function subscribeStomp(connectionId: string, subscriptionId: string, topic: string) {
-  window.api.stomp.subscribe(connectionId, subscriptionId, topic);
+  const resolvedTopic = resolveEnvironmentVariables(topic);
+  window.api.stomp.subscribe(connectionId, subscriptionId, resolvedTopic);
 }
 
 export function unsubscribeStomp(connectionId: string, subscriptionId: string, topic: string) {
-  window.api.stomp.unsubscribe(connectionId, subscriptionId, topic);
+  const resolvedTopic = resolveEnvironmentVariables(topic);
+  window.api.stomp.unsubscribe(connectionId, subscriptionId, resolvedTopic);
 }
 
 export function sendStompMessage(connectionId: string, request: Request) {
-  window.api.stomp.send(connectionId, request);
+  const resolvedRequest = resolveObjectVariables(request);
+  window.api.stomp.send(connectionId, resolvedRequest);
 }
