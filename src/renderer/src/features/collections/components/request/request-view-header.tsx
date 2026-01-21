@@ -6,7 +6,8 @@ import { COMMANDS } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
 import { useConnection } from '@/hooks/connection/use-connection';
 import { Button } from '@/components/common/button';
-import { InputGroup, InputGroupInput } from '@/components/common/input-group';
+import { InputGroup } from '@/components/common/input-group';
+import { VariableInput } from '@/components/common/variable-input';
 
 function RequestViewHeader() {
   const form = useFormContext();
@@ -31,8 +32,8 @@ function RequestViewHeader() {
           control={form.control}
           render={({ field, fieldState }) => (
             <InputGroup>
-              <InputGroupInput
-                type="text"
+              <VariableInput
+                className="text-sm"
                 placeholder="Enter a request path or paste text"
                 aria-invalid={fieldState.invalid}
                 value={field.value || ''}

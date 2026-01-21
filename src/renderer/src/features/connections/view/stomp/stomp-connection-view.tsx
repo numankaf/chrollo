@@ -21,9 +21,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/common/input-group';
+import { InputGroup, InputGroupAddon, InputGroupButton } from '@/components/common/input-group';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
+import { VariableInput } from '@/components/common/variable-input';
 
 function StompConnectionView() {
   const { activeTab } = useActiveItem();
@@ -77,7 +78,7 @@ function StompConnectionView() {
                       <DropdownMenuTrigger asChild>
                         <InputGroupButton
                           variant="ghost"
-                          className="-ml-1.5 pr-1.5! w-20 flex items-center justify-between text-foreground h-full border-r"
+                          className="-ml-1.5 pr-1.5! w-20 flex items-center justify-between text-foreground h-full"
                         >
                           <span className={URL_SCHEME_COLORS[field.value]}>{field.value}</span>
                           <ChevronDownIcon className="size-3" />
@@ -101,9 +102,9 @@ function StompConnectionView() {
                     name="url"
                     control={form.control}
                     render={({ field: urlField, fieldState }) => (
-                      <InputGroupInput
+                      <VariableInput
                         placeholder="Enter URL"
-                        className="pl-1.5!"
+                        className="pl-1.5 text-sm!"
                         value={urlField.value}
                         onChange={urlField.onChange}
                         aria-invalid={!!fieldState.error}

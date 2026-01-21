@@ -8,11 +8,13 @@ import { useShallow } from 'zustand/react/shallow';
 
 interface AppContextValue {
   appLoaded: boolean;
+  workspacesLoaded: boolean;
   loadingText: string;
 }
 
 const initialState: AppContextValue = {
   appLoaded: false,
+  workspacesLoaded: false,
   loadingText: 'Loading...',
 };
 
@@ -20,6 +22,7 @@ export const AppContext = createContext<AppContextValue>(initialState);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [appLoaded, setAppLoaded] = useState<boolean>(false);
+  const [workspacesLoaded, setWorkspacesLoaded] = useState<boolean>(false);
   const [loadingText, setLoadingText] = useState<string>(initialState.loadingText);
 
   const { activeWorkspaceId } = useWorkspaceStore(
@@ -31,11 +34,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function initGlobal() {
       try {
-        setAppLoaded(false);
+        setWorkspacesLoaded(false);
         setLoadingText('Loading workspaces...');
         const workspaceData = await window.api.workspace.load();
         await useWorkspaceStore.getState().initWorkspaceStore(workspaceData);
-        setAppLoaded(true);
+        setWorkspacesLoaded(true);
       } catch (err) {
         console.error('Failed to init workspaces:', err);
       }
@@ -46,7 +49,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function initWorkspace() {
       try {
-        if (!activeWorkspaceId) return;
+        if (!activeWorkspaceId) {
+          setAppLoaded(false);
+          return;
+        }
 
         setAppLoaded(false);
         setLoadingText('Loading connections...');
@@ -73,5 +79,5 @@ export function AppProvider({ children }: { children: ReactNode }) {
     initWorkspace();
   }, [activeWorkspaceId]);
 
-  return <AppContext.Provider value={{ appLoaded, loadingText }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ appLoaded, workspacesLoaded, loadingText }}>{children}</AppContext.Provider>;
 }

@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
-import { EditableTextCell } from '@/components/common/table';
+import { EditableTextCell, EditableVariableTextCell } from '@/components/common/table';
 import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
 const PROPERTY_KEY = 'connectHeaders';
@@ -72,13 +72,13 @@ function StompHeaders({ headers }: { headers: Header[] }) {
             </Button>
           </div>
         ),
-        cell: EditableTextCell<Header>,
+        cell: EditableVariableTextCell<Header>,
         size: 500,
       },
       {
         accessorKey: 'value',
         header: 'Value',
-        cell: EditableTextCell<Header>,
+        cell: EditableVariableTextCell<Header>,
         size: 500,
         meta: {
           placeholder: 'Add Value',

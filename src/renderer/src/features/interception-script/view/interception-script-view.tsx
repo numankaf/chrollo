@@ -4,8 +4,9 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
+import { Label } from '@/components/common/label';
 import { ScrollArea } from '@/components/common/scroll-area';
-import { Toggle } from '@/components/common/toggle';
+import { Switch } from '@/components/common/switch';
 import { BeautifyButton } from '@/components/app/button/beautify-button';
 import CodeEditor, { EDITOR_BODY_TYPE } from '@/components/app/editor/code-editor';
 
@@ -31,16 +32,18 @@ function InterceptionScriptView() {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-end gap-2 mx-2 mb-1 ">
         <p className="text-muted-foreground my-1 flex-1">Script</p>
-        <Toggle
-          data-state={script.enabled ? 'on' : 'off'}
-          variant="ghost"
-          onClick={async () =>
-            await updateInterceptionScript({ ...script, enabled: !script.enabled }, { persist: true })
-          }
-          className="w-24 h-6"
-        >
-          {script.enabled ? 'Enabled' : 'Disabled'}
-        </Toggle>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="script-enabled" className="text-sm text-muted-foreground">
+            {script.enabled ? 'Enabled' : 'Disabled'}
+          </Label>
+          <Switch
+            id="script-enabled"
+            checked={script.enabled}
+            onCheckedChange={async (checked) =>
+              await updateInterceptionScript({ ...script, enabled: checked }, { persist: true })
+            }
+          />
+        </div>
         <Button variant="ghost" size="sm" className="h-6 gap-1.5 pointer-events-none!">
           {EDITOR_BODY_TYPE.JAVASCRIPT}
         </Button>

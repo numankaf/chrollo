@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
 import { Switch } from '@/components/common/switch';
-import { EditableTextCell } from '@/components/common/table';
+import { EditableTextCell, EditableVariableTextCell } from '@/components/common/table';
 import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 
 const PROPERTY_KEY = 'subscriptions';
@@ -79,7 +79,7 @@ function StompSubsciptions({ subscriptions }: { subscriptions: StompSubscription
             </Button>
           </div>
         ),
-        cell: EditableTextCell<StompSubscription>,
+        cell: EditableVariableTextCell<StompSubscription>,
         size: 500,
       },
       {

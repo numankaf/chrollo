@@ -1,3 +1,4 @@
+import { WorkspaceList } from '@/features/home/components/workspace-list';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
 import { PlusIcon } from 'lucide-react';
@@ -5,8 +6,6 @@ import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/common/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/common/card';
-
-import { WorkspaceList } from '../components/workspace-list';
 
 function HomeView() {
   const navigate = useNavigate();
