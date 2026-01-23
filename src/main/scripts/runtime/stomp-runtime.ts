@@ -38,7 +38,7 @@ export interface StompMessageCtx {
   message: SocketMessage;
 }
 
-export class StompScriptRuntime {
+export class StompRuntime {
   preConnect: PreStompConnectHandler[] = [];
   preSubscribe: PreStompSubscribeHandler[] = [];
   preUnsubscribe: PreStompUnsubscribeHandler[] = [];

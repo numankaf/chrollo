@@ -22,7 +22,7 @@ export function unsubscribeStomp(connectionId: string, subscriptionId: string, t
   window.api.stomp.unsubscribe(connectionId, subscriptionId, resolvedTopic);
 }
 
-export function sendStompMessage(connectionId: string, request: Request) {
+export async function sendStompMessage(connectionId: string, request: Request): Promise<string | null> {
   const resolvedRequest = resolveObjectVariables(request);
-  window.api.stomp.send(connectionId, resolvedRequest);
+  return await window.api.stomp.send(connectionId, resolvedRequest);
 }

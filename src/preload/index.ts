@@ -5,6 +5,7 @@ import type { CollectionItem, Request } from '@/types/collection';
 import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
+import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
 import type { SocketMessage } from '@/types/socket';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
@@ -45,7 +46,7 @@ const api = {
       ipcRenderer.send('stomp:subscribe', { connectionId, subscriptionId, topic }),
     unsubscribe: (connectionId: string, subscriptionId: string, topic: string) =>
       ipcRenderer.send('stomp:unsubscribe', { connectionId, subscriptionId, topic }),
-    send: (id: string, data: Request) => ipcRenderer.send('stomp:send', id, data),
+    send: (id: string, data: Request) => ipcRenderer.invoke('stomp:send', id, data) as Promise<string | null>,
   },
 
   workspace: {
@@ -109,6 +110,16 @@ const listener = {
       const handler = (_: Electron.IpcRendererEvent, data: SocketMessage) => callback(data);
       ipcRenderer.on('stomp:message', handler);
       return () => ipcRenderer.removeListener('stomp:message', handler);
+    },
+    onRequestPending: (callback: (data: RequestPendingEvent) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: RequestPendingEvent) => callback(data);
+      ipcRenderer.on('stomp:request-pending', handler);
+      return () => ipcRenderer.removeListener('stomp:request-pending', handler);
+    },
+    onRequestResolved: (callback: (data: RequestResolvedEvent) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: RequestResolvedEvent) => callback(data);
+      ipcRenderer.on('stomp:request-resolved', handler);
+      return () => ipcRenderer.removeListener('stomp:request-resolved', handler);
     },
   },
 

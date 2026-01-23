@@ -1,15 +1,18 @@
-import { StompScriptRuntime } from '@/main/scripts/runtime/stomp-script-runtime';
+import { RequestsRuntime } from '@/main/scripts/runtime/requests-runtime';
+import { StompRuntime } from '@/main/scripts/runtime/stomp-runtime';
 import { UtilsRuntime } from '@/main/scripts/runtime/utils-runtime';
 import { VariablesRuntime } from '@/main/scripts/runtime/variables-runtime';
 
 export class ChrolloRuntime {
-  stomp: StompScriptRuntime;
+  stomp: StompRuntime;
   variables: VariablesRuntime;
   utils: UtilsRuntime;
+  requests: RequestsRuntime;
 
   constructor() {
-    this.stomp = new StompScriptRuntime();
+    this.stomp = new StompRuntime();
     this.variables = new VariablesRuntime();
     this.utils = new UtilsRuntime();
+    this.requests = new RequestsRuntime();
   }
 }
