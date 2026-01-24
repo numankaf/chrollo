@@ -188,7 +188,7 @@ function SocketResponseConsole() {
   const { activeConnection } = useActiveItem();
   const { activeTab } = useActiveItem();
 
-  const { getByRequestId, clearRequestByKey } = useRequestResponse(activeConnection?.id);
+  const { getByRequestId, getLastResolvedByRequestId, clearRequest } = useRequestResponse(activeConnection?.id);
 
   const { applicationSettings } = useAppConfigStore(
     useShallow((state) => ({
@@ -196,24 +196,27 @@ function SocketResponseConsole() {
     }))
   );
 
+  const [lastTrackedRequest, setLastTrackedRequest] = useState<TrackedRequest | undefined>(undefined);
   const [trackedRequest, setTrackedRequest] = useState<TrackedRequest | undefined>(undefined);
 
-  // Sync with store state
+  const updateTrackedRequest = useEffectEvent((request: TrackedRequest | undefined) => {
+    setTrackedRequest(request);
+  });
+
+  const updateLastTrackedRequest = useEffectEvent((request: TrackedRequest | undefined) => {
+    setLastTrackedRequest(request);
+  });
+
   useEffect(() => {
-    if (!activeTab?.id) return;
-    const storeRequest = getByRequestId(activeTab.id);
+    if (!activeTab) return;
+    const request = getByRequestId(activeTab.id);
+    updateTrackedRequest(request);
 
-    if (storeRequest) {
-      setTrackedRequest(storeRequest);
-    } else {
-      if (trackedRequest && trackedRequest.requestId !== activeTab.id) {
-        setTrackedRequest(undefined);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab?.id, getByRequestId(activeTab?.id || '')]);
+    const lastResolvedRequest = getLastResolvedByRequestId(activeTab.id);
+    updateLastTrackedRequest(lastResolvedRequest);
+  }, [activeTab, getByRequestId, getLastResolvedByRequestId]);
 
-  const message = trackedRequest?.response;
+  const message = lastTrackedRequest?.response;
   const headers = message?.meta?.headers || {};
   const bodyTypeRetrieved = getMessageContentType(headers);
 
@@ -235,15 +238,15 @@ function SocketResponseConsole() {
       : message?.data || '';
 
   const handleClear = () => {
-    if (trackedRequest?.requestKey) {
-      clearRequestByKey(trackedRequest?.requestKey);
+    if (trackedRequest?.requestId) {
+      clearRequest(trackedRequest?.requestId);
       setTrackedRequest(undefined);
     }
   };
 
   return (
     <div className="flex flex-col w-full px-2 flex-1 min-h-0 h-full relative">
-      {!trackedRequest && <NoResponseFound />}
+      {!lastTrackedRequest && <NoResponseFound />}
 
       {trackedRequest && trackedRequest.status === REQUEST_STATUS.PENDING && (
         <div className="absolute inset-0 flex items-center justify-center z-50 bg-background/70  select-none">
@@ -251,7 +254,7 @@ function SocketResponseConsole() {
         </div>
       )}
 
-      {trackedRequest && trackedRequest.status !== REQUEST_STATUS.PENDING && (
+      {lastTrackedRequest && (
         <Tabs variant="link" defaultValue="body" className="w-full flex-1 flex flex-col min-h-0">
           <div className="flex items-center justify-between">
             <TabsList>
@@ -259,7 +262,7 @@ function SocketResponseConsole() {
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="test-results">Test Results</TabsTrigger>
             </TabsList>
-            <ResponseStatusBar trackedRequest={trackedRequest} onClear={handleClear} />
+            <ResponseStatusBar trackedRequest={lastTrackedRequest} onClear={handleClear} />
           </div>
 
           <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-2 h-full">

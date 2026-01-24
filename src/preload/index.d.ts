@@ -36,7 +36,7 @@ declare global {
         disconnectAll: () => void;
         subscribe: (connectionId: string, subscriptionId: string, topic: string) => void;
         unsubscribe: (connectionId: string, subscriptionId: string, topic: string) => void;
-        send: (id: string, data: Request) => Promise<string | null>;
+        send: (id: string, data: Request) => void;
       };
       workspace: {
         save: (workspace: Workspace) => Promise<void>;

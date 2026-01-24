@@ -5,141 +5,144 @@ import { REQUEST_STATUS, type RequestStatus, type TrackedRequest } from '@/types
 import type { SocketMessage } from '@/types/socket';
 
 interface RequestResponseStore {
-  // Map: requestId (collection item) -> requestKey (correlation key set by user script)
-  requestIdToRequestKey: Record<string, string>;
+  // Map: requestId -> current pending TrackedRequest
+  requestIdToTrackedRequest: Map<string, TrackedRequest>;
 
-  // Map: requestKey -> TrackedRequest (the actual tracking info)
-  trackedRequests: Record<string, TrackedRequest>;
+  // Map: requestId -> last resolved TrackedRequest (persists when new pending request starts)
+  requestIdToLastResolvedRequest: Map<string, TrackedRequest>;
 
   // Actions
   addPendingRequest: (requestKey: string, requestId: string, connectionId: string, request: Request) => void;
 
-  setRequestIdMapping: (requestId: string, requestKey: string) => void;
-
   resolveRequest: (requestKey: string, response: SocketMessage) => void;
 
-  cancelRequest: (requestKey: string) => void;
-
-  getRequestByKey: (requestKey: string) => TrackedRequest | undefined;
-
-  getRequestByRequestId: (requestId: string) => TrackedRequest | undefined;
-
+  cancelRequest: (requestId: string) => void;
   clearAll: () => void;
 
   clearByConnectionId: (connectionId: string) => void;
 
-  clearRequestByKey: (requestKey: string) => void;
+  clearRequest: (requestId: string) => void;
 }
 
-const useRequestResponseStore = create<RequestResponseStore>((set, get) => ({
-  requestIdToRequestKey: {},
-  trackedRequests: {},
+const useRequestResponseStore = create<RequestResponseStore>((set) => ({
+  requestIdToTrackedRequest: new Map(),
+  requestIdToLastResolvedRequest: new Map(),
 
   addPendingRequest: (requestKey, requestId, connectionId, request) =>
-    set((state) => ({
-      trackedRequests: {
-        ...state.trackedRequests,
-        [requestKey]: {
-          requestKey,
-          requestId,
-          connectionId,
-          status: REQUEST_STATUS.PENDING as RequestStatus,
-          request,
-          startTime: Date.now(),
-        },
-      },
-    })),
+    set((state) => {
+      const newRequestIdToTrackedRequest = new Map(state.requestIdToTrackedRequest);
+      newRequestIdToTrackedRequest.set(requestId, {
+        requestKey,
+        requestId,
+        connectionId,
+        status: REQUEST_STATUS.PENDING as RequestStatus,
+        request,
+        startTime: Date.now(),
+      });
 
-  setRequestIdMapping: (requestId, requestKey) =>
-    set((state) => ({
-      requestIdToRequestKey: {
-        ...state.requestIdToRequestKey,
-        [requestId]: requestKey,
-      },
-    })),
+      return {
+        requestIdToTrackedRequest: newRequestIdToTrackedRequest,
+      };
+    }),
 
   resolveRequest: (requestKey, response) =>
     set((state) => {
-      const existing = state.trackedRequests[requestKey];
+      // Find the requestId by scanning map values for matching requestKey
+      let requestId: string | undefined;
+      for (const [id, tracked] of state.requestIdToTrackedRequest.entries()) {
+        if (tracked.requestKey === requestKey) {
+          requestId = id;
+          break;
+        }
+      }
+
+      if (!requestId) {
+        return state;
+      }
+
+      const existing = state.requestIdToTrackedRequest.get(requestId);
       if (!existing || existing.status !== REQUEST_STATUS.PENDING) {
         return state;
       }
+
+      const resolvedTrackedRequest = {
+        ...existing,
+        status: REQUEST_STATUS.RESOLVED as RequestStatus,
+        response,
+        endTime: Date.now(),
+      };
+
+      const newRequestIdToTrackedRequest = new Map(state.requestIdToTrackedRequest);
+      newRequestIdToTrackedRequest.set(requestId, resolvedTrackedRequest);
+
+      const newRequestIdToLastResolvedRequest = new Map(state.requestIdToLastResolvedRequest);
+      newRequestIdToLastResolvedRequest.set(requestId, resolvedTrackedRequest);
+
       return {
-        trackedRequests: {
-          ...state.trackedRequests,
-          [requestKey]: {
-            ...existing,
-            status: REQUEST_STATUS.RESOLVED as RequestStatus,
-            response,
-            endTime: Date.now(),
-          },
-        },
+        requestIdToTrackedRequest: newRequestIdToTrackedRequest,
+        requestIdToLastResolvedRequest: newRequestIdToLastResolvedRequest,
       };
     }),
 
-  cancelRequest: (requestKey) =>
+  cancelRequest: (requestId) =>
     set((state) => {
-      const existing = state.trackedRequests[requestKey];
+      const existing = state.requestIdToTrackedRequest.get(requestId);
       if (!existing || existing.status !== REQUEST_STATUS.PENDING) {
         return state;
       }
+
+      const newRequestIdToTrackedRequest = new Map(state.requestIdToTrackedRequest);
+      newRequestIdToTrackedRequest.set(requestId, {
+        ...existing,
+        status: REQUEST_STATUS.CANCELED as RequestStatus,
+        endTime: Date.now(),
+      });
+
       return {
-        trackedRequests: {
-          ...state.trackedRequests,
-          [requestKey]: {
-            ...existing,
-            status: REQUEST_STATUS.CANCELED as RequestStatus,
-            endTime: Date.now(),
-          },
-        },
+        requestIdToTrackedRequest: newRequestIdToTrackedRequest,
       };
     }),
-
-  getRequestByKey: (requestKey) => get().trackedRequests[requestKey],
-
-  getRequestByRequestId: (requestId) => {
-    const requestKey = get().requestIdToRequestKey[requestId];
-    return requestKey ? get().trackedRequests[requestKey] : undefined;
-  },
 
   clearAll: () =>
     set({
-      requestIdToRequestKey: {},
-      trackedRequests: {},
+      requestIdToTrackedRequest: new Map(),
+      requestIdToLastResolvedRequest: new Map(),
     }),
 
   clearByConnectionId: (connectionId) =>
     set((state) => {
-      const newTrackedRequests = { ...state.trackedRequests };
-      const newRequestIdToRequestKey = { ...state.requestIdToRequestKey };
+      const newRequestIdToTrackedRequest = new Map(state.requestIdToTrackedRequest);
+      const newRequestIdToLastResolvedRequest = new Map(state.requestIdToLastResolvedRequest);
 
-      for (const [key, tracked] of Object.entries(state.trackedRequests)) {
+      for (const [requestId, tracked] of state.requestIdToTrackedRequest.entries()) {
         if (tracked.connectionId === connectionId) {
-          delete newTrackedRequests[key];
-          delete newRequestIdToRequestKey[tracked.requestId];
+          newRequestIdToTrackedRequest.delete(requestId);
+        }
+      }
+
+      for (const [requestId, tracked] of state.requestIdToLastResolvedRequest.entries()) {
+        if (tracked.connectionId === connectionId) {
+          newRequestIdToLastResolvedRequest.delete(requestId);
         }
       }
 
       return {
-        requestIdToRequestKey: newRequestIdToRequestKey,
-        trackedRequests: newTrackedRequests,
+        requestIdToTrackedRequest: newRequestIdToTrackedRequest,
+        requestIdToLastResolvedRequest: newRequestIdToLastResolvedRequest,
       };
     }),
 
-  clearRequestByKey: (requestKey) =>
+  clearRequest: (requestId) =>
     set((state) => {
-      const existing = state.trackedRequests[requestKey];
-      if (!existing) return state;
+      const newRequestIdToTrackedRequest = new Map(state.requestIdToTrackedRequest);
+      newRequestIdToTrackedRequest.delete(requestId);
 
-      const newTrackedRequests = { ...state.trackedRequests };
-      delete newTrackedRequests[requestKey];
-
-      const newRequestIdToRequestKey = { ...state.requestIdToRequestKey };
-      delete newRequestIdToRequestKey[existing.requestId];
+      const newRequestIdToLastResolvedRequest = new Map(state.requestIdToLastResolvedRequest);
+      newRequestIdToLastResolvedRequest.delete(requestId);
 
       return {
-        requestIdToRequestKey: newRequestIdToRequestKey,
-        trackedRequests: newTrackedRequests,
+        requestIdToTrackedRequest: newRequestIdToTrackedRequest,
+        requestIdToLastResolvedRequest: newRequestIdToLastResolvedRequest,
       };
     }),
 }));

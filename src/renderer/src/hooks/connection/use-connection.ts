@@ -1,5 +1,4 @@
 import useConnectionStatusStore from '@/store/connection-status-store';
-import useRequestResponseStore from '@/store/request-response-store';
 import { sendStompMessage } from '@/utils/stomp-util';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
@@ -15,50 +14,33 @@ export function useConnection() {
       getStatus: state.getStatus,
     }))
   );
-  const { requestIdToRequestKey, setRequestIdMapping } = useRequestResponseStore(
-    useShallow((state) => ({
-      requestIdToRequestKey: state.requestIdToRequestKey,
-      setRequestIdMapping: state.setRequestIdMapping,
-    }))
-  );
-
   /**
    * Sends a request and returns the requestKey if user script set one.
    * The requestKey can be used to track request-response correlation.
    * @param request The request to send
    * @param options.enableMapping If true, does not update the requestId -> requestKey mapping. Useful for runner mode.
    */
-  async function sendRequest(request: Request, options?: { enableMapping?: boolean }): Promise<string | null> {
+  function sendRequest(request: Request): void {
     if (!activeConnection) {
       toast.warning('No connection selected. Please select a connection first.');
-      return null;
+      return;
     }
     const status = getStatus(activeConnection.id);
 
     if (!(status === CONNECTION_STATUS.CONNECTED)) {
       toast.warning(`Connection "${activeConnection.name}" is not connected Please check connection status.`);
-      return null;
+      return;
     }
 
     switch (activeConnection.connectionType) {
       case CONNECTION_TYPE.STOMP: {
-        const requestKey = await sendStompMessage(activeConnection.id, request);
-        if (requestKey && options?.enableMapping) {
-          setRequestIdMapping(request.id, requestKey);
-        }
-        return requestKey;
+        sendStompMessage(activeConnection.id, request);
+        break;
       }
       default:
-        return null;
+        return;
     }
   }
 
-  /**
-   * Gets the requestKey for a given request ID (if one was set by user script)
-   */
-  function getRequestKey(requestId: string): string | undefined {
-    return requestIdToRequestKey[requestId];
-  }
-
-  return { sendRequest, getRequestKey };
+  return { sendRequest };
 }

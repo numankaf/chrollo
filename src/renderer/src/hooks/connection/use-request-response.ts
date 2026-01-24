@@ -8,25 +8,26 @@ import { REQUEST_STATUS, type TrackedRequest } from '@/types/request-response';
  * Hook to access and manage request-response tracking for a specific connection.
  */
 export function useRequestResponse(connectionId?: string) {
-  const { trackedRequests, requestIdToRequestKey, cancelRequest, clearByConnectionId, clearAll } =
+  const { requestIdToTrackedRequest, requestIdToLastResolvedRequest, cancelRequest, clearByConnectionId, clearAll } =
     useRequestResponseStore(
       useShallow((state) => ({
-        trackedRequests: state.trackedRequests,
-        requestIdToRequestKey: state.requestIdToRequestKey,
+        requestIdToTrackedRequest: state.requestIdToTrackedRequest,
+        requestIdToLastResolvedRequest: state.requestIdToLastResolvedRequest,
         cancelRequest: state.cancelRequest,
         clearByConnectionId: state.clearByConnectionId,
         clearAll: state.clearAll,
+        clearRequest: state.clearRequest,
       }))
     );
 
   // Get all tracked requests, optionally filtered by connectionId
   const requests = useMemo((): TrackedRequest[] => {
-    const allRequests = Object.values(trackedRequests);
+    const allRequests = Array.from(requestIdToTrackedRequest.values());
     if (connectionId) {
       return allRequests.filter((r) => r.connectionId === connectionId);
     }
     return allRequests;
-  }, [trackedRequests, connectionId]);
+  }, [requestIdToTrackedRequest, connectionId]);
 
   // Get only pending requests
   const pendingRequests = useMemo(() => requests.filter((r) => r.status === REQUEST_STATUS.PENDING), [requests]);
@@ -37,27 +38,26 @@ export function useRequestResponse(connectionId?: string) {
   // Get only canceled requests
   const canceledRequests = useMemo(() => requests.filter((r) => r.status === REQUEST_STATUS.CANCELED), [requests]);
 
-  // Get a tracked request by requestKey
-  const getByRequestKey = useCallback(
-    (requestKey: string): TrackedRequest | undefined => {
-      return trackedRequests[requestKey];
-    },
-    [trackedRequests]
-  );
-
-  // Get a tracked request by the original request ID
+  // Get a tracked request by requestId (returns pending or last resolved) - REACTIVE
   const getByRequestId = useCallback(
     (requestId: string): TrackedRequest | undefined => {
-      const requestKey = requestIdToRequestKey[requestId];
-      return requestKey ? trackedRequests[requestKey] : undefined;
+      return requestIdToTrackedRequest.get(requestId);
     },
-    [requestIdToRequestKey, trackedRequests]
+    [requestIdToTrackedRequest]
   );
 
-  // Cancel a pending request
+  // Get the last resolved request by requestId - REACTIVE
+  const getLastResolvedByRequestId = useCallback(
+    (requestId: string): TrackedRequest | undefined => {
+      return requestIdToLastResolvedRequest.get(requestId);
+    },
+    [requestIdToLastResolvedRequest]
+  );
+
+  // Cancel a pending request by requestId
   const cancel = useCallback(
-    (requestKey: string) => {
-      cancelRequest(requestKey);
+    (requestId: string) => {
+      cancelRequest(requestId);
     },
     [cancelRequest]
   );
@@ -71,9 +71,9 @@ export function useRequestResponse(connectionId?: string) {
     }
   }, [connectionId, clearByConnectionId, clearAll]);
 
-  // Clear specific request by Key
-  const clearRequestByKey = useCallback((requestKey: string) => {
-    useRequestResponseStore.getState().clearRequestByKey(requestKey);
+  // Clear specific request by requestId
+  const clearRequest = useCallback((requestId: string) => {
+    useRequestResponseStore.getState().clearRequest(requestId);
   }, []);
 
   return {
@@ -81,10 +81,10 @@ export function useRequestResponse(connectionId?: string) {
     pendingRequests,
     resolvedRequests,
     canceledRequests,
-    getByRequestKey,
     getByRequestId,
+    getLastResolvedByRequestId,
     cancel,
     clear,
-    clearRequestByKey,
+    clearRequest,
   };
 }

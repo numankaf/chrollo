@@ -48,7 +48,7 @@ function RequestViewHeader() {
         variant="primary-bordered-ghost"
         onClick={() =>
           form.handleSubmit((data) => {
-            sendRequest(data as Request, { enableMapping: true });
+            sendRequest(data as Request);
           })()
         }
       >

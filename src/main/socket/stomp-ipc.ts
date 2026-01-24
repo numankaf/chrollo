@@ -302,17 +302,15 @@ export function initStompIpc() {
   // ------------------------------
   // SEND
   // ------------------------------
-  ipcMain.handle('stomp:send', (_, id: string, request: Request): string | null => {
+  ipcMain.on('stomp:send', (_, id: string, request: Request) => {
     const runtime = chrolloEngine.getRuntime();
 
-    // Set send context so setRequestKey works in user scripts
     runtime.requests.beginSendContext(id, request);
 
     const ctx = { connectionId: id, request };
     runtime.stomp.runPreSend(ctx);
 
-    // Get the requestKey (if user script set one)
-    const requestKey = runtime.requests.endSendContext();
+    runtime.requests.endSendContext();
 
     const client = stompClients[id];
     const { body, destination, headers } = request;
@@ -347,8 +345,6 @@ export function initStompIpc() {
     } else {
       mainWindow.webContents.send('console:log', ` STOMP (${id}) not connected`);
     }
-
-    return requestKey;
   });
 
   // ------------------------------

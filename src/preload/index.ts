@@ -46,7 +46,7 @@ const api = {
       ipcRenderer.send('stomp:subscribe', { connectionId, subscriptionId, topic }),
     unsubscribe: (connectionId: string, subscriptionId: string, topic: string) =>
       ipcRenderer.send('stomp:unsubscribe', { connectionId, subscriptionId, topic }),
-    send: (id: string, data: Request) => ipcRenderer.invoke('stomp:send', id, data) as Promise<string | null>,
+    send: (id: string, data: Request) => ipcRenderer.send('stomp:send', id, data),
   },
 
   workspace: {
