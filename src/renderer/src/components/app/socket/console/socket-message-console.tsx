@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TIME_FORMAT_HH_MM_SS_MMM } from '@/constants/date-constants';
-import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import { useAppConfigStore } from '@/store/app-config-store';
-import useConnectionStatusStore from '@/store/connection-status-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
-import { getConnectionButtonVariant } from '@/utils/connection-util';
 import { formatCode } from '@/utils/editor-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
@@ -36,7 +33,7 @@ import CodeEditor from '@/components/app/editor/code-editor';
 import NoActiveConnectionFound from '@/components/app/empty/no-active-connection-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 import NoSocketMessageFound from '@/components/app/empty/no-socket-message-found';
-import { SocketMessageDetailDialog } from '@/components/app/socket/socket-message-detail-dialog';
+import { SocketMessageDetailDialog } from '@/components/app/socket/console/common/socket-message-detail-dialog';
 import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-message-icon';
 
 function MessageMetaInfo({ headers }: { headers?: Record<string, unknown> }) {
@@ -232,7 +229,6 @@ function ConsoleMessage({
 
 function SocketMessageConsole() {
   const { activeConnection } = useActiveItem();
-  const status = useConnectionStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
 
   const { clearMessages } = useSocketMessageStatusStore(
     useShallow((state) => ({
@@ -254,7 +250,6 @@ function SocketMessageConsole() {
     if (selectedTypes.length === 0) return true;
     return selectedTypes.includes(message.type);
   });
-  const { variant } = getConnectionButtonVariant(status);
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -277,106 +272,92 @@ function SocketMessageConsole() {
     };
   }, [activeConnection, clearMessages]);
 
+  if (!activeConnection) return <NoActiveConnectionFound />;
+
   return (
-    <div className="h-full">
-      <header className="flex items-center justify-between p-1 h-8">
-        <div className="flex items-center gap-2">
-          <p>Response Console: </p>
-          <Button variant={variant} size="2xs" className="rounded-md text-sm pointer-events-none">
-            {activeConnection?.name || 'No Active Connection'}
-          </Button>
-        </div>
-        {activeConnection && <ConnectionStatusBadge connectionId={activeConnection.id} showLabel />}
-      </header>
-      {!activeConnection && <NoActiveConnectionFound />}
-      {activeConnection && (
-        <>
-          <header className="flex items-center gap-2 py-2 h-8 px-4">
-            <SearchBar
-              placeholder="Search messages"
-              className="flex-1 max-w-60"
-              onSearchChange={(e) => {
-                setSearch(e.target.value);
-              }}
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 px-3 border-muted-foreground/20 hover:bg-accent/50">
-                  Type <ChevronDown className="ml-2 size-4 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-auto p-1">
-                {Object.values(SOCKET_MESSAGE_TYPE).map((type) => (
-                  <DropdownMenuItem
-                    key={type}
-                    className="flex items-center gap-2 cursor-pointer h-7"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleType(type);
-                    }}
-                  >
-                    <Checkbox checked={selectedTypes.includes(type)} className="pointer-events-none" />
-                    <div className="flex items-center gap-2">
-                      <SocketConsoleMessageIcon messageType={type} size={14} />
-                      <span className="capitalize">{type.toLowerCase()}</span>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                clearMessages(activeConnection?.id);
-              }}
-            >
-              <Trash2 />
-              Clear Messages
+    <>
+      <header className="flex items-center gap-2 py-2 h-8 px-4">
+        <SearchBar
+          placeholder="Search messages"
+          className="flex-1 max-w-60"
+          onSearchChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-7 px-3 border-muted-foreground/20 hover:bg-accent/50">
+              Type <ChevronDown className="ml-2 size-4 opacity-50" />
             </Button>
-          </header>
-          <ScrollArea viewportRef={parentRef} style={{ height: 'calc(100% - 4rem)' }}>
-            <Accordion
-              type="multiple"
-              className="w-full max-w-full relative"
-              style={{ height: virtualizer.getTotalSize() }}
-            >
-              {messages.length === 0 && <NoSocketMessageFound />}
-              {messages.length !== 0 && filteredMessages.length === 0 && (
-                <NoResultsFound searchTerm={debouncedSearch} />
-              )}
-              <div
-                className="px-4 w-full absolute top-0 left-0"
-                style={{
-                  transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-auto p-1">
+            {Object.values(SOCKET_MESSAGE_TYPE).map((type) => (
+              <DropdownMenuItem
+                key={type}
+                className="flex items-center gap-2 cursor-pointer h-7"
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleType(type);
                 }}
               >
-                {virtualItems.map((virtualRow) => (
-                  <div
-                    className="border-b"
-                    key={virtualRow.key}
-                    data-index={virtualRow.index}
-                    ref={virtualizer.measureElement}
-                  >
-                    <ConsoleMessage
-                      key={virtualRow.index}
-                      message={filteredMessages[virtualRow.index]}
-                      onShowDetail={setDetailMessage}
-                    />
-                  </div>
-                ))}
-              </div>
-            </Accordion>
-          </ScrollArea>
-          <SocketMessageDetailDialog
-            message={detailMessage}
-            onOpenChange={(open) => {
-              if (!open) setDetailMessage(null);
+                <Checkbox checked={selectedTypes.includes(type)} className="pointer-events-none" />
+                <div className="flex items-center gap-2">
+                  <SocketConsoleMessageIcon messageType={type} size={14} />
+                  <span className="capitalize">{type.toLowerCase()}</span>
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            clearMessages(activeConnection?.id);
+          }}
+        >
+          <Trash2 />
+          Clear Messages
+        </Button>
+      </header>
+      <ScrollArea viewportRef={parentRef} className="h-full">
+        <Accordion
+          type="multiple"
+          className="w-full max-w-full relative"
+          style={{ height: virtualizer.getTotalSize() }}
+        >
+          {messages.length === 0 && <NoSocketMessageFound />}
+          {messages.length !== 0 && filteredMessages.length === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
+          <div
+            className="px-4 w-full absolute top-0 left-0"
+            style={{
+              transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
             }}
-          />
-        </>
-      )}
-    </div>
+          >
+            {virtualItems.map((virtualRow) => (
+              <div
+                className="border-b"
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+              >
+                <ConsoleMessage
+                  key={virtualRow.index}
+                  message={filteredMessages[virtualRow.index]}
+                  onShowDetail={setDetailMessage}
+                />
+              </div>
+            ))}
+          </div>
+        </Accordion>
+      </ScrollArea>
+      <SocketMessageDetailDialog
+        message={detailMessage}
+        onOpenChange={(open) => {
+          if (!open) setDetailMessage(null);
+        }}
+      />
+    </>
   );
 }
 

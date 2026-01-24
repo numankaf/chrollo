@@ -5,7 +5,7 @@ import { Outlet } from 'react-router';
 import { COMMANDS } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
-import SocketMessageConsole from '@/components/app/socket/socket-message-console';
+import SocketConsole from '@/components/app/socket/console/socket-console';
 
 function AppConsoleLayout() {
   const consolePanelRef = useRef<ImperativePanelHandle>(null);
@@ -34,7 +34,7 @@ function AppConsoleLayout() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel ref={consolePanelRef} collapsible className="min-h-8">
-        <SocketMessageConsole />
+        <SocketConsole />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

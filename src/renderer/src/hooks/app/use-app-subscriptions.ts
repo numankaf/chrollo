@@ -44,13 +44,11 @@ export function useAppSubscriptions() {
     // Request-Response tracking listeners
     const unsubscribeRequestPending = window.listener.stomp.onRequestPending((data) => {
       const { requestKey, requestId, connectionId, request } = data;
-      console.log('Request pending:', requestKey, requestId, connectionId, request);
       useRequestResponseStore.getState().addPendingRequest(requestKey, requestId, connectionId, request);
     });
 
     const unsubscribeRequestResolved = window.listener.stomp.onRequestResolved((data) => {
       const { requestKey, response } = data;
-      console.log('Request resolved:', requestKey, response);
       useRequestResponseStore.getState().resolveRequest(requestKey, response);
     });
 
