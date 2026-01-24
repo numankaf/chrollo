@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import { getConnectionButtonVariant } from '@/utils/connection-util';
@@ -16,17 +16,27 @@ export const CONSOLE_TYPE = {
 
 export type ConsoleType = (typeof CONSOLE_TYPE)[keyof typeof CONSOLE_TYPE];
 
+const SOCKET_CONSOLE_TYPE_STORAGE_KEY = 'socket-console-view';
+
 function SocketConsole() {
   const { activeConnection, activeTab } = useActiveItem();
   const status = useConnectionStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
   const { variant } = getConnectionButtonVariant(status);
-  const [view, setView] = useState<ConsoleType>(CONSOLE_TYPE.MESSAGE);
+
+  const [consoleType, setConsoleType] = useState<ConsoleType>(() => {
+    const stored = localStorage.getItem(SOCKET_CONSOLE_TYPE_STORAGE_KEY);
+    return (stored as ConsoleType) || CONSOLE_TYPE.MESSAGE;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(SOCKET_CONSOLE_TYPE_STORAGE_KEY, consoleType);
+  }, [consoleType]);
 
   return (
     <div className="h-full flex flex-col">
       <header className="flex items-center justify-between p-1 h-8 shrink-0 relative z-10">
         <div className="flex items-center gap-2">
-          <Select value={view} onValueChange={(v) => setView(v as ConsoleType)}>
+          <Select value={consoleType} onValueChange={(v) => setConsoleType(v as ConsoleType)}>
             <SelectTrigger size="sm" className="h-6! text-sm">
               <SelectValue />
             </SelectTrigger>
@@ -46,8 +56,8 @@ function SocketConsole() {
         {activeConnection && <ConnectionStatusBadge connectionId={activeConnection.id} showLabel />}
       </header>
       <div className="flex-1 min-h-0">
-        {view === CONSOLE_TYPE.MESSAGE && <SocketMessageConsole />}
-        {view === CONSOLE_TYPE.RESPONSE && <SocketResponseConsole key={activeTab?.id} />}
+        {consoleType === CONSOLE_TYPE.MESSAGE && <SocketMessageConsole />}
+        {consoleType === CONSOLE_TYPE.RESPONSE && <SocketResponseConsole key={activeTab?.id} />}
       </div>
     </div>
   );

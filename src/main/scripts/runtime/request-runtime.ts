@@ -4,7 +4,7 @@ import type { Request } from '@/types/collection';
 import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
 import type { SocketMessage } from '@/types/socket';
 
-export class RequestsRuntime {
+export class RequestRuntime {
   // Context for current execution - set before running preSend/message handlers
   private currentRequestKey: string | null = null;
   private currentConnectionId: string | null = null;

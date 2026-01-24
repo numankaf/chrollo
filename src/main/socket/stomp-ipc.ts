@@ -50,9 +50,9 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
         const ctx: StompMessageCtx = { message: socketReceivedMessage };
 
         // Set message context so resolveRequestKey works in user scripts
-        runtime.requests.beginMessageContext(socketReceivedMessage);
+        runtime.request.beginMessageContext(socketReceivedMessage);
         runtime.stomp.runMessage(ctx);
-        runtime.requests.endMessageContext();
+        runtime.request.endMessageContext();
 
         mainWindow.webContents.send('stomp:message', socketReceivedMessage);
 
@@ -305,12 +305,12 @@ export function initStompIpc() {
   ipcMain.on('stomp:send', (_, id: string, request: Request) => {
     const runtime = chrolloEngine.getRuntime();
 
-    runtime.requests.beginSendContext(id, request);
+    runtime.request.beginSendContext(id, request);
 
     const ctx = { connectionId: id, request };
     runtime.stomp.runPreSend(ctx);
 
-    runtime.requests.endSendContext();
+    runtime.request.endSendContext();
 
     const client = stompClients[id];
     const { body, destination, headers } = request;

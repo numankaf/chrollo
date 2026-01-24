@@ -1,6 +1,6 @@
-import type { RequestsRuntime } from '@/main/scripts/runtime/requests-runtime';
+import type { RequestRuntime } from '@/main/scripts/runtime/request-runtime';
 
-export function createRequestsAPI(runtime: RequestsRuntime) {
+export function createRequestAPI(runtime: RequestRuntime) {
   return Object.freeze({
     setRequestKey(requestKey: string) {
       runtime.setRequestKey(requestKey);
