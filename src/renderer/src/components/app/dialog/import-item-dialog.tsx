@@ -14,7 +14,7 @@ import { COLLECTION_TYPE, type CollectionItem, type ExportableCollectionItem } f
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
-import { cn } from '@/lib/utils';
+import { cn, formatBytes } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 import {
@@ -26,18 +26,6 @@ import {
   DialogTitle,
 } from '@/components/common/dialog';
 import { CollectionTreeSelector } from '@/components/app/selector/collection-tree-selector';
-
-function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes) return '0 Bytes';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-}
 
 interface ImportItemDialogProps {
   open: boolean;

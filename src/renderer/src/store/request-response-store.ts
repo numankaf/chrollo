@@ -27,6 +27,8 @@ interface RequestResponseStore {
   clearAll: () => void;
 
   clearByConnectionId: (connectionId: string) => void;
+
+  clearRequestByKey: (requestKey: string) => void;
 }
 
 const useRequestResponseStore = create<RequestResponseStore>((set, get) => ({
@@ -117,6 +119,23 @@ const useRequestResponseStore = create<RequestResponseStore>((set, get) => ({
           delete newRequestIdToRequestKey[tracked.requestId];
         }
       }
+
+      return {
+        requestIdToRequestKey: newRequestIdToRequestKey,
+        trackedRequests: newTrackedRequests,
+      };
+    }),
+
+  clearRequestByKey: (requestKey) =>
+    set((state) => {
+      const existing = state.trackedRequests[requestKey];
+      if (!existing) return state;
+
+      const newTrackedRequests = { ...state.trackedRequests };
+      delete newTrackedRequests[requestKey];
+
+      const newRequestIdToRequestKey = { ...state.requestIdToRequestKey };
+      delete newRequestIdToRequestKey[existing.requestId];
 
       return {
         requestIdToRequestKey: newRequestIdToRequestKey,

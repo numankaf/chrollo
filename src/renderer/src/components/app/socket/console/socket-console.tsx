@@ -17,7 +17,7 @@ export const CONSOLE_TYPE = {
 export type ConsoleType = (typeof CONSOLE_TYPE)[keyof typeof CONSOLE_TYPE];
 
 function SocketConsole() {
-  const { activeConnection } = useActiveItem();
+  const { activeConnection, activeTab } = useActiveItem();
   const status = useConnectionStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
   const { variant } = getConnectionButtonVariant(status);
   const [view, setView] = useState<ConsoleType>(CONSOLE_TYPE.MESSAGE);
@@ -47,7 +47,7 @@ function SocketConsole() {
       </header>
       <div className="flex-1 min-h-0">
         {view === CONSOLE_TYPE.MESSAGE && <SocketMessageConsole />}
-        {view === CONSOLE_TYPE.RESPONSE && <SocketResponseConsole />}
+        {view === CONSOLE_TYPE.RESPONSE && <SocketResponseConsole key={activeTab?.id} />}
       </div>
     </div>
   );

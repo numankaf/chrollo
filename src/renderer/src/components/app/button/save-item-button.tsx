@@ -128,7 +128,7 @@ function SaveItemButton() {
         </Button>
       </TooltipTrigger>
       {!dirty && (
-        <TooltipContent side="bottom" className="[&_svg]:invisible bg-secondary text-secondary-foreground">
+        <TooltipContent side="bottom" className="bg-secondary text-secondary-foreground">
           <span>No new changes to save</span>
         </TooltipContent>
       )}

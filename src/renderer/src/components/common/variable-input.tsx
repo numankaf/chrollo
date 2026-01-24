@@ -68,7 +68,7 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
             <TooltipContent
               side="bottom"
               align="start"
-              className="[&_svg]:invisible z-100 max-w-80 p-3 overflow-hidden min-w-64 shadow-xl border bg-card text-foreground"
+              className="z-100 max-w-80 p-3 overflow-hidden min-w-64 shadow-xl border bg-card text-foreground"
             >
               <div className="flex flex-col gap-3 pointer-events-auto">
                 <div className="flex items-center gap-1">

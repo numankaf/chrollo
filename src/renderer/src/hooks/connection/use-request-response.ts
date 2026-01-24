@@ -71,6 +71,11 @@ export function useRequestResponse(connectionId?: string) {
     }
   }, [connectionId, clearByConnectionId, clearAll]);
 
+  // Clear specific request by Key
+  const clearRequestByKey = useCallback((requestKey: string) => {
+    useRequestResponseStore.getState().clearRequestByKey(requestKey);
+  }, []);
+
   return {
     requests,
     pendingRequests,
@@ -80,5 +85,6 @@ export function useRequestResponse(connectionId?: string) {
     getByRequestId,
     cancel,
     clear,
+    clearRequestByKey,
   };
 }

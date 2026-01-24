@@ -58,7 +58,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
             {children}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+        <TooltipContent side="bottom" className="bg-card text-xs">
           {tooltip}
         </TooltipContent>
       </Tooltip>
@@ -89,7 +89,7 @@ const ToolbarToggle = React.forwardRef<HTMLButtonElement, ToolbarToggleProps>(
             {children}
           </Toggle>
         </TooltipTrigger>
-        <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+        <TooltipContent side="bottom" className="bg-card text-xs">
           {tooltip}
         </TooltipContent>
       </Tooltip>
@@ -201,7 +201,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+            <TooltipContent side="bottom" className="bg-card text-xs">
               Text Style
             </TooltipContent>
           </Tooltip>
@@ -248,7 +248,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+            <TooltipContent side="bottom" className="bg-card text-xs">
               Lists
             </TooltipContent>
           </Tooltip>
@@ -282,7 +282,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+            <TooltipContent side="bottom" className="bg-card text-xs">
               Font Family
             </TooltipContent>
           </Tooltip>
@@ -404,7 +404,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 </Button>
               </PopoverTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+            <TooltipContent side="bottom" className="bg-card text-xs">
               Text Color
             </TooltipContent>
           </Tooltip>
@@ -441,7 +441,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 </Button>
               </PopoverTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+            <TooltipContent side="bottom" className="bg-card text-xs">
               Highlight Color
             </TooltipContent>
           </Tooltip>
@@ -478,7 +478,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
                 </Button>
               </PopoverTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-card [&_svg]:invisible text-xs">
+            <TooltipContent side="bottom" className="bg-card text-xs">
               Link
             </TooltipContent>
           </Tooltip>
