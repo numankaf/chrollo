@@ -14,8 +14,13 @@ export function useConnection() {
       getStatus: state.getStatus,
     }))
   );
-
-  function sendRequest(request: Request) {
+  /**
+   * Sends a request and returns the requestKey if user script set one.
+   * The requestKey can be used to track request-response correlation.
+   * @param request The request to send
+   * @param options.enableMapping If true, does not update the requestId -> requestKey mapping. Useful for runner mode.
+   */
+  function sendRequest(request: Request): void {
     if (!activeConnection) {
       toast.warning('No connection selected. Please select a connection first.');
       return;
@@ -30,7 +35,7 @@ export function useConnection() {
     switch (activeConnection.connectionType) {
       case CONNECTION_TYPE.STOMP: {
         sendStompMessage(activeConnection.id, request);
-        return;
+        break;
       }
       default:
         return;

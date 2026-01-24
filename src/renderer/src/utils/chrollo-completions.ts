@@ -16,6 +16,11 @@ const CHROLLO_API = {
     type: 'class',
     info: 'Utility functions',
   },
+  request: {
+    label: 'request',
+    type: 'class',
+    info: 'Requests API for managing request lifecycle',
+  },
 };
 
 const STOMP_CONNECTION_TYPE = `interface StompConnection {
@@ -66,31 +71,50 @@ const SOCKET_MESSAGE_TYPE = `interface SocketMessage {
   };
 }`;
 
+const makeInfo = (info: string) => {
+  const pre = document.createElement('pre');
+  pre.textContent = info;
+  return pre;
+};
+
 const STOMP_API = [
   {
     label: 'onPreConnect',
     type: 'function',
-    info: `Triggered before connecting.\n\nctx: { connection: StompConnection }\n\n${STOMP_CONNECTION_TYPE}`,
+    info: () =>
+      makeInfo(`Triggered before connecting.\n\nctx: { connection: StompConnection }\n\n${STOMP_CONNECTION_TYPE}`),
   },
   {
     label: 'onPreSubscribe',
     type: 'function',
-    info: 'Triggered before subscribing.\n\nctx: {\n  connectionId: string,\n  subscriptionId: string,\n  topic: string,\n  subscribe(connectionId, subscriptionId, topic): void,\n  disableDefault(): void\n}',
+    info: () =>
+      makeInfo(
+        'Triggered before subscribing.\n\nctx: {\n  connectionId: string,\n  subscriptionId: string,\n  topic: string,\n  subscribe(connectionId, subscriptionId, topic): void,\n  disableDefault(): void\n}'
+      ),
   },
   {
     label: 'onPreUnsubscribe',
     type: 'function',
-    info: 'Triggered before unsubscribing.\n\nctx: {\n  connectionId: string,\n  subscriptionId: string,\n  topic: string,\n  unsubscribe(connectionId, subscriptionId, topic): void,\n  disableDefault(): void\n}',
+    info: () =>
+      makeInfo(
+        'Triggered before unsubscribing.\n\nctx: {\n  connectionId: string,\n  subscriptionId: string,\n  topic: string,\n  unsubscribe(connectionId, subscriptionId, topic): void,\n  disableDefault(): void\n}'
+      ),
   },
   {
     label: 'onPreSend',
     type: 'function',
-    info: `Triggered before sending a message.\n\nctx: {\n  connectionId: string,\n  request: Request\n}\n\n${REQUEST_TYPE}`,
+    info: () =>
+      makeInfo(
+        `Triggered before sending a message.\n\nctx: {\n  connectionId: string,\n  request: Request\n}\n\n${REQUEST_TYPE}`
+      ),
   },
   {
     label: 'onMessage',
     type: 'function',
-    info: `Triggered when a message is received.\n\nctx: {\n  message: SocketMessage\n}\n\n${SOCKET_MESSAGE_TYPE}`,
+    info: () =>
+      makeInfo(
+        `Triggered when a message is received.\n\nctx: {\n  message: SocketMessage\n}\n\n${SOCKET_MESSAGE_TYPE}`
+      ),
   },
 ];
 
@@ -106,6 +130,11 @@ const UTILS_API = [
   { label: 'now', type: 'function', info: '() => number' },
 ];
 
+const REQUESTS_API = [
+  { label: 'setRequestKey', type: 'function', info: '(requestKey: string) => void' },
+  { label: 'resolveRequestKey', type: 'function', info: '(requestKey: string) => void' },
+];
+
 export function chrolloCompletions(context: CompletionContext): CompletionResult | null {
   const word = context.matchBefore(/[\w.]*/);
   if (!word) return null;
@@ -117,24 +146,31 @@ export function chrolloCompletions(context: CompletionContext): CompletionResult
     };
   }
 
-  if (word.text.startsWith('chrollo.stomp.')) {
+  if (word.text === 'chrollo.stomp.') {
     return {
       from: word.to,
-      options: STOMP_API,
+      options: Object.values(STOMP_API),
     };
   }
 
-  if (word.text.startsWith('chrollo.variables.')) {
+  if (word.text === 'chrollo.variables.') {
     return {
       from: word.to,
-      options: VARIABLES_API,
+      options: Object.values(VARIABLES_API),
     };
   }
 
-  if (word.text.startsWith('chrollo.utils.')) {
+  if (word.text === 'chrollo.utils.') {
     return {
       from: word.to,
-      options: UTILS_API,
+      options: Object.values(UTILS_API),
+    };
+  }
+
+  if (word.text === 'chrollo.request.') {
+    return {
+      from: word.to,
+      options: Object.values(REQUESTS_API),
     };
   }
 
@@ -152,19 +188,25 @@ export function chrolloCompletions(context: CompletionContext): CompletionResult
     if (parent === 'chrollo.stomp') {
       return {
         from: word.from + lastDotIndex + 1,
-        options: STOMP_API,
+        options: Object.values(STOMP_API),
       };
     }
     if (parent === 'chrollo.variables') {
       return {
         from: word.from + lastDotIndex + 1,
-        options: VARIABLES_API,
+        options: Object.values(VARIABLES_API),
       };
     }
     if (parent === 'chrollo.utils') {
       return {
         from: word.from + lastDotIndex + 1,
-        options: UTILS_API,
+        options: Object.values(UTILS_API),
+      };
+    }
+    if (parent === 'chrollo.request') {
+      return {
+        from: word.from + lastDotIndex + 1,
+        options: Object.values(REQUESTS_API),
       };
     }
   }

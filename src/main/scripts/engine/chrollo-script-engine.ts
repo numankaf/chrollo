@@ -1,3 +1,4 @@
+import { createRequestAPI } from '@/main/scripts/api/request-api';
 import { createStompAPI } from '@/main/scripts/api/stomp-api';
 import { createUtilsAPI } from '@/main/scripts/api/utils-api';
 import { createVariablesAPI } from '@/main/scripts/api/variables-api';
@@ -9,6 +10,7 @@ interface ChrolloContext {
     stomp: ReturnType<typeof createStompAPI>;
     variables: ReturnType<typeof createVariablesAPI>;
     utils: ReturnType<typeof createUtilsAPI>;
+    request: ReturnType<typeof createRequestAPI>;
   };
 }
 
@@ -27,6 +29,7 @@ export class ChrolloScriptEngine {
         stomp: createStompAPI(this.runtime.stomp),
         variables: createVariablesAPI(this.runtime.variables),
         utils: createUtilsAPI(this.runtime.utils),
+        request: createRequestAPI(this.runtime.request),
       },
     };
   }

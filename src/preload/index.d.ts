@@ -1,9 +1,10 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
 import type { CollectionItem, Request } from '@/types/collection';
-import type { Connection } from '@/types/connection';
+import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
+import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
 import type { SocketMessage } from '@/types/socket';
 import type { Workspace, WorkspaceFile } from '@/types/workspace';
 
@@ -81,6 +82,8 @@ declare global {
       stomp: {
         onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
         onMessage: (callback: (data: SocketMessage) => void) => () => void;
+        onRequestPending: (callback: (data: RequestPendingEvent) => void) => () => void;
+        onRequestResolved: (callback: (data: RequestResolvedEvent) => void) => () => void;
       };
       console: {
         log: (callback: (data: unknown) => void) => () => void;

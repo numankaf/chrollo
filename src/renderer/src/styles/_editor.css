@@ -1,0 +1,14 @@
+.cm-tooltip {
+  background: var(--card) !important;
+}
+
+.cm-tooltip.cm-completionInfo {
+  max-width: 600px !important;
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre;
+}
+
+.cm-panel.cm-search {
+  background: var(--card) !important;
+}

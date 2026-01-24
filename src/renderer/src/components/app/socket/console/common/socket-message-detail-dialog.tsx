@@ -11,10 +11,10 @@ import { cn, deepParseJson } from '@/lib/utils';
 import { Badge } from '@/components/common/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/common/dialog';
 import { ScrollArea } from '@/components/common/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import CodeEditor from '@/components/app/editor/code-editor';
+import { BodyTypeSelector } from '@/components/app/socket/console/common/body-type-selector';
+import { MessageHeadersTable } from '@/components/app/socket/console/common/message-headers-table';
 
 interface SocketMessageDetailDialogProps {
   message: SocketMessage | null;
@@ -87,23 +87,11 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
 
             <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-4 h-full">
               <div className="flex justify-end mb-1">
-                <Select
+                <BodyTypeSelector
                   value={bodyType}
-                  onValueChange={(value) => {
-                    setBodyType(value as RequestBodyType);
-                  }}
-                >
-                  <SelectTrigger size="sm" className="h-6! w-22 ">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent align="end">
-                    {Object.values(REQUEST_BODY_TYPE).map((value) => (
-                      <SelectItem className="h-6 rounded-md" key={value} value={value}>
-                        {value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onValueChange={(value) => setBodyType(value as RequestBodyType)}
+                  options={Object.values(REQUEST_BODY_TYPE)}
+                />
               </div>
               <div className="flex-1 min-h-0 border rounded-lg overflow-hidden flex flex-col">
                 <ScrollArea className="h-full">
@@ -113,38 +101,7 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
             </TabsContent>
 
             <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-4 h-full">
-              <div className="flex-1 min-h-0  rounded-lg overflow-hidden flex flex-col">
-                <ScrollArea className="h-full">
-                  <Table className="border table-fixed w-full">
-                    <TableHeader>
-                      <TableRow className="*:border-border [&>:not(:last-child)]:border-r">
-                        <TableHead className="w-1/2">Key</TableHead>
-                        <TableHead className="w-1/2">Value</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(headers).length > 0 ? (
-                        Object.entries(headers).map(([key, value]) => (
-                          <TableRow key={key} className="*:border-border [&>:not(:last-child)]:border-r">
-                            <TableCell className="truncate align-top" title={key}>
-                              {key}
-                            </TableCell>
-                            <TableCell className="truncate align-top" title={String(value)}>
-                              {String(value)}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={2} className="text-center py-8 text-muted-foreground">
-                            No headers available
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </div>
+              <MessageHeadersTable headers={headers as Record<string, unknown>} />
             </TabsContent>
           </Tabs>
         </div>

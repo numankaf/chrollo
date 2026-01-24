@@ -4,10 +4,10 @@ import type {
   PreStompSubscribeCtx,
   PreStompUnsubscribeCtx,
   StompMessageCtx,
-  StompScriptRuntime,
-} from '@/main/scripts/runtime/stomp-script-runtime';
+  StompRuntime,
+} from '@/main/scripts/runtime/stomp-runtime';
 
-export function createStompAPI(runtime: StompScriptRuntime) {
+export function createStompAPI(runtime: StompRuntime) {
   return Object.freeze({
     onPreConnect(handler: (ctx: PreStompConnectCtx) => void) {
       runtime.preConnect.push(handler);

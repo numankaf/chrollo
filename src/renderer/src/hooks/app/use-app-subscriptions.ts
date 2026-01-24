@@ -1,6 +1,7 @@
 import { use, useEffect } from 'react';
 import { AppContext } from '@/provider/app-init-provider';
 import useConnectionStatusStore from '@/store/connection-status-store';
+import useRequestResponseStore from '@/store/request-response-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
 import { getTabRoute } from '@/utils/tab-util';
 import { useNavigate } from 'react-router';
@@ -31,10 +32,6 @@ export function useAppSubscriptions() {
   }, [workspacesLoaded, appLoaded, activeTab, activeWorkspace, navigate]);
 
   useEffect(() => {
-    const unsubscribeConsoleLog = window.listener.console.log((data) => {
-      console.log(data);
-    });
-
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
       useSocketMessageStatusStore.getState().addMessage(data);
     });
@@ -44,10 +41,22 @@ export function useAppSubscriptions() {
       useConnectionStatusStore.getState().setStatus(connectionId, status);
     });
 
+    // Request-Response tracking listeners
+    const unsubscribeRequestPending = window.listener.stomp.onRequestPending((data) => {
+      const { requestKey, requestId, connectionId, request } = data;
+      useRequestResponseStore.getState().addPendingRequest(requestKey, requestId, connectionId, request);
+    });
+
+    const unsubscribeRequestResolved = window.listener.stomp.onRequestResolved((data) => {
+      const { requestKey, response } = data;
+      useRequestResponseStore.getState().resolveRequest(requestKey, response);
+    });
+
     return () => {
-      unsubscribeConsoleLog();
       unsubscribeStompStatus();
       unsubscribeStompMessage();
+      unsubscribeRequestPending();
+      unsubscribeRequestResolved();
     };
   }, []);
 }
