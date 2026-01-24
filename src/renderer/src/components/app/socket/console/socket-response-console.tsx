@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { formatCode } from '@/utils/editor-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
-import { Ellipsis } from 'lucide-react';
+import { Ellipsis, Loader2Icon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
@@ -29,7 +29,11 @@ import NoResponseFound from '@/components/app/empty/no-response-found';
 import { BodyTypeSelector } from '@/components/app/socket/console/common/body-type-selector';
 import { MessageHeadersTable } from '@/components/app/socket/console/common/message-headers-table';
 import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-message-icon';
-import AppLoader from '@/components/layout/app-loader';
+
+function LoadingOverlay({ isLoading }: { isLoading: boolean }) {
+  if (!isLoading) return null;
+  return <div className="absolute inset-0 flex items-center justify-center z-50 bg-background/70  select-none" />;
+}
 
 function TrackedRequestStatusBadge({ trackedRequest }: { trackedRequest: TrackedRequest }) {
   const { status } = trackedRequest;
@@ -61,9 +65,16 @@ function TrackedRequestStatusBadge({ trackedRequest }: { trackedRequest: Tracked
   );
 }
 
-function ResponseStatusBar({ trackedRequest, onClear }: { trackedRequest: TrackedRequest; onClear: () => void }) {
+function ResponseStatusBar({ trackedRequest }: { trackedRequest: TrackedRequest }) {
   const { request, response, startTime, endTime } = trackedRequest;
+  const { activeConnection } = useActiveItem();
+  const { clearRequest } = useRequestResponse(activeConnection?.id);
 
+  const handleClear = () => {
+    if (trackedRequest?.requestId) {
+      clearRequest(trackedRequest?.requestId);
+    }
+  };
   const duration = useMemo(() => {
     if (!startTime || !endTime) return null;
     return endTime - startTime;
@@ -120,7 +131,7 @@ function ResponseStatusBar({ trackedRequest, onClear }: { trackedRequest: Tracke
             showArrow={false}
             side="bottom"
             className="bg-card w-64 p-3 grid gap-3 text-sm z-50 border shadow-md"
-            align="end"
+            align="center"
           >
             <div className="grid gap-1">
               <div className="flex items-center justify-between">
@@ -175,7 +186,7 @@ function ResponseStatusBar({ trackedRequest, onClear }: { trackedRequest: Tracke
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="start" className="data-[state=closed]:animate-none!">
           <DropdownMenuItem className="h-7! text-sm!">Save Response To File</DropdownMenuItem>
-          <DropdownMenuItem className="h-7! text-sm!" onClick={onClear}>
+          <DropdownMenuItem className="h-7! text-sm!" onClick={handleClear}>
             Clear Response
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -188,7 +199,7 @@ function SocketResponseConsole() {
   const { activeConnection } = useActiveItem();
   const { activeTab } = useActiveItem();
 
-  const { getByRequestId, getLastResolvedByRequestId, clearRequest } = useRequestResponse(activeConnection?.id);
+  const { getByRequestId, getLastResolvedByRequestId, cancel } = useRequestResponse(activeConnection?.id);
 
   const { applicationSettings } = useAppConfigStore(
     useShallow((state) => ({
@@ -237,20 +248,28 @@ function SocketResponseConsole() {
       ? JSON.stringify(deepParseJson(message.data, applicationSettings.formatResponses))
       : message?.data || '';
 
-  const handleClear = () => {
-    if (trackedRequest?.requestId) {
-      clearRequest(trackedRequest?.requestId);
-      setTrackedRequest(undefined);
-    }
-  };
-
+  const isLoading = !!(trackedRequest && trackedRequest.status === REQUEST_STATUS.PENDING);
   return (
     <div className="flex flex-col w-full px-2 flex-1 min-h-0 h-full relative">
-      {!lastTrackedRequest && <NoResponseFound />}
-
-      {trackedRequest && trackedRequest.status === REQUEST_STATUS.PENDING && (
-        <div className="absolute inset-0 flex items-center justify-center z-50 bg-background/70  select-none">
-          <AppLoader text="Waiting for response..." />
+      {!lastTrackedRequest && (
+        <div>
+          <div className="flex items-center justify-end h-7">
+            {isLoading && (
+              <Button
+                variant="error-bordered-ghost"
+                size="sm"
+                className="h-7! px-0.5"
+                onClick={() => cancel(trackedRequest.requestId)}
+              >
+                <Loader2Icon className="animate-spin" />
+                Cancel
+              </Button>
+            )}
+          </div>
+          <div className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+            <LoadingOverlay isLoading={isLoading} />
+            <NoResponseFound />
+          </div>
         </div>
       )}
 
@@ -262,10 +281,22 @@ function SocketResponseConsole() {
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="test-results">Test Results</TabsTrigger>
             </TabsList>
-            <ResponseStatusBar trackedRequest={lastTrackedRequest} onClear={handleClear} />
+            {!isLoading && <ResponseStatusBar trackedRequest={lastTrackedRequest} />}
+            {isLoading && (
+              <Button
+                variant="error-bordered-ghost"
+                size="sm"
+                className="h-7! px-0.5"
+                onClick={() => cancel(trackedRequest.requestId)}
+              >
+                <Loader2Icon className="animate-spin" />
+                Cancel
+              </Button>
+            )}
           </div>
 
-          <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-2 h-full">
+          <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+            <LoadingOverlay isLoading={isLoading} />
             <div className="flex justify-between mb-1 items-center">
               <BodyTypeSelector
                 value={bodyType}
@@ -280,11 +311,13 @@ function SocketResponseConsole() {
             </div>
           </TabsContent>
 
-          <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-2 h-full">
+          <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+            <LoadingOverlay isLoading={isLoading} />
             <MessageHeadersTable headers={headers as Record<string, unknown>} />
           </TabsContent>
 
-          <TabsContent value="test-results">
+          <TabsContent value="test-results" className="relative">
+            <LoadingOverlay isLoading={isLoading} />
             <ComingSoon />
           </TabsContent>
         </Tabs>
