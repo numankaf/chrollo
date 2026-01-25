@@ -1,15 +1,25 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useGlobalSearchStore from '@/store/global-search-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasParent } from '@/utils/collection-util';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Cable, ChevronDown, Columns3Cog, FolderOpen, LayoutDashboard, LibraryBig, Waypoints, Zap } from 'lucide-react';
+import {
+  Cable,
+  ChevronDown,
+  Columns3Cog,
+  FolderOpen,
+  LayoutDashboard,
+  LibraryBig,
+  Waypoints,
+  X,
+  Zap,
+} from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import { BASE_MODEL_TYPE, type BaseModelType } from '@/types/base';
+import { BASE_MODEL_TYPE } from '@/types/base';
 import { COLLECTION_TYPE, NULL_PARENT_ID } from '@/types/collection';
 import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
@@ -34,6 +44,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
 import { ScrollArea } from '@/components/common/scroll-area';
+import NoRecentItemFound from '@/components/app/empty/no-recent-item-found';
+import NoResultsFound from '@/components/app/empty/no-results-found';
 import TabItemIcon from '@/components/icon/tab-item-icon';
 
 const FILTER_DROPDOWN_ITEMS = [
@@ -76,10 +88,12 @@ const FILTER_DROPDOWN_ITEMS = [
 
 export function GlobalSearch() {
   const navigate = useNavigate();
-  const { isOpen, setIsOpen } = useGlobalSearchStore(
+  const { isOpen, setIsOpen, recentTabs, removeRecentTab } = useGlobalSearchStore(
     useShallow((state) => ({
       isOpen: state.isOpen,
       setIsOpen: state.setIsOpen,
+      recentTabs: state.recentTabs,
+      removeRecentTab: state.removeRecentTab,
     }))
   );
 
@@ -124,12 +138,12 @@ export function GlobalSearch() {
     }
   };
 
-  const parentRef = useRef<HTMLDivElement>(null);
+  const [parentElement, setParentElement] = useState<HTMLDivElement | null>(null);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: filteredItems.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement: () => parentElement,
     estimateSize: () => 40,
     overscan: 12,
   });
@@ -160,9 +174,9 @@ export function GlobalSearch() {
   return (
     <CommandDialog open={isOpen} onOpenChange={setIsOpen} className="max-w-[60vw]! top-12 translate-y-0">
       <Command shouldFilter={false}>
-        <div className="flex items-center gap-3 border-b h-12 pr-12">
+        <div className="flex items-center gap-3 border-b  h-12 pr-12">
           <div className="flex-1">
-            <CommandInput placeholder="Search everything..." value={search} onValueChange={setSearch} />
+            <CommandInput placeholder="Search Chrollo..." value={search} onValueChange={setSearch} />
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -178,7 +192,7 @@ export function GlobalSearch() {
                   className="flex items-center gap-2 cursor-pointer h-7! text-sm"
                   onClick={(e) => {
                     e.preventDefault();
-                    toggleType(item.value as BaseModelType);
+                    toggleType(item.value);
                   }}
                 >
                   <Checkbox checked={selectedTypes.includes(item.value)} className="pointer-events-none" />
@@ -190,21 +204,19 @@ export function GlobalSearch() {
           </DropdownMenu>
         </div>
 
-        <CommandList className="max-h-[400px] overflow-hidden">
-          <ScrollArea viewportRef={parentRef} className="h-[400px]">
-            <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
-              {/* {filteredItems.length === 0 && (search.trim() || selectedTypes.length > 0) && (
-              <div className="py-12 text-center text-sm text-muted-foreground animate-in fade-in duration-200">
-                No results found.
-              </div>
-            )}
-
-            {filteredItems.length === 0 && !search.trim() && selectedTypes.length === 0 && (
-              <div className="py-12 text-center text-sm text-muted-foreground">
-                Your recently viewed items will appear here.
-              </div>
-            )} */}
-
+        {!debouncedSearch.trim() && selectedTypes.length === 0 && (
+          <span className="px-3 pt-1  text-muted-foreground text-sem">Recently Viewed</span>
+        )}
+        {filteredItems.length === 0 && (debouncedSearch.trim() || selectedTypes.length > 0) && (
+          <NoResultsFound searchTerm={debouncedSearch} />
+        )}
+        {filteredItems.length === 0 && !debouncedSearch.trim() && selectedTypes.length === 0 && <NoRecentItemFound />}
+        <CommandList className="max-h-[60vh] overflow-hidden">
+          <ScrollArea viewportRef={setParentElement} className="h-full p-2">
+            <div
+              className="relative w-full"
+              style={{ maxHeight: 'calc(60vh - 1rem)', height: `${virtualizer.getTotalSize()}px` }}
+            >
               <CommandGroup>
                 <div
                   className="absolute top-0 left-0 w-full px-1"
@@ -214,19 +226,34 @@ export function GlobalSearch() {
                 >
                   {virtualItems.map((virtualRow) => {
                     const item = filteredItems[virtualRow.index];
+                    if (!item) return null;
+                    const isRecent = recentTabs.some((t) => t.id === item.id);
                     return (
                       <div key={item.id} data-index={virtualRow.index} ref={virtualizer.measureElement}>
                         <CommandItem
                           key={item.id}
                           value={item.id}
                           onSelect={() => onSelect(item)}
-                          className="gap-3 h-10 cursor-pointer"
+                          className="gap-3 h-10 cursor-pointer group"
                         >
                           <TabItemIcon item={item} size={16} className="shrink-0" />
                           <div className="flex flex-col flex-1 overflow-hidden pointer-events-none">
                             <span className="truncate">{item.name}</span>
                             <span className="text-xs text-muted-foreground truncate">{getSubtitle(item)}</span>
                           </div>
+                          {!search.trim() && isRecent && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeRecentTab(item.id);
+                              }}
+                            >
+                              <X className="size-3" />
+                            </Button>
+                          )}
                         </CommandItem>
                       </div>
                     );

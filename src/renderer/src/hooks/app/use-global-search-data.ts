@@ -48,16 +48,16 @@ export function useGlobalSearchData({ search, selectedTypes }: UseGlobalSearchDa
     if (selectedTypes.length > 0) {
       items = items.filter((item) => {
         return selectedTypes.some((selectedType) => {
-          if (item.modelType === selectedType) return true;
           if (item.modelType === BASE_MODEL_TYPE.COLLECTION) {
             return (item as CollectionItem).collectionItemType === selectedType;
           }
+          if (item.modelType === selectedType) return true;
           return false;
         });
       });
     }
 
-    if (!search.trim()) {
+    if (!search.trim() && selectedTypes.length === 0) {
       const recentIds = recentTabs.map((ri) => ri.id);
       return items
         .filter((item) => recentIds.includes(item.id))

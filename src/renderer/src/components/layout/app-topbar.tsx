@@ -61,7 +61,7 @@ function Topbar() {
             onClick={() => setIsOpen(true)}
           >
             <Search />
-            <span>Search Inspector</span>
+            <span>Search Chrollo</span>
             <KbdGroup>
               <Kbd>Ctrl</Kbd>
               <Kbd>K</Kbd>

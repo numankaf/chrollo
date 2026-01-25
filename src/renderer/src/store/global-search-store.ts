@@ -12,6 +12,7 @@ interface GlobalSearchStore {
   setIsOpen: (isOpen: boolean) => void;
   recentTabs: RecentTab[];
   addRecentTab: (tab: Tab) => void;
+  removeRecentTab: (id: string) => void;
 }
 
 const useGlobalSearchStore = create<GlobalSearchStore>()(
@@ -28,6 +29,10 @@ const useGlobalSearchStore = create<GlobalSearchStore>()(
             recentTabs: [newRecentTab, ...filtered].slice(0, MAX_RECENT_TABS),
           };
         }),
+      removeRecentTab: (id) =>
+        set((state) => ({
+          recentTabs: state.recentTabs.filter((t) => t.id !== id),
+        })),
     }),
     {
       name: 'global-search-store',

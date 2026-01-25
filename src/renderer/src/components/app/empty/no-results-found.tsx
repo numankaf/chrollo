@@ -14,7 +14,7 @@ function NoResultsFound({ searchTerm }: NoResultsFoundProps) {
           <SearchX size={30} />
         </EmptyMedia>
         <EmptyTitle>
-          No results found for <span className="font-semibold">"{searchTerm}"</span>
+          No results found for <span className="ml-1 font-semibold">"{searchTerm}"</span>
         </EmptyTitle>
         <EmptyDescription>
           No items match the current search criteria. Adjust your search or reset the filter.
