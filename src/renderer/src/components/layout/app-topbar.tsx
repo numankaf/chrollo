@@ -3,11 +3,13 @@ import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
+import useCommandSearchStore from '@/store/command-search-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Minus, Search, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/common/button';
+import { Kbd, KbdGroup } from '@/components/common/kbd';
 import SettingsButton from '@/components/app/button/settings-button';
 import { WindowMaximizeButton } from '@/components/app/button/window-maximize-button';
 import ConnectionSelector from '@/components/selector/connection-selector';
@@ -21,6 +23,7 @@ function Topbar() {
       activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
+  const setIsOpen = useCommandSearchStore((state) => state.setIsOpen);
   return (
     <nav
       style={
@@ -52,11 +55,17 @@ function Topbar() {
 
       {workspacesLoaded && (
         <div className="flex items-center justify-center flex-1 draggable">
-          <Button variant="outline" className="bg-background! hover:border-primary!">
+          <Button
+            variant="outline"
+            className="bg-background! hover:border-primary! text-muted-foreground gap-4"
+            onClick={() => setIsOpen(true)}
+          >
             <Search />
-            <span>Search Inspector</span>
-            <span className="text-xs bg-card! p-0.5 px-1 rounded-md">Ctrl</span>
-            <span className="text-xs bg-card! py-0.5 px-1.5 rounded-md">K</span>
+            <span>Search Chrollo</span>
+            <KbdGroup>
+              <Kbd>Ctrl</Kbd>
+              <Kbd>K</Kbd>
+            </KbdGroup>
           </Button>
         </div>
       )}

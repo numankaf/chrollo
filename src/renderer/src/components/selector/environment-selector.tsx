@@ -11,6 +11,7 @@ import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
+import { AddEnvironmentDialog } from '@/components/app/dialog/add-environment-dialog';
 
 function EnvironmentSelector() {
   const environments = useWorkspaceEnvironments();
@@ -23,6 +24,7 @@ function EnvironmentSelector() {
   const { activeEnvironment } = useActiveItem();
 
   const [search, setSearch] = useState('');
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const allEnvironments = [{ id: 'none', name: 'No Environment' }, ...environments] as Environment[];
 
@@ -49,12 +51,13 @@ function EnvironmentSelector() {
 
       <PopoverContent align="end" className="w-[320px] p-2">
         <div className="flex items-center justify-between p-1 gap-1">
+          {addDialogOpen && <AddEnvironmentDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />}
           <SearchBar
             placeholder="Search environment"
             className="flex-1"
             onSearchChange={(e) => setSearch(e.target.value)}
           />
-          <Button size="sm" variant="ghost">
+          <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
             <Plus size={16} />
           </Button>
         </div>
@@ -66,7 +69,7 @@ function EnvironmentSelector() {
                 <Button
                   variant="ghost"
                   key={environment.id}
-                  className="w-full justify-start gap-2"
+                  className="w-full justify-start gap-1"
                   size="sm"
                   onClick={() =>
                     environment.id === 'none'
@@ -74,9 +77,10 @@ function EnvironmentSelector() {
                       : updateWorkspaceSelection({ activeEnvironmentId: environment.id })
                   }
                 >
-                  {(environment.id === activeEnvironment?.id || (!activeEnvironment && environment.id === 'none')) && (
-                    <Check size={16} />
-                  )}
+                  <div className="w-5 shrink-0 flex items-center justify-center">
+                    {(environment.id === activeEnvironment?.id ||
+                      (!activeEnvironment && environment.id === 'none')) && <Check size={14} />}
+                  </div>
                   <p className={environment.id === 'none' ? 'text-muted-foreground' : undefined}>{environment.name}</p>
                 </Button>
               ))}

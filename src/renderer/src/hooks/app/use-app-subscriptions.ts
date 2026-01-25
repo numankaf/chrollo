@@ -1,5 +1,6 @@
 import { use, useEffect } from 'react';
 import { AppContext } from '@/provider/app-init-provider';
+import useCommandSearchStore from '@/store/command-search-store';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import useRequestResponseStore from '@/store/request-response-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
@@ -14,6 +15,8 @@ export function useAppSubscriptions() {
 
   const { activeTab, activeWorkspace } = useActiveItem();
 
+  const activeTabId = activeTab?.id;
+
   useEffect(() => {
     if (!workspacesLoaded) return;
 
@@ -25,11 +28,15 @@ export function useAppSubscriptions() {
     if (!appLoaded) return;
 
     if (activeTab) {
+      const { recentTabs, addRecentTab } = useCommandSearchStore.getState();
+      if (recentTabs[0]?.id !== activeTab.id) {
+        addRecentTab(activeTab);
+      }
       navigate(getTabRoute(activeTab));
     } else {
       navigate('/main/empty');
     }
-  }, [workspacesLoaded, appLoaded, activeTab, activeWorkspace, navigate]);
+  }, [workspacesLoaded, appLoaded, activeTabId, activeWorkspace, navigate, activeTab]);
 
   useEffect(() => {
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {

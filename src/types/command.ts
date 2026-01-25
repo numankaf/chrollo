@@ -3,6 +3,7 @@ export const SHORTCUTS = {
   TAB_NEXT: 'Ctrl+Tab',
   TAB_PREVIOUS: 'Ctrl+Shift+Tab',
   TAB_SEARCH: 'Ctrl+Shift+A',
+  GLOBAL_SEARCH: 'Ctrl+K',
 
   REQUEST_SEND: 'Ctrl+Enter',
 
@@ -17,7 +18,7 @@ export const SHORTCUTS = {
   ITEM_DELETE: 'Delete',
   TOGGLE_SIDEBAR: 'Ctrl+B',
 
-  CLEAR_REQUEST_CONSOLE: 'Ctrl+K',
+  CLEAR_REQUEST_CONSOLE: 'Ctrl+L',
   TOGGLE_REQUEST_CONSOLE: 'Ctrl+"',
   TOGGLE_CONSOLE: 'F12',
 } as const;
@@ -27,6 +28,7 @@ export const COMMANDS = {
   TAB_NEXT: 'tab.next',
   TAB_PREVIOUS: 'tab.previous',
   TAB_SEARCH: 'tab.search',
+  GLOBAL_SEARCH: 'global.search',
 
   REQUEST_SEND: 'request.send',
 
@@ -55,6 +57,7 @@ export const SHORTCUT_TO_COMMAND: Record<string, Command> = {
   [SHORTCUTS.TAB_NEXT]: COMMANDS.TAB_NEXT,
   [SHORTCUTS.TAB_PREVIOUS]: COMMANDS.TAB_PREVIOUS,
   [SHORTCUTS.TAB_SEARCH]: COMMANDS.TAB_SEARCH,
+  [SHORTCUTS.GLOBAL_SEARCH]: COMMANDS.GLOBAL_SEARCH,
 
   [SHORTCUTS.REQUEST_SEND]: COMMANDS.REQUEST_SEND,
 

@@ -46,7 +46,7 @@ function WorkspaceSelector() {
           />
         </div>
         <div className="mt-3 space-y-1">
-          <ScrollArea className="px-4">
+          <ScrollArea className="px-1">
             <div className="max-h-[300px]">
               {filteredWorkspaces.map((workspace) => (
                 <Button

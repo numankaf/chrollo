@@ -62,7 +62,9 @@ function TabSelector() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-70 p-0!">
         <Command shouldFilter={false}>
-          <CommandInput value={search} onValueChange={setSearch} placeholder="Search tabs..." className="h-9" />
+          <div className="border-b">
+            <CommandInput value={search} onValueChange={setSearch} placeholder="Search tabs..." className="h-9" />
+          </div>
           <CommandList>
             <CommandEmpty>No tabs found.</CommandEmpty>
             <CommandGroup>
