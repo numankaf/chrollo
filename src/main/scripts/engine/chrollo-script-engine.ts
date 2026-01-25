@@ -1,3 +1,4 @@
+import logger from '@/main/lib/logger';
 import { createRequestAPI } from '@/main/scripts/api/request-api';
 import { createStompAPI } from '@/main/scripts/api/stomp-api';
 import { createUtilsAPI } from '@/main/scripts/api/utils-api';
@@ -41,7 +42,7 @@ export class ChrolloScriptEngine {
       executeUserScript(script, this.context as unknown as Record<string, unknown>);
     } catch (err) {
       this.scriptError = err as Error;
-      console.error('[SCRIPT ERROR]', this.scriptError);
+      logger.error(`[SCRIPT ERROR] ${this.scriptError}`);
     }
   }
 

@@ -1,11 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { Tab } from '@/types/layout';
+import type { RecentTab, Tab } from '@/types/layout';
 
 export const MAX_RECENT_TABS = 20;
-
-export type RecentTab = Tab & { timestamp: number };
 
 interface CommandSearchStore {
   isOpen: boolean;

@@ -6,6 +6,7 @@ import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { deleteWorkspaceEnvironments } from '@/main/environment/environment-ipc';
 import { getMainWindow } from '@/main/index';
 import { deleteWorkspaceInterceptionScripts } from '@/main/interception-script/interception-script-ipc';
+import logger from '@/main/lib/logger';
 import { applyAuditFields } from '@/main/utils/audit-util';
 import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
@@ -35,7 +36,7 @@ async function getWorkspace(id: string): Promise<Workspace | undefined> {
   try {
     return await workspaceDataDb.get(id);
   } catch (error: unknown) {
-    console.error(error);
+    logger.error(error);
     return undefined;
   }
 }
@@ -49,7 +50,7 @@ async function deleteWorkspace(id: string): Promise<void> {
 
     await workspaceDataDb.del(id);
   } catch (error: unknown) {
-    console.error(error);
+    logger.error(error);
     return;
   }
 }

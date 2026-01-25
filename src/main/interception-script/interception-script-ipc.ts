@@ -1,6 +1,7 @@
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
+import logger from '@/main/lib/logger';
 import { chrolloEngine } from '@/main/scripts/engine';
 import { applyAuditFields } from '@/main/utils/audit-util';
 import { sortByDate } from '@/main/utils/sort-util';
@@ -23,7 +24,7 @@ async function getInterceptionScript(id: string): Promise<InterceptionScript | u
   try {
     return await interceptionScriptDb.get(id);
   } catch (error: unknown) {
-    console.error(error);
+    logger.error(error);
     return undefined;
   }
 }
@@ -32,7 +33,7 @@ async function deleteInterceptionScript(id: string): Promise<void> {
   try {
     await interceptionScriptDb.del(id);
   } catch (error: unknown) {
-    console.error(error);
+    logger.error(error);
     return;
   }
 }

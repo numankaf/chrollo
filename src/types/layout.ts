@@ -16,6 +16,10 @@ export interface Tab {
   readonly workspaceId?: string;
 }
 
+export interface RecentTab extends Tab {
+  timestamp: number;
+}
+
 export type SidebarItem = {
   modelType: BaseModelType;
   title: string;

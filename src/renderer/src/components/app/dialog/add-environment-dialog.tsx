@@ -46,8 +46,7 @@ export function AddEnvironmentDialog({ open, onOpenChange }: AddEnvironmentDialo
       const newEnvironment = await saveEnvironment(environmentPayload);
       openTab(newEnvironment);
       onOpenChange(false);
-    } catch (error) {
-      console.error('Failed to submit environment:', error);
+    } catch {
       toast.error('Failed to submit environment.');
     }
   }

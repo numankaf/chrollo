@@ -1,6 +1,7 @@
 import path from 'path';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { getMainWindow } from '@/main/index';
+import logger from '@/main/lib/logger';
 import { applyAuditFields } from '@/main/utils/audit-util';
 import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
@@ -19,7 +20,7 @@ async function getCollectionItem(id: string): Promise<CollectionItem | undefined
   try {
     return await collectionItemDb.get(id);
   } catch (error: unknown) {
-    console.error(error);
+    logger.error(error);
     return undefined;
   }
 }
@@ -28,7 +29,7 @@ async function deleteCollectionItem(id: string): Promise<void> {
   try {
     await collectionItemDb.del(id);
   } catch (error: unknown) {
-    console.error(error);
+    logger.error(error);
     return;
   }
 }

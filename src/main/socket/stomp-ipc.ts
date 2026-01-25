@@ -1,4 +1,5 @@
 import { getMainWindow } from '@/main/index';
+import logger from '@/main/lib/logger';
 import { chrolloEngine } from '@/main/scripts/engine';
 import type { StompMessageCtx } from '@/main/scripts/runtime/stomp-runtime';
 import { stripAllWhitespace } from '@/main/utils/common-util';
@@ -58,7 +59,7 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
 
         const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
 
-        mainWindow.webContents.send('console:log', data);
+        logger.info(data);
       },
       { id: subscriptionId }
     );
@@ -153,7 +154,7 @@ export function initStompIpc() {
       ...connection.settings,
       connectHeaders: headers,
       debug: (msg) => {
-        mainWindow.webContents.send('console:log', `[${id}] [${name}] ${msg}`);
+        logger.info(`[${id}] [${name}] ${msg}`);
       },
     });
 
@@ -223,7 +224,7 @@ export function initStompIpc() {
     };
 
     client.onStompError = (frame: IFrame) => {
-      mainWindow.webContents.send('console:log', `STOMP Error (${id}: ${name}): ${frame.headers['message']}`);
+      logger.info(`STOMP Error (${id}: ${name}): ${frame.headers['message']}`);
 
       const socketStompErrorMessage: SocketMessage = {
         id: nextSeq(),
@@ -323,7 +324,7 @@ export function initStompIpc() {
         body: payload,
         headers: requestHeaders,
       });
-      mainWindow.webContents.send('console:log', ` [${id}] Message sent: ${body}`);
+      logger.info(` [${id}] Message sent: ${body}`);
       const socketSentMessage: SocketMessage = {
         id: nextSeq(),
         connectionId: id,
@@ -343,7 +344,7 @@ export function initStompIpc() {
       };
       mainWindow.webContents.send('stomp:message', socketSentMessage);
     } else {
-      mainWindow.webContents.send('console:log', ` STOMP (${id}) not connected`);
+      logger.info(` STOMP (${id}) not connected`);
     }
   });
 
@@ -360,7 +361,7 @@ export function initStompIpc() {
         status: CONNECTION_STATUS.DISCONNECTED,
         timestamp: Date.now(),
       } as ConnectionStatusData);
-      mainWindow.webContents.send('console:log', `Disconnected STOMP (${id})`);
+      logger.info(`Disconnected STOMP (${id})`);
     }
   });
 
@@ -372,6 +373,6 @@ export function initStompIpc() {
       client.deactivate();
       delete stompClients[id];
     });
-    mainWindow.webContents.send('console:log', `All STOMP connections closed`);
+    logger.info(`All STOMP connections closed`);
   });
 }

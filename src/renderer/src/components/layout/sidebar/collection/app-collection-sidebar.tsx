@@ -145,8 +145,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
       const newFolder = await saveCollectionItem(folderPayload);
       openTab(newFolder);
       setAddFolderDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit collection:', error);
+    } catch {
       toast.error('Failed to submit collection.');
     }
   }
@@ -166,8 +165,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
       const newRequest = await saveCollectionItem(requestPayload);
       openTab(newRequest);
       setAddRequestDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit collection:', error);
+    } catch {
       toast.error('Failed to submit collection.');
     }
   }
@@ -485,8 +483,7 @@ export default function CollectionSidebar() {
       const newCollection = await saveCollectionItem(collectionPayload);
       openTab(newCollection);
       setAddDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit collection:', error);
+    } catch {
       toast.error('Failed to submit collection.');
     }
   }

@@ -1,3 +1,5 @@
+import logger from '@/main/lib/logger';
+
 import type { Request } from '@/types/collection';
 import type { StompConnection } from '@/types/connection';
 import type { SocketMessage } from '@/types/socket';
@@ -52,12 +54,12 @@ export class StompRuntime {
 
   private handleRuntimeError(err: unknown, hook: string) {
     const error = err instanceof Error ? err : new Error(String(err));
-    console.error(`[SCRIPT ERROR: chrollo.stomp.${hook}]`, error);
+    logger.error(`[SCRIPT ERROR: chrollo.stomp.${hook}] ${error}`);
     for (const handler of this.errorHandlers) {
       try {
         handler(error, hook);
       } catch (e) {
-        console.error('Error in script error handler:', e);
+        logger.error(`Error in script error handler: ${e}`);
       }
     }
   }

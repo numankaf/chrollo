@@ -167,6 +167,9 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
+      electron-log:
+        specifier: ^5.4.3
+        version: 5.4.3
       electron-updater:
         specifier: ^6.7.3
         version: 6.7.3
@@ -2922,6 +2925,10 @@ packages:
     resolution: {integrity: sha512-FCUqvdq2AULL+Db2SUGgjOYTbrgkPxZtCjqIZGnjH9p29pTWyesQqBIfvQBKa6ewqde87aWl49n/WyI/NyUBog==}
     engines: {node: '>=14.0.0'}
     hasBin: true
+
+  electron-log@5.4.3:
+    resolution: {integrity: sha512-sOUsM3LjZdugatazSQ/XTyNcw8dfvH1SYhXWiJyfYodAAKOZdHs0txPiLDXFzOZbhXgAgshQkshH2ccq0feyLQ==}
+    engines: {node: '>= 14'}
 
   electron-publish@25.1.7:
     resolution: {integrity: sha512-+jbTkR9m39eDBMP4gfbqglDd6UvBC7RLh5Y0MhFSsc6UkGHj9Vj9TWobxevHYMMqmoujL11ZLjfPpMX+Pt6YEg==}
@@ -7944,6 +7951,8 @@ snapshots:
     transitivePeerDependencies:
       - electron-builder-squirrel-windows
       - supports-color
+
+  electron-log@5.4.3: {}
 
   electron-publish@25.1.7:
     dependencies:

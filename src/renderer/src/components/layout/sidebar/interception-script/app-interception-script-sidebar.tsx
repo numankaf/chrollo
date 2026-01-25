@@ -86,8 +86,7 @@ function AppInterceptionScriptSidebar() {
       const newScript = await saveInterceptionScript(scriptPayload);
       openTab(newScript);
       setAddDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit interception script:', error);
+    } catch {
       toast.error('Failed to submit interception script.');
     }
   }

@@ -6,12 +6,15 @@ import { initConnectionIpc } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
 import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
 import { initInterceptionScriptIpc } from '@/main/interception-script/interception-script-ipc';
+import { logger } from '@/main/lib/logger';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 
 import icon from '../../resources/app-logo.png?asset';
+
+logger.info('Chrollo application starting...');
 
 //Disable https certificate validation
 https.globalAgent.options.rejectUnauthorized = false;

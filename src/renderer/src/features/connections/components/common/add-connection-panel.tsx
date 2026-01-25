@@ -76,8 +76,7 @@ function AddConnectionPanel() {
         default:
           throw new Error('Unsupported connection type');
       }
-    } catch (error) {
-      console.error('Failed to submit connection:', error);
+    } catch {
       toast.error('Failed to submit connection.');
     }
   }

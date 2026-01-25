@@ -55,8 +55,7 @@ export default function CreateWorkspaceView() {
 
       toast.success('Workspace created successfully');
       navigate('/main/workspace/' + workspace.id);
-    } catch (error) {
-      console.error('Failed to create workspace:', error);
+    } catch {
       toast.error('Failed to create workspace');
     }
   };
