@@ -2,18 +2,15 @@ import { useEffect, useState } from 'react';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useEnvironmentStore from '@/store/environment-store';
 import useTabsStore from '@/store/tab-store';
-import useWorkspaceStore from '@/store/workspace-store';
 import { exportAsJson } from '@/utils/download-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getTabItem } from '@/utils/tab-util';
-import { Container, Plus } from 'lucide-react';
-import { nanoid } from 'nanoid';
+import { CircleCheck, Container, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import { COMMANDS } from '@/types/command';
 import type { Environment } from '@/types/environment';
-import { ENVIRONMENT_DEFAULT_VALUES } from '@/types/environment';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
@@ -31,7 +28,7 @@ import {
   SidebarMenuButton,
 } from '@/components/common/sidebar';
 import OperationsButton, { type OperationButtonItem } from '@/components/app/button/operations-button';
-import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
+import { AddEnvironmentDialog } from '@/components/app/dialog/add-environment-dialog';
 import NoEnvironmentFound from '@/components/app/empty/no-environment-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
 
@@ -43,7 +40,7 @@ function EnvironmentsSidebar() {
       openTab: state.openTab,
     }))
   );
-  const { activeTab } = useActiveItem();
+  const { activeTab, activeEnvironment } = useActiveItem();
 
   const environments = useWorkspaceEnvironments();
 
@@ -53,40 +50,13 @@ function EnvironmentsSidebar() {
 
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
 
-  const { activeWorkspaceId } = useWorkspaceStore(
+  const { deleteEnvironment, cloneEnvironment, updateEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
-      activeWorkspaceId: state.activeWorkspaceId,
-    }))
-  );
-
-  const { saveEnvironment, deleteEnvironment, cloneEnvironment, updateEnvironment } = useEnvironmentStore(
-    useShallow((state) => ({
-      saveEnvironment: state.saveEnvironment,
       deleteEnvironment: state.deleteEnvironment,
       cloneEnvironment: state.cloneEnvironment,
       updateEnvironment: state.updateEnvironment,
     }))
   );
-
-  async function onAddSubmit(values: { name: string }) {
-    if (!activeWorkspaceId) {
-      return;
-    }
-    try {
-      const environmentPayload: Environment = {
-        id: nanoid(),
-        name: values.name,
-        workspaceId: activeWorkspaceId,
-        ...ENVIRONMENT_DEFAULT_VALUES,
-      };
-      const newEnvironment = await saveEnvironment(environmentPayload);
-      openTab(newEnvironment);
-      setAddDialogOpen(false);
-    } catch (error) {
-      console.error('Failed to submit environment:', error);
-      toast.error('Failed to submit environment.');
-    }
-  }
 
   useEffect(() => {
     const unsubscribeItemRename = commandBus.on(COMMANDS.ITEM_RENAME, () => {
@@ -185,18 +155,8 @@ function EnvironmentsSidebar() {
     <SidebarContent className="h-full">
       <SidebarHeader className="m-0! p-0!">
         <div className="flex items-center justify-between p-1 gap-1">
-          {addDialogOpen && (
-            <AddItemDialog
-              title="Create Environment"
-              inputLabel="Environment Name"
-              inputRequiredLabel="Environment name is required."
-              inputPlaceholder="Enter a environment name"
-              defaultValue="New Environment"
-              open={addDialogOpen}
-              onOpenChange={(open) => setAddDialogOpen(open)}
-              onSubmit={onAddSubmit}
-            />
-          )}
+          {addDialogOpen && <AddEnvironmentDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />}
+
           <Button size="sm" variant="ghost" onClick={() => setAddDialogOpen(true)}>
             <Plus size={16} />
           </Button>
@@ -238,6 +198,7 @@ function EnvironmentsSidebar() {
                       setEditingItemId(null);
                     }}
                   />
+                  {activeEnvironment?.id === item.id && <CircleCheck size={12} color="var(--primary)" />}
                   <OperationsButton
                     open={operationsMenuOpenItemId === item.id}
                     onOpenChange={(open) => setOperationsMenuOpenItemId(open ? item.id : null)}

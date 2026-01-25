@@ -1,7 +1,7 @@
 import { use, useEffect } from 'react';
 import { AppContext } from '@/provider/app-init-provider';
+import useCommandSearchStore from '@/store/command-search-store';
 import useConnectionStatusStore from '@/store/connection-status-store';
-import useGlobalSearchStore from '@/store/global-search-store';
 import useRequestResponseStore from '@/store/request-response-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
 import { getTabRoute } from '@/utils/tab-util';
@@ -28,7 +28,7 @@ export function useAppSubscriptions() {
     if (!appLoaded) return;
 
     if (activeTab) {
-      const { recentTabs, addRecentTab } = useGlobalSearchStore.getState();
+      const { recentTabs, addRecentTab } = useCommandSearchStore.getState();
       if (recentTabs[0]?.id !== activeTab.id) {
         addRecentTab(activeTab);
       }

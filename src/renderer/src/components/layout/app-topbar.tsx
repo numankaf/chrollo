@@ -3,7 +3,7 @@ import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
-import useGlobalSearchStore from '@/store/global-search-store';
+import useCommandSearchStore from '@/store/command-search-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Minus, Search, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
@@ -23,7 +23,7 @@ function Topbar() {
       activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
-  const setIsOpen = useGlobalSearchStore((state) => state.setIsOpen);
+  const setIsOpen = useCommandSearchStore((state) => state.setIsOpen);
   return (
     <nav
       style={

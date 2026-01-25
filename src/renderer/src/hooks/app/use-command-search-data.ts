@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
+import useCommandSearchStore from '@/store/command-search-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
-import useGlobalSearchStore from '@/store/global-search-store';
 import useInterceptionScriptStore from '@/store/interception-script-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
@@ -14,12 +14,12 @@ import type { TabItem } from '@/types/layout';
 
 export type SearchFilterType = BaseModelType | CollectionType;
 
-interface UseGlobalSearchDataProps {
+interface UseCommandSearchDataProps {
   search: string;
   selectedTypes: SearchFilterType[];
 }
 
-export function useGlobalSearchData({ search, selectedTypes }: UseGlobalSearchDataProps) {
+export function useCommandSearchData({ search, selectedTypes }: UseCommandSearchDataProps) {
   const { workspaces } = useWorkspaceStore(useShallow((state) => ({ workspaces: state.workspaces })));
   const { connections } = useConnectionStore(useShallow((state) => ({ connections: state.connections })));
   const { collectionItemMap } = useCollectionItemStore(
@@ -29,7 +29,7 @@ export function useGlobalSearchData({ search, selectedTypes }: UseGlobalSearchDa
   const { interceptionScripts } = useInterceptionScriptStore(
     useShallow((state) => ({ interceptionScripts: state.interceptionScripts }))
   );
-  const recentTabs = useGlobalSearchStore((state) => state.recentTabs);
+  const recentTabs = useCommandSearchStore((state) => state.recentTabs);
 
   const allItems = useMemo(() => {
     const items: TabItem[] = [

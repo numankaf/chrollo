@@ -7,7 +7,7 @@ export const MAX_RECENT_TABS = 20;
 
 export type RecentTab = Tab & { timestamp: number };
 
-interface GlobalSearchStore {
+interface CommandSearchStore {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   recentTabs: RecentTab[];
@@ -15,7 +15,7 @@ interface GlobalSearchStore {
   removeRecentTab: (id: string) => void;
 }
 
-const useGlobalSearchStore = create<GlobalSearchStore>()(
+const useCommandSearchStore = create<CommandSearchStore>()(
   persist(
     (set) => ({
       isOpen: false,
@@ -35,10 +35,10 @@ const useGlobalSearchStore = create<GlobalSearchStore>()(
         })),
     }),
     {
-      name: 'global-search-store',
+      name: 'command-search-store',
       partialize: (state) => ({ recentTabs: state.recentTabs }),
     }
   )
 );
 
-export default useGlobalSearchStore;
+export default useCommandSearchStore;

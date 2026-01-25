@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
-import useGlobalSearchStore from '@/store/global-search-store';
+import useCommandSearchStore from '@/store/command-search-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasParent } from '@/utils/collection-util';
@@ -25,7 +25,7 @@ import type { Connection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
 import type { Tab, TabItem } from '@/types/layout';
-import { useGlobalSearchData, type SearchFilterType } from '@/hooks/app/use-global-search-data';
+import { useCommandSearchData, type SearchFilterType } from '@/hooks/app/use-command-search-data';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
@@ -86,9 +86,9 @@ const FILTER_DROPDOWN_ITEMS = [
   },
 ];
 
-export function GlobalSearch() {
+function CommandSearchDialog() {
   const navigate = useNavigate();
-  const { isOpen, setIsOpen, recentTabs, removeRecentTab } = useGlobalSearchStore(
+  const { isOpen, setIsOpen, recentTabs, removeRecentTab } = useCommandSearchStore(
     useShallow((state) => ({
       isOpen: state.isOpen,
       setIsOpen: state.setIsOpen,
@@ -101,7 +101,7 @@ export function GlobalSearch() {
   const debouncedSearch = useDebouncedValue<string>(search, 300);
   const [selectedTypes, setSelectedTypes] = useState<SearchFilterType[]>([]);
 
-  const { filteredItems } = useGlobalSearchData({
+  const { filteredItems } = useCommandSearchData({
     search: debouncedSearch,
     selectedTypes,
   });
@@ -241,7 +241,7 @@ export function GlobalSearch() {
                             <span className="truncate">{item.name}</span>
                             <span className="text-xs text-muted-foreground truncate">{getSubtitle(item)}</span>
                           </div>
-                          {!search.trim() && isRecent && (
+                          {!search.trim() && selectedTypes.length === 0 && isRecent && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -267,3 +267,5 @@ export function GlobalSearch() {
     </CommandDialog>
   );
 }
+
+export default CommandSearchDialog;

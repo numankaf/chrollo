@@ -76,12 +76,12 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-5 px-1 font-bold text-xs"
+                    className="h-5 px-1 text-sm"
                     onClick={() => {
                       if (activeEnvironment) openTab(activeEnvironment);
                     }}
                   >
-                    {activeEnvironment?.name}
+                    {activeEnvironment?.name || 'No environment'}
                   </Button>
                 </div>
                 <div className="flex flex-col">
@@ -89,13 +89,14 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
                     <Input
                       autoFocus
                       className="h-8 text-sm focus-visible:ring-primary/30"
-                      // Use local editing value if this is the variable being edited
                       value={editingVar?.id === variable.id ? editingVar.value : variable.value}
                       onFocus={() => setEditingVar({ id: variable.id, value: variable.value })}
                       onChange={(e) => setEditingVar({ id: variable.id, value: e.target.value })}
                     />
                   ) : (
-                    <div className="text-sm">Variable not found in selected environment</div>
+                    <div className="text-sm text-muted-foreground">
+                      {activeEnvironment ? 'Variable not found in selected environment' : 'No environment selected'}
+                    </div>
                   )}
                 </div>
               </div>
