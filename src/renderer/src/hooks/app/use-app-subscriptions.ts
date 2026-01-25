@@ -15,6 +15,8 @@ export function useAppSubscriptions() {
 
   const { activeTab, activeWorkspace } = useActiveItem();
 
+  const activeTabId = activeTab?.id;
+
   useEffect(() => {
     if (!workspacesLoaded) return;
 
@@ -26,12 +28,15 @@ export function useAppSubscriptions() {
     if (!appLoaded) return;
 
     if (activeTab) {
-      useGlobalSearchStore.getState().addRecentTab(activeTab);
+      const { recentTabs, addRecentTab } = useGlobalSearchStore.getState();
+      if (recentTabs[0]?.id !== activeTab.id) {
+        addRecentTab(activeTab);
+      }
       navigate(getTabRoute(activeTab));
     } else {
       navigate('/main/empty');
     }
-  }, [workspacesLoaded, appLoaded, activeTab, activeWorkspace, navigate]);
+  }, [workspacesLoaded, appLoaded, activeTabId, activeWorkspace, navigate, activeTab]);
 
   useEffect(() => {
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
