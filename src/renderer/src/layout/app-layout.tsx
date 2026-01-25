@@ -6,6 +6,7 @@ import { Outlet } from 'react-router';
 
 import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
 import { useGlobalShortcuts } from '@/hooks/common/use-global-shortcuts';
+import { GlobalSearch } from '@/components/app/search/global-search';
 import AppLoader from '@/components/layout/app-loader';
 import Topbar from '@/components/layout/app-topbar';
 
@@ -21,6 +22,7 @@ function AppLayout() {
   return (
     <>
       <Topbar />
+      <GlobalSearch />
       <div
         className="relative"
         style={{
