@@ -312,9 +312,6 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
           <div
             className="flex items-center gap-2 flex-1 w-20! data-[active=true]:bg-transparent [&:hover>.operations-trigger]:block [&>.operations-trigger[data-state=open]]:inline-block focus-visible:outline-none focus-visible:ring-0"
             key={collectionItem.id}
-            onClick={() => {
-              openTab(collectionItem);
-            }}
             onContextMenu={(e) => {
               e.preventDefault();
               setOperationsMenuOpen(true);
@@ -380,12 +377,21 @@ function CollectionTreeCursor({ top }: CursorProps) {
 function CollectionSidebarItem(props: RowRendererProps<TreeDataItem>) {
   const { node, innerRef, attrs, children } = props;
   const { activeTab } = useActiveItem();
+  const { openTab } = useTabsStore(
+    useShallow((state) => ({
+      openTab: state.openTab,
+    }))
+  );
+  const collectionItem = node.data as CollectionItem;
 
   const isEmptyPlaceholder = node.data && 'isEmptyPlaceholder' in node.data;
   const isActive = !isEmptyPlaceholder && activeTab?.id === node.data?.id;
 
   return (
     <div
+      onClick={() => {
+        openTab(collectionItem);
+      }}
       {...attrs}
       ref={innerRef}
       className={`${isActive ? 'bg-sidebar-accent' : ''} ${

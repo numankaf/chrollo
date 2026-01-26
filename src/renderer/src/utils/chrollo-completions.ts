@@ -51,8 +51,8 @@ const REQUEST_TYPE = `interface Request {
   };
   headers: { key: string; value: string; active: boolean }[];
   scripts: {
-    preRequest: string;
-    postRequest: string;
+    preRequest?: string;
+    postResponse?: string;
   };
 }`;
 
