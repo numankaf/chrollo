@@ -1,6 +1,5 @@
 import { use, useLayoutEffect, useMemo, useState } from 'react';
 import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
-import { chrolloCompletions } from '@/utils/chrollo-completions';
 import { getEditorTheme } from '@/utils/editor-util';
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentWithTab } from '@codemirror/commands';
@@ -11,6 +10,8 @@ import CodeMirror, { EditorView, keymap } from '@uiw/react-codemirror';
 import { Linter } from 'eslint-linter-browserify';
 import globals from 'globals';
 import { useTheme } from 'next-themes';
+
+import { chrolloCompletions } from '@/components/app/editor/code-mirror/completions/chrollo-completions';
 
 const lineWrap = EditorView.lineWrapping;
 

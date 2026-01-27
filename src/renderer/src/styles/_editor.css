@@ -6,7 +6,15 @@
   max-width: 600px !important;
   max-height: 400px;
   overflow: auto;
-  white-space: pre;
+
+  white-space: pre-wrap;
+  line-height: 1;
+}
+
+.cm-tooltip.cm-completionInfo a {
+  color: #3182ce !important;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .cm-panel.cm-search {
