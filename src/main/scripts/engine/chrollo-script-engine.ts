@@ -1,3 +1,4 @@
+import { getMainWindow } from '@/main/index';
 import logger from '@/main/lib/logger';
 import { createFakerAPI } from '@/main/scripts/api/faker-api';
 import { createRequestAPI } from '@/main/scripts/api/request-api';
@@ -46,6 +47,9 @@ export class ChrolloScriptEngine {
     } catch (err) {
       this.scriptError = err as Error;
       logger.error(`[SCRIPT ERROR] ${this.scriptError}`);
+      const mainWindow = getMainWindow();
+      if (!mainWindow) return;
+      mainWindow.webContents.send('console:error', `[SCRIPT ERROR] ${this.scriptError}`);
     }
   }
 

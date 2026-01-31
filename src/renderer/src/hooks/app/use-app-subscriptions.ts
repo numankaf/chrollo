@@ -39,6 +39,10 @@ export function useAppSubscriptions() {
   }, [workspacesLoaded, appLoaded, activeTabId, activeWorkspace, navigate, activeTab]);
 
   useEffect(() => {
+    const unsubscribeConsoleError = window.listener.console.error((data) => {
+      console.error(data);
+    });
+
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
       useSocketMessageStatusStore.getState().addMessage(data);
     });
@@ -60,6 +64,7 @@ export function useAppSubscriptions() {
     });
 
     return () => {
+      unsubscribeConsoleError();
       unsubscribeStompStatus();
       unsubscribeStompMessage();
       unsubscribeRequestPending();

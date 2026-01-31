@@ -87,6 +87,7 @@ declare global {
       };
       console: {
         log: (callback: (data: unknown) => void) => () => void;
+        error: (callback: (data: unknown) => void) => () => void;
       };
     };
     electron: ElectronAPI;

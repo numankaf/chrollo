@@ -9,6 +9,7 @@ import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
 import { type Request } from '@/types/collection';
+import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
 import {
   CONNECTION_STATUS,
   CONNECTION_TYPE,
@@ -305,17 +306,40 @@ export function initStompIpc() {
   // ------------------------------
   ipcMain.on('stomp:send', (_, id: string, request: Request) => {
     const runtime = chrolloEngine.getRuntime();
+    const mainWindow = getMainWindow();
 
     runtime.request.beginSendContext(id, request);
 
     const ctx = { connectionId: id, request };
     runtime.stomp.runPreSend(ctx);
 
+    // Run request's pre-request script
+    if (request.scripts?.preRequest) {
+      chrolloEngine.loadScript(request.scripts.preRequest);
+    }
+
+    const allVariables = runtime.variables.all();
+    const { body, destination, headers } = request;
+    let payload = body.data;
+
+    // Resolve variables in payload
+    payload = payload.replace(ENVIRONMENT_VARIABLE_MATCH_REGEX, (match) => {
+      const capture = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(match);
+      if (!capture) return match;
+      const key = capture[1];
+      const val = allVariables[key];
+
+      if (val === undefined) return match;
+
+      if (typeof val === 'object') {
+        return JSON.stringify(val);
+      }
+      return String(val);
+    });
+
     runtime.request.endSendContext();
 
     const client = stompClients[id];
-    const { body, destination, headers } = request;
-    const payload = body.data;
 
     const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
     if (client && client.connected) {
@@ -324,7 +348,6 @@ export function initStompIpc() {
         body: payload,
         headers: requestHeaders,
       });
-      logger.info(` [${id}] Message sent: ${body}`);
       const socketSentMessage: SocketMessage = {
         id: nextSeq(),
         connectionId: id,
@@ -342,7 +365,9 @@ export function initStompIpc() {
           },
         },
       };
-      mainWindow.webContents.send('stomp:message', socketSentMessage);
+      if (mainWindow) {
+        mainWindow.webContents.send('stomp:message', socketSentMessage);
+      }
     } else {
       logger.info(` STOMP (${id}) not connected`);
     }
