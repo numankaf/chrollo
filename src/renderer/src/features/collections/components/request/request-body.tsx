@@ -62,9 +62,10 @@ function RequestBody() {
             control={form.control}
             render={({ field }) => (
               <CodeEditor
+                enableVariables
+                enableResolveFromScript
                 value={field.value}
                 bodyType={bodyType}
-                enableVariables
                 onChange={(value) => {
                   form.setValue(BODY_DATA_PROPERTY_KEY, value, {
                     shouldDirty: true,

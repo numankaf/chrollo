@@ -55,8 +55,16 @@ export type EditorBodyType = (typeof EDITOR_BODY_TYPE)[keyof typeof EDITOR_BODY_
 export type CodeEditorProps = React.ComponentPropsWithRef<typeof CodeMirror> & {
   bodyType: EditorBodyType;
   enableVariables?: boolean;
+  enableResolveFromScript?: boolean;
 };
-function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...props }: CodeEditorProps) {
+function CodeEditor({
+  readOnly,
+  height,
+  bodyType,
+  enableVariables = false,
+  enableResolveFromScript = false,
+  ...props
+}: CodeEditorProps) {
   const { activeTheme } = use(ActiveThemeProviderContext);
   const { activeEnvironment } = useActiveItem();
   const { resolvedTheme } = useTheme();
@@ -101,12 +109,12 @@ function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...pr
         break;
     }
     if (enableVariables) {
-      const enabledVariables = activeEnvironment?.variables.filter((v) => v.enabled).map((v) => v.key) || [];
-      _extensions.push(variableExtension(enabledVariables));
+      const enabledVariables = activeEnvironment?.variables.filter((v) => v.enabled);
+      _extensions.push(variableExtension(enabledVariables, enableResolveFromScript));
     }
 
     return _extensions;
-  }, [bodyType, readOnly, enableVariables, activeEnvironment]);
+  }, [bodyType, readOnly, enableVariables, activeEnvironment, enableResolveFromScript]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;

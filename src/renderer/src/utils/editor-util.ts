@@ -3,7 +3,7 @@ import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
 import { js_beautify } from 'js-beautify';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
-import { ENVIRONMENT_VAR_REGEX } from '@/types/common';
+import { ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
 
 export function getEditorTheme(theme: string | undefined) {
   const settings = {
@@ -25,7 +25,7 @@ export function formatJs(text: string) {
   try {
     // Protect {{VAR}} tokens from being mangled by beautifier
     const placeholders: string[] = [];
-    const protectedText = text.replace(ENVIRONMENT_VAR_REGEX, (match) => {
+    const protectedText = text.replace(ENVIRONMENT_VARIABLE_MATCH_REGEX, (match) => {
       placeholders.push(match);
       return `__CHROLLO_VAR_${placeholders.length - 1}__`;
     });
@@ -51,7 +51,7 @@ export function formatJson(text: string): string {
     // JSON.parse will fail if variables are used outside of quotes: {"a": {{VAR}}}
     // We protect them by wrapping in placeholders that look like strings if they aren't already
     const placeholders: string[] = [];
-    const protectedText = text.replace(ENVIRONMENT_VAR_REGEX, (match) => {
+    const protectedText = text.replace(ENVIRONMENT_VARIABLE_MATCH_REGEX, (match) => {
       placeholders.push(match);
       return `"__CHROLLO_VAR_${placeholders.length - 1}__"`;
     });

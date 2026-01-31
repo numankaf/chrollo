@@ -16,6 +16,14 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
   color?: string;
 }
 
+// Plain environment variable KEY (no {{ }})
+// Use for: inputs, validation, forms
 export const ENVIRONMENT_KEY_REGEX = /^[a-zA-Z_][\w.-]*$/;
-export const ENVIRONMENT_VAR_REGEX = /\{\{\s*[a-zA-Z_][\w.-]*\s*}}/g;
-export const ENVIRONMENT_VAR_CAPTURE_REGEX = /^\{\{\s*([a-zA-Z_][\w.-]*)\s*}}$/;
+
+// Match ALL environment variable placeholders in text
+// Use for: replace, split, MatchDecorator
+export const ENVIRONMENT_VARIABLE_MATCH_REGEX = /\{\{\s*[a-zA-Z_][\w.-]*\s*}}/g;
+
+// Match EXACTLY ONE placeholder and CAPTURE the key
+// Use for: hover, tooltip, single-token parsing
+export const ENVIRONMENT_VARIABLE_CAPTURE_REGEX = /^\{\{\s*([a-zA-Z_][\w.-]*)\s*}}$/;

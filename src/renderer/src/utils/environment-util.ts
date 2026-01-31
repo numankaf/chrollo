@@ -1,7 +1,7 @@
 import useEnvironmentStore from '@/store/environment-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
 
-import { ENVIRONMENT_VAR_CAPTURE_REGEX, ENVIRONMENT_VAR_REGEX } from '@/types/common';
+import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
 
 export function resolveEnvironmentVariables(text: string): string {
   if (!text) return text;
@@ -18,8 +18,8 @@ export function resolveEnvironmentVariables(text: string): string {
 
   if (variableMap.size === 0) return text;
 
-  return text.replace(ENVIRONMENT_VAR_REGEX, (match) => {
-    const capture = ENVIRONMENT_VAR_CAPTURE_REGEX.exec(match);
+  return text.replace(ENVIRONMENT_VARIABLE_MATCH_REGEX, (match) => {
+    const capture = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(match);
     if (!capture) return match;
 
     const key = capture[1];
