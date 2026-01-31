@@ -1,6 +1,8 @@
 import useEnvironmentStore from '@/store/environment-store';
 import { getActiveWorkspaceSelection } from '@/utils/workspace-util';
 
+import { ENVIRONMENT_VAR_CAPTURE_REGEX, ENVIRONMENT_VAR_REGEX } from '@/types/common';
+
 export function resolveEnvironmentVariables(text: string): string {
   if (!text) return text;
 
@@ -8,37 +10,35 @@ export function resolveEnvironmentVariables(text: string): string {
   if (!activeEnvironmentId) return text;
 
   const environment = useEnvironmentStore.getState().environments.find((e) => e.id === activeEnvironmentId);
-  if (!environment || !environment.variables) return text;
 
-  // Resolve variables that are enabled
-  const variables = environment.variables.filter((v) => v.enabled);
+  if (!environment?.variables?.length) return text;
 
-  let resolvedText = text;
+  // Build lookup map for enabled variables
+  const variableMap = new Map(environment.variables.filter((v) => v.enabled).map((v) => [v.key, v.value]));
 
-  // Use a regex to find all {{key}} patterns
-  const variableRegex = /\{\{(.+?)\}\}/g;
+  if (variableMap.size === 0) return text;
 
-  resolvedText = resolvedText.replace(variableRegex, (match, key) => {
-    const variable = variables.find((v) => v.key === key.trim());
-    return variable ? variable.value : match;
+  return text.replace(ENVIRONMENT_VAR_REGEX, (match) => {
+    const capture = ENVIRONMENT_VAR_CAPTURE_REGEX.exec(match);
+    if (!capture) return match;
+
+    const key = capture[1];
+    return variableMap.get(key) ?? match;
   });
-
-  return resolvedText;
 }
 
-export function resolveObjectVariables<T>(obj: T): T {
-  if (!obj || typeof obj !== 'object') return obj;
-
-  const resolved = Array.isArray(obj) ? [...obj] : { ...obj };
-
-  for (const key in resolved) {
-    const value = resolved[key];
-    if (typeof value === 'string') {
-      resolved[key] = resolveEnvironmentVariables(value);
-    } else if (typeof value === 'object' && value !== null) {
-      resolved[key] = resolveObjectVariables(value);
-    }
+export function resolveObjectVariables<T>(value: T): T {
+  if (typeof value === 'string') {
+    return resolveEnvironmentVariables(value) as T;
   }
 
-  return resolved as T;
+  if (Array.isArray(value)) {
+    return value.map(resolveObjectVariables) as T;
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveObjectVariables(v)])) as T;
+  }
+
+  return value;
 }

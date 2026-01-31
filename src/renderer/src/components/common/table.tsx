@@ -78,13 +78,20 @@ function EditableTextCell<T>({ getValue, row, column, table }: CellContext<T, un
     setValue(initialValue);
   }, [initialValue]);
 
-  const placeholder = (column.columnDef.meta as { placeholder?: string } | undefined)?.placeholder;
+  const meta = column.columnDef.meta as { placeholder?: string; validationRegex?: RegExp } | undefined;
+  const placeholder = meta?.placeholder;
+  const validationRegex = meta?.validationRegex;
 
   return (
     <Input
       value={value}
       onChange={(e) => {
-        setValue(e.target.value);
+        const newValue = e.target.value;
+
+        if (validationRegex && newValue !== '' && !validationRegex.test(newValue)) {
+          return;
+        }
+        setValue(newValue);
       }}
       onBlur={onBlur}
       placeholder={placeholder}

@@ -64,6 +64,7 @@ function RequestBody() {
               <CodeEditor
                 value={field.value}
                 bodyType={bodyType}
+                enableVariables
                 onChange={(value) => {
                   form.setValue(BODY_DATA_PROPERTY_KEY, value, {
                     shouldDirty: true,

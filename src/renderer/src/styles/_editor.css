@@ -20,3 +20,17 @@
 .cm-panel.cm-search {
   background: var(--card) !important;
 }
+
+.cm-variable-exists,
+.cm-variable-exists * {
+  background-color: color-mix(in srgb, var(--primary), transparent 90%) !important;
+  color: var(--primary) !important;
+  border-radius: 0.25rem !important;
+}
+
+.cm-variable-not-exists,
+.cm-variable-not-exists * {
+  background-color: color-mix(in srgb, var(--destructive), transparent 90%) !important;
+  color: var(--destructive) !important;
+  border-radius: 0.25rem !important;
+}

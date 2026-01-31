@@ -3,6 +3,7 @@ import useEnvironmentStore from '@/store/environment-store';
 import useTabsStore from '@/store/tab-store';
 import { useShallow } from 'zustand/react/shallow';
 
+import { ENVIRONMENT_VAR_CAPTURE_REGEX, ENVIRONMENT_VAR_REGEX } from '@/types/common';
 import { cn } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
@@ -44,9 +45,9 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
   }, [debouncedEditingVar, activeEnvironment, updateEnvironment]);
 
   const renderMirror = () => {
-    const parts = currentText.split(/(\{\{.+?\}\})/g);
+    const parts = currentText.split(new RegExp(`(${ENVIRONMENT_VAR_REGEX.source})`, 'g'));
     return parts.map((part, i) => {
-      const match = part.match(/^\{\{(.+?)\}\}$/);
+      const match = ENVIRONMENT_VAR_CAPTURE_REGEX.exec(part);
       if (match) {
         const varKey = match[1].trim();
         const variable = variables.find((v) => v.key === varKey && v.enabled);
