@@ -5,6 +5,7 @@ import { Check, ChevronDown, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
@@ -13,6 +14,7 @@ import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 function WorkspaceSelector() {
   const navigate = useNavigate();
+  const { activeWorkspace } = useActiveItem();
   const { workspaces, activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
       workspaces: state.workspaces,
@@ -35,7 +37,14 @@ function WorkspaceSelector() {
       <PopoverContent align="start" className="w-[320px] p-1!">
         <div className="flex items-center justify-between p-1 gap-1">
           <PopoverClose asChild>
-            <Button size="sm" variant="ghost" onClick={() => navigate('/workspace/create')}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setActiveWorkspace(undefined);
+                navigate('/workspace/create');
+              }}
+            >
               <Plus size={16} />
             </Button>
           </PopoverClose>
@@ -53,6 +62,7 @@ function WorkspaceSelector() {
                   key={workspace.id}
                   onClick={async () => {
                     await setActiveWorkspace(workspace.id);
+                    if (activeWorkspace?.id === workspace.id) return;
                     navigate('/main/workspace/' + workspace.id);
                   }}
                   variant="ghost"

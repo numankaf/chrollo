@@ -3,6 +3,7 @@ import { REQUEST_VALIDATION_SCHEMA } from '@/constants/collection/request-schema
 import RequestBody from '@/features/collections/components/request/request-body';
 import RequestDocs from '@/features/collections/components/request/request-docs';
 import RequestHeaders from '@/features/collections/components/request/request-headers';
+import RequestScripts from '@/features/collections/components/request/request-scripts';
 import RequestViewHeader from '@/features/collections/components/request/request-view-header';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +15,6 @@ import { type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
-import ComingSoon from '@/components/app/empty/coming-soon';
 
 function RequestView() {
   const { activeTab } = useActiveItem();
@@ -39,7 +39,7 @@ function RequestView() {
   useEffect(() => {
     const dirtyKeys = Object.keys(dirtyFields);
     if (!watchedValues || dirtyKeys.length === 0) return;
-    const shouldDebounce = dirtyKeys.some((key) => ['destination', 'body', 'documentation'].includes(key));
+    const shouldDebounce = dirtyKeys.some((key) => ['destination', 'body', 'documentation', 'scripts'].includes(key));
     if (shouldDebounce) {
       const t = setTimeout(() => {
         updateCollectionItem(watchedValues as Request);
@@ -77,7 +77,7 @@ function RequestView() {
                 <RequestBody />
               </TabsContent>
               <TabsContent value="scripts" className="h-full absolute inset-0">
-                <ComingSoon />
+                <RequestScripts />
               </TabsContent>
             </div>
           </Tabs>

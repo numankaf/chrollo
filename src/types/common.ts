@@ -7,11 +7,23 @@ export interface Header {
 }
 
 export interface Scripts {
-  preRequest: string;
-  postRequest: string;
+  preRequest?: string;
+  postResponse?: string;
 }
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   size?: number | string;
   color?: string;
 }
+
+// Plain environment variable KEY (no {{ }})
+// Use for: inputs, validation, forms
+export const ENVIRONMENT_KEY_REGEX = /^[a-zA-Z_][\w.-]*$/;
+
+// Match ALL environment variable placeholders in text
+// Use for: replace, split, MatchDecorator
+export const ENVIRONMENT_VARIABLE_MATCH_REGEX = /\{\{\s*[a-zA-Z_][\w.-]*\s*}}/g;
+
+// Match EXACTLY ONE placeholder and CAPTURE the key
+// Use for: hover, tooltip, single-token parsing
+export const ENVIRONMENT_VARIABLE_CAPTURE_REGEX = /^\{\{\s*([a-zA-Z_][\w.-]*)\s*}}$/;

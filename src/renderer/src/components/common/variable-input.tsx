@@ -1,15 +1,75 @@
-import React, { useEffect, useState } from 'react';
-import useEnvironmentStore from '@/store/environment-store';
+import React from 'react';
 import useTabsStore from '@/store/tab-store';
+import { CodeXml } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
+import type { EnvironmentVariable } from '@/types/environment';
 import { cn } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
-import useDebouncedValue from '@/hooks/common/use-debounced-value';
+import useUpdateEnvironmentVariable from '@/hooks/environment/use-update-environment-variable';
 import { Badge } from '@/components/common/badge';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
+
+type VariableInputTooltipContentProps = {
+  variable?: EnvironmentVariable;
+  resolveFromScript?: boolean;
+};
+
+function VariableInputTooltipContent({ variable, resolveFromScript }: VariableInputTooltipContentProps) {
+  const { openTab } = useTabsStore(useShallow((s) => ({ openTab: s.openTab })));
+
+  const { activeEnvironment, editingVariable, setEditingVariable } = useUpdateEnvironmentVariable();
+
+  if (resolveFromScript && !variable) {
+    return (
+      <div className="flex flex-col gap-3 pointer-events-auto">
+        <div className="flex items-center gap-1">
+          <Badge variant="primary-bordered-ghost">
+            <CodeXml />
+          </Badge>
+          <div className="text-sm">Local</div>
+        </div>
+        <div className="text-sm h-8 border border-border rounded px-2 py-1 flex items-center">Resolved via script</div>
+      </div>
+    );
+  }
+
+  const exists = !!variable;
+
+  return (
+    <div className="flex flex-col gap-3 pointer-events-auto">
+      <div className="flex items-center gap-1">
+        <Badge variant="primary-bordered-ghost">E</Badge>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-5 px-1 text-sm"
+          onClick={() => activeEnvironment && openTab(activeEnvironment)}
+        >
+          {activeEnvironment?.name || 'No environment'}
+        </Button>
+      </div>
+
+      <div className="flex flex-col">
+        {exists && variable ? (
+          <Input
+            className="h-8 text-sm focus-visible:ring-primary/30"
+            value={editingVariable?.id === variable.id ? editingVariable.value : variable.value}
+            onFocus={() => setEditingVariable({ id: variable.id, value: variable.value })}
+            onChange={(e) => setEditingVariable({ id: variable.id, value: e.target.value })}
+          />
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            {activeEnvironment ? 'Variable not found in selected environment' : 'No environment selected'}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface VariableInputProps extends React.ComponentProps<'input'> {
   containerClassName?: string;
@@ -18,35 +78,12 @@ interface VariableInputProps extends React.ComponentProps<'input'> {
 function VariableInput({ className, containerClassName, value, onChange, ...props }: VariableInputProps) {
   const currentText = String(value || '');
   const { activeEnvironment } = useActiveItem();
-  const updateEnvironment = useEnvironmentStore((s) => s.updateEnvironment);
   const variables = activeEnvironment?.variables || [];
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
-
-  // Management for debounced editing of variables within tooltips
-  const [editingVar, setEditingVar] = useState<{ id: string; value: string } | null>(null);
-  const debouncedEditingVar = useDebouncedValue(editingVar, 500);
-
-  useEffect(() => {
-    if (!debouncedEditingVar || !activeEnvironment) return;
-
-    const { id, value: newValue } = debouncedEditingVar;
-    const variable = activeEnvironment.variables.find((v) => v.id === id);
-
-    // Only update if the value has actually changed to avoid infinite loops
-    if (variable && variable.value !== newValue) {
-      const newVariables = activeEnvironment.variables.map((v) => (v.id === id ? { ...v, value: newValue } : v));
-      updateEnvironment({ ...activeEnvironment, variables: newVariables }, { persist: true });
-    }
-  }, [debouncedEditingVar, activeEnvironment, updateEnvironment]);
 
   const renderMirror = () => {
-    const parts = currentText.split(/(\{\{.+?\}\})/g);
+    const parts = currentText.split(new RegExp(`(${ENVIRONMENT_VARIABLE_MATCH_REGEX.source})`, 'g'));
     return parts.map((part, i) => {
-      const match = part.match(/^\{\{(.+?)\}\}$/);
+      const match = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(part);
       if (match) {
         const varKey = match[1].trim();
         const variable = variables.find((v) => v.key === varKey && v.enabled);
@@ -68,38 +105,9 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
             <TooltipContent
               side="bottom"
               align="start"
-              className="z-100 max-w-80 p-3 overflow-hidden min-w-64 shadow-xl border bg-card text-foreground"
+              className="z-100 max-w-80 p-3 overflow-hidden min-w-64 shadow-xl border bg-card text-foreground animate-none"
             >
-              <div className="flex flex-col gap-3 pointer-events-auto">
-                <div className="flex items-center gap-1">
-                  <Badge variant="primary-bordered-ghost">E</Badge>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-5 px-1 text-sm"
-                    onClick={() => {
-                      if (activeEnvironment) openTab(activeEnvironment);
-                    }}
-                  >
-                    {activeEnvironment?.name || 'No environment'}
-                  </Button>
-                </div>
-                <div className="flex flex-col">
-                  {exists && variable ? (
-                    <Input
-                      autoFocus
-                      className="h-8 text-sm focus-visible:ring-primary/30"
-                      value={editingVar?.id === variable.id ? editingVar.value : variable.value}
-                      onFocus={() => setEditingVar({ id: variable.id, value: variable.value })}
-                      onChange={(e) => setEditingVar({ id: variable.id, value: e.target.value })}
-                    />
-                  ) : (
-                    <div className="text-sm text-muted-foreground">
-                      {activeEnvironment ? 'Variable not found in selected environment' : 'No environment selected'}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <VariableInputTooltipContent variable={variable} />
             </TooltipContent>
           </Tooltip>
         );
@@ -139,4 +147,4 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
   );
 }
 
-export { VariableInput };
+export { VariableInput, VariableInputTooltipContent };

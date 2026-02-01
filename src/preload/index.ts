@@ -129,6 +129,11 @@ const listener = {
       ipcRenderer.on('console:log', handler);
       return () => ipcRenderer.removeListener('console:log', handler);
     },
+    error: (callback: (data: unknown) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);
+      ipcRenderer.on('console:error', handler);
+      return () => ipcRenderer.removeListener('console:error', handler);
+    },
   },
 };
 // Use `contextBridge` APIs to expose Electron APIs to

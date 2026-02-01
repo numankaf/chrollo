@@ -74,7 +74,7 @@ export const COLLECTION_DEFAULT_VALUES: Omit<Collection, 'id' | 'name' | 'worksp
   children: [],
   scripts: {
     preRequest: '',
-    postRequest: '',
+    postResponse: '',
   },
 };
 
@@ -84,7 +84,7 @@ export const FOLDER_DEFAULT_VALUES: Omit<Folder, 'id' | 'name' | 'workspaceId' |
   children: [],
   scripts: {
     preRequest: '',
-    postRequest: '',
+    postResponse: '',
   },
 };
 
@@ -101,7 +101,7 @@ export const REQUEST_DEFAULT_VALUES: Omit<Request, 'id' | 'name' | 'workspaceId'
   headers: [],
   scripts: {
     preRequest: '',
-    postRequest: '',
+    postResponse: '',
   },
 };
 

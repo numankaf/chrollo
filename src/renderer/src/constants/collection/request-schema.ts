@@ -19,8 +19,8 @@ const REQUEST_VALIDATION_SCHEMA = z.object({
     type: z.enum(Object.values(REQUEST_BODY_TYPE) as [RequestBodyType, ...RequestBodyType[]]),
   }),
   scripts: z.object({
-    preRequest: z.string(),
-    postRequest: z.string(),
+    preRequest: z.string().optional(),
+    postResponse: z.string().optional(),
   }),
   documentation: z.string().optional(),
 });

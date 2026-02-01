@@ -4,6 +4,7 @@ import { MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
+import { ENVIRONMENT_KEY_REGEX } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useColumnVisibility } from '@/hooks/common/use-column-visibility';
@@ -57,6 +58,7 @@ function EnvironmentView() {
         accessorKey: 'key',
         meta: {
           placeholder: 'Add Key',
+          validationRegex: ENVIRONMENT_KEY_REGEX,
         },
         header: ({ table }) => (
           <div className="flex items-center gap-3 justify-between">
