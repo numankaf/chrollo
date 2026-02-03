@@ -26,14 +26,15 @@ function TabSelector() {
   const tabs = useWorkspaceTabs();
   const [search, setSearch] = useState('');
   const filteredTabs = applyTextSearch(tabs, search, (tab) => getTabItem(tab)!.name);
-  const { updateWorkspaceSelection } = useWorkspaceStore(
+  const { activeWorkspaceId } = useWorkspaceStore(
     useShallow((state) => ({
-      updateWorkspaceSelection: state.updateWorkspaceSelection,
+      activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
-  const { dirtyBeforeSaveByTab } = useTabsStore(
+  const { dirtyBeforeSaveByTab, setActiveTabId } = useTabsStore(
     useShallow((state) => ({
       dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
+      setActiveTabId: state.setActiveTabId,
     }))
   );
 
@@ -73,7 +74,12 @@ function TabSelector() {
                   key={tab.id}
                   value={tab.id}
                   className="gap-2 py-1! pr-0.5 [&:hover>span]:opacity-100"
-                  onSelect={() => updateWorkspaceSelection({ activeTabId: tab.id })}
+                  onSelect={() => {
+                    if (activeWorkspaceId) {
+                      setActiveTabId(activeWorkspaceId, tab.id);
+                    }
+                    setOpen(false);
+                  }}
                 >
                   <div className="flex-1 truncate">
                     <TabItemContent tab={tab} />

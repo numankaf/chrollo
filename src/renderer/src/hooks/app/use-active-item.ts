@@ -19,9 +19,10 @@ export function useActiveItem() {
     }))
   );
 
-  const { tabs } = useTabsStore(
+  const { tabs, activeTabIdByWorkspace } = useTabsStore(
     useShallow((state) => ({
       tabs: state.tabs,
+      activeTabIdByWorkspace: state.activeTabIdByWorkspace,
     }))
   );
 
@@ -43,7 +44,8 @@ export function useActiveItem() {
     ? (environments.find((e) => e.id === selection.activeEnvironmentId) ?? null)
     : null;
 
-  const activeTab = selection?.activeTabId ? (tabs.find((t) => t.id === selection.activeTabId) ?? null) : null;
+  const activeTabId = activeWorkspaceId ? activeTabIdByWorkspace[activeWorkspaceId] : undefined;
+  const activeTab = activeTabId ? (tabs.find((t) => t.id === activeTabId) ?? null) : null;
 
   return {
     activeWorkspace,

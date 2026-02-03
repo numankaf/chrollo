@@ -71,6 +71,7 @@ const useWorkspaceStore = create<WorkspaceStore>()((set, get) => ({
 
     if (isActive) {
       await get().setActiveWorkspace(undefined);
+      await window.api.workspace.setActive(undefined);
     }
 
     set((state) => {

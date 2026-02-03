@@ -41,7 +41,7 @@ function WorkspaceSelector() {
               size="sm"
               variant="ghost"
               onClick={() => {
-                setActiveWorkspace(undefined);
+                //setActiveWorkspace(undefined);
                 navigate('/workspace/create');
               }}
             >

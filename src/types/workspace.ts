@@ -29,7 +29,6 @@ export interface Workspace extends BaseAuditModel {
 export type WorkspaceSelectionValue = {
   activeConnectionId?: string | undefined;
   activeEnvironmentId?: string | undefined;
-  activeTabId?: string | undefined;
 };
 
 export type WorkspaceSelection = Record<string, WorkspaceSelectionValue>;
