@@ -7,7 +7,7 @@ import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
 import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
 import type { SocketMessage } from '@/types/socket';
-import type { Workspace, WorkspaceFile } from '@/types/workspace';
+import type { Workspace, WorkspaceFile, WorkspaceSelectionValue } from '@/types/workspace';
 
 interface Window {
   electron: ElectronAPI;
@@ -57,6 +57,8 @@ const api = {
     setActive: (workspaceId: string | undefined) =>
       ipcRenderer.invoke('workspaces:setActive', workspaceId) as Promise<void>,
     getActive: () => ipcRenderer.invoke('workspaces:getActive') as Promise<string | undefined>,
+    updateSelection: (workspaceId: string, values: Partial<WorkspaceSelectionValue>) =>
+      ipcRenderer.invoke('workspaces:updateSelection', workspaceId, values) as Promise<void>,
   },
 
   connection: {

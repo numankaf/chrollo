@@ -12,7 +12,14 @@ import { sortByDate } from '@/main/utils/sort-util';
 import { ipcMain } from 'electron';
 import { Level } from 'level';
 
-import { ACTIVE_WORKSPACE_ID_KEY, type Workspace, type WorkspaceFile } from '@/types/workspace';
+import {
+  ACTIVE_WORKSPACE_ID_KEY,
+  WORKSPACE_SELECTION_KEY,
+  type Workspace,
+  type WorkspaceFile,
+  type WorkspaceSelection,
+  type WorkspaceSelectionValue,
+} from '@/types/workspace';
 
 const workspaceDatabasePath = path.join(BASE_STORAGE_DIR, 'workspace');
 
@@ -55,6 +62,25 @@ async function deleteWorkspace(id: string): Promise<void> {
   }
 }
 
+async function getWorkspaceSelection(): Promise<WorkspaceSelection> {
+  try {
+    const data = await workspaceMetaDb.get(WORKSPACE_SELECTION_KEY);
+    if (!data) return {};
+    return JSON.parse(data);
+  } catch {
+    return {};
+  }
+}
+
+async function saveWorkspaceSelection(workspaceId: string, values: Partial<WorkspaceSelectionValue>) {
+  const selection = await getWorkspaceSelection();
+  selection[workspaceId] = {
+    ...(selection[workspaceId] ?? {}),
+    ...values,
+  };
+  await workspaceMetaDb.put(WORKSPACE_SELECTION_KEY, JSON.stringify(selection));
+}
+
 async function loadWorkspaces(): Promise<WorkspaceFile> {
   const results: Workspace[] = [];
 
@@ -63,10 +89,12 @@ async function loadWorkspaces(): Promise<WorkspaceFile> {
   }
 
   const activeWorkspaceId = await getActiveWorkspace();
+  const workspaceSelection = await getWorkspaceSelection();
 
   return {
     workspaces: sortByDate(results, 'createdDate'),
     activeWorkspaceId,
+    workspaceSelection,
   };
 }
 
@@ -126,5 +154,9 @@ export function initWorkspaceIpc() {
 
   ipcMain.handle('workspaces:getActive', async () => {
     return await getActiveWorkspace();
+  });
+
+  ipcMain.handle('workspaces:updateSelection', async (_, workspaceId, values) => {
+    return await saveWorkspaceSelection(workspaceId, values);
   });
 }
