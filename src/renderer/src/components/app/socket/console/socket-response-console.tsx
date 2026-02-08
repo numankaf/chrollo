@@ -154,8 +154,8 @@ function ResponseStatusBar({ trackedRequest }: { trackedRequest: TrackedRequest 
             <div className="h-px bg-border" />
 
             <div className="grid gap-1">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-foreground">
+              <div className="flex items-center justify-between text-foreground">
+                <div className="flex items-center gap-2">
                   <SocketConsoleMessageIcon messageType={SOCKET_MESSAGE_TYPE.SENT} size={12} />
                   <span>Request Size</span>
                 </div>
