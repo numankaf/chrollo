@@ -15,7 +15,6 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
@@ -87,7 +86,6 @@ const FILTER_DROPDOWN_ITEMS = [
 ];
 
 function CommandSearchDialog() {
-  const navigate = useNavigate();
   const { isOpen, setIsOpen, recentTabs, removeRecentTab } = useCommandSearchStore(
     useShallow((state) => ({
       isOpen: state.isOpen,
@@ -126,16 +124,15 @@ function CommandSearchDialog() {
   const onSelect = async (item: TabItem) => {
     setIsOpen(false);
 
-    if (item.modelType === BASE_MODEL_TYPE.WORKSPACE) {
+    if (item.modelType === BASE_MODEL_TYPE.WORKSPACE && item.id !== activeWorkspaceId) {
       await setActiveWorkspace(item.id);
-      navigate('/main/workspace/' + item.id);
     } else {
       const workspaceId = (item as Connection | Environment | InterceptionScript).workspaceId;
       if (workspaceId && workspaceId !== activeWorkspaceId) {
         await setActiveWorkspace(workspaceId);
       }
-      openTab(item as Tab);
     }
+    openTab(item as Tab);
   };
 
   const [parentElement, setParentElement] = useState<HTMLDivElement | null>(null);

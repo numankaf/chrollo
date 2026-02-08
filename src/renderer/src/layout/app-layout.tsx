@@ -9,6 +9,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { COMMANDS } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
 import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
+import { useNavigationSync } from '@/hooks/app/use-navigation-sync';
 import { useGlobalShortcuts } from '@/hooks/common/use-global-shortcuts';
 import CommandSearchDialog from '@/components/app/search/command-search-dialog';
 import AppLoader from '@/components/layout/app-loader';
@@ -32,6 +33,7 @@ function AppLayout() {
   }, [setIsOpen, isOpen]);
 
   useAppSubscriptions();
+  useNavigationSync();
   useGlobalShortcuts();
 
   const isReady = workspacesLoaded && (!activeWorkspaceId || appLoaded);
