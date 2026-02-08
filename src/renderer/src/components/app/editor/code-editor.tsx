@@ -12,6 +12,7 @@ import globals from 'globals';
 import { useTheme } from 'next-themes';
 
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { chrolloCompletions } from '@/components/app/editor/code-mirror/completions/chrollo-completions';
 import { variableExtension } from '@/components/app/editor/code-mirror/extensions/variable-extension';
 
@@ -67,6 +68,7 @@ function CodeEditor({
 }: CodeEditorProps) {
   const { activeTheme } = use(ActiveThemeProviderContext);
   const { activeEnvironment } = useActiveItem();
+  const { openTab } = useTabNavigation();
   const { resolvedTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
 
@@ -110,11 +112,11 @@ function CodeEditor({
     }
     if (enableVariables) {
       const enabledVariables = activeEnvironment?.variables.filter((v) => v.enabled);
-      _extensions.push(variableExtension(enabledVariables, enableResolveFromScript));
+      _extensions.push(variableExtension(enabledVariables, enableResolveFromScript, openTab));
     }
 
     return _extensions;
-  }, [bodyType, readOnly, enableVariables, activeEnvironment, enableResolveFromScript]);
+  }, [bodyType, readOnly, enableVariables, activeEnvironment, enableResolveFromScript, openTab]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;

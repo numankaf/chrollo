@@ -11,9 +11,14 @@ import { createRoot } from 'react-dom/client';
 
 import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
+import type { Tab } from '@/types/layout';
 import { VariableInputTooltipContent } from '@/components/common/variable-input';
 
-export function variableExtension(enabledVariables: EnvironmentVariable[] | undefined, resolveFromScript?: boolean) {
+export function variableExtension(
+  enabledVariables: EnvironmentVariable[] | undefined,
+  resolveFromScript?: boolean,
+  onEnvironmentClick?: (tab: Tab) => void
+) {
   const variableMatcher = new MatchDecorator({
     regexp: ENVIRONMENT_VARIABLE_MATCH_REGEX,
     decoration: (match: RegExpExecArray) => {
@@ -59,7 +64,11 @@ export function variableExtension(enabledVariables: EnvironmentVariable[] | unde
 
           root.render(
             <div className="p-3 min-w-64 bg-card border rounded-md shadow-xl text-foreground">
-              <VariableInputTooltipContent variable={variable} resolveFromScript={resolveFromScript} />
+              <VariableInputTooltipContent
+                variable={variable}
+                resolveFromScript={resolveFromScript}
+                onEnvironmentClick={onEnvironmentClick}
+              />
             </div>
           );
 

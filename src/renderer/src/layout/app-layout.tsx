@@ -1,4 +1,4 @@
-import { use, useEffect } from 'react';
+import { use, useEffect, useEffectEvent, useRef } from 'react';
 import { SIDEBAR_TOP_OFFSET } from '@/constants/layout-constants';
 import { AppContext } from '@/provider/app-init-provider';
 import useCommandSearchStore from '@/store/command-search-store';
@@ -11,6 +11,7 @@ import { commandBus } from '@/lib/command-bus';
 import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
 import { useNavigationSync } from '@/hooks/app/use-navigation-sync';
 import { useGlobalShortcuts } from '@/hooks/common/use-global-shortcuts';
+import { useLoadAndNavigateWorkspace } from '@/hooks/workspace/use-load-and-navigate-workspace';
 import CommandSearchDialog from '@/components/app/search/command-search-dialog';
 import AppLoader from '@/components/layout/app-loader';
 import Topbar from '@/components/layout/app-topbar';
@@ -22,6 +23,22 @@ function AppLayout() {
   const { isOpen, setIsOpen } = useCommandSearchStore(
     useShallow((state) => ({ isOpen: state.isOpen, setIsOpen: state.setIsOpen }))
   );
+
+  const loadAndNavigateWorkspace = useLoadAndNavigateWorkspace();
+
+  const didInitRef = useRef(false);
+
+  const loadWorkspaceInitialData = useEffectEvent(async (id: string) => {
+    await loadAndNavigateWorkspace(id);
+  });
+
+  useEffect(() => {
+    if (didInitRef.current) return;
+    if (!activeWorkspaceId) return;
+
+    didInitRef.current = true;
+    loadWorkspaceInitialData(activeWorkspaceId);
+  }, [activeWorkspaceId]);
 
   useEffect(() => {
     const unsubscribeGlobalSearch = commandBus.on(COMMANDS.GLOBAL_SEARCH, () => {
@@ -37,7 +54,6 @@ function AppLayout() {
   useGlobalShortcuts();
 
   const isReady = workspacesLoaded && (!activeWorkspaceId || appLoaded);
-
   return (
     <>
       <Topbar />
