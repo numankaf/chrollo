@@ -90,8 +90,6 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     await window.api.connection.delete(id);
 
-    useTabsStore.getState().closeTab(id);
-
     set({ connections: newConnections });
   },
 
@@ -117,7 +115,6 @@ const useConnectionStore = create<ConnectionStore>((set, get) => ({
 
     await window.api.connection.save(newConnection);
 
-    useTabsStore.getState().openTab(newConnection);
     return newConnection;
   },
 

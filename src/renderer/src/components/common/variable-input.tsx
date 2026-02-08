@@ -1,12 +1,12 @@
 import React from 'react';
-import useTabsStore from '@/store/tab-store';
 import { CodeXml } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
+import { nanoid } from 'nanoid';
 
 import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
 import { cn } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useUpdateEnvironmentVariable from '@/hooks/environment/use-update-environment-variable';
 import { Badge } from '@/components/common/badge';
 import { Button } from '@/components/common/button';
@@ -19,7 +19,7 @@ type VariableInputTooltipContentProps = {
 };
 
 function VariableInputTooltipContent({ variable, resolveFromScript }: VariableInputTooltipContentProps) {
-  const { openTab } = useTabsStore(useShallow((s) => ({ openTab: s.openTab })));
+  const { openTab } = useTabNavigation();
 
   const { activeEnvironment, editingVariable, setEditingVariable } = useUpdateEnvironmentVariable();
 
@@ -82,7 +82,7 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
 
   const renderMirror = () => {
     const parts = currentText.split(new RegExp(`(${ENVIRONMENT_VARIABLE_MATCH_REGEX.source})`, 'g'));
-    return parts.map((part, i) => {
+    return parts.map((part) => {
       const match = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(part);
       if (match) {
         const varKey = match[1].trim();
@@ -90,8 +90,7 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
         const exists = !!variable;
 
         return (
-          /* eslint-disable-next-line react/no-array-index-key */
-          <Tooltip key={`var-${i}`} delayDuration={500}>
+          <Tooltip key={nanoid()} delayDuration={500}>
             <TooltipTrigger asChild>
               <span
                 className={cn(
@@ -112,8 +111,7 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
           </Tooltip>
         );
       }
-      /* eslint-disable-next-line react/no-array-index-key */
-      return <span key={`text-${i}`}>{part}</span>;
+      return <span key={nanoid()}>{part}</span>;
     });
   };
 

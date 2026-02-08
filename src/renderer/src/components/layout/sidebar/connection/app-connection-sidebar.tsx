@@ -3,7 +3,6 @@ import AddConnectionPanel from '@/features/connections/components/common/add-con
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
-import useTabsStore from '@/store/tab-store';
 import { exportAsJson } from '@/utils/download-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getTabItem } from '@/utils/tab-util';
@@ -14,6 +13,7 @@ import { COMMANDS } from '@/types/command';
 import type { Connection } from '@/types/connection';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceConnections } from '@/hooks/workspace/use-workspace-connections';
 import InlineEditText from '@/components/common/inline-edit-text';
@@ -35,11 +35,8 @@ import { ConnectionIcon } from '@/components/icon/connection-icon';
 function ConnectionSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [operationsMenuOpenItemId, setOperationsMenuOpenItemId] = useState<string | null>(null);
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+
+  const { openTab, closeTab } = useTabNavigation();
   const { activeTab } = useActiveItem();
   const connections = useWorkspaceConnections();
 
@@ -60,8 +57,11 @@ function ConnectionSidebar() {
       if (activeTab) setEditingItemId(activeTab.id);
     });
 
-    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
-      if (activeTab) cloneConnection(activeTab.id);
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, async () => {
+      if (activeTab) {
+        const clonedConnection = await cloneConnection(activeTab.id);
+        openTab(clonedConnection);
+      }
     });
 
     const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
@@ -75,6 +75,7 @@ function ConnectionSidebar() {
           primaryLabel: 'Delete',
           onPrimaryAction: async () => {
             await deleteConnection(tabItem.id);
+            closeTab(tabItem.id);
           },
         });
       }
@@ -85,7 +86,7 @@ function ConnectionSidebar() {
       unsubscribeItemDuplicate?.();
       unsubscribeItemDelete?.();
     };
-  }, [activeTab, cloneConnection, deleteConnection]);
+  }, [activeTab, cloneConnection, deleteConnection, closeTab, openTab]);
 
   function getOperationItems(item: Connection): OperationButtonItem[] {
     return [
@@ -108,7 +109,8 @@ function ConnectionSidebar() {
           onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              await cloneConnection(item.id);
+              const clonedConnection = await cloneConnection(item.id);
+              openTab(clonedConnection);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -141,6 +143,7 @@ function ConnectionSidebar() {
               primaryLabel: 'Delete',
               onPrimaryAction: async () => {
                 await deleteConnection(item.id);
+                closeTab(item.id);
               },
             });
           },

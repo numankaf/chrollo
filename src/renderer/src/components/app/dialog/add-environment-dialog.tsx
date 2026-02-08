@@ -1,11 +1,11 @@
 import useEnvironmentStore from '@/store/environment-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import { ENVIRONMENT_DEFAULT_VALUES, type Environment } from '@/types/environment';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
 
 interface AddEnvironmentDialogProps {
@@ -26,11 +26,7 @@ export function AddEnvironmentDialog({ open, onOpenChange }: AddEnvironmentDialo
     }))
   );
 
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab } = useTabNavigation();
 
   async function onAddSubmit(values: { name: string }) {
     if (!activeWorkspaceId) {

@@ -1,4 +1,4 @@
-type Handler = () => void;
+type Handler = (payload?: unknown) => void;
 
 const listeners = new Map<string, Set<Handler>>();
 
@@ -12,7 +12,7 @@ export const commandBus = {
     return () => listeners.get(command)?.delete(handler);
   },
 
-  emit(command: string) {
-    listeners.get(command)?.forEach((handler) => handler());
+  emit(command: string, payload?: unknown) {
+    listeners.get(command)?.forEach((handler) => handler(payload));
   },
 };

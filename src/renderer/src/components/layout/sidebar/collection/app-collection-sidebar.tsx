@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useEffectEvent, useMemo, useState } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import { confirmDialog } from '@/store/confirm-dialog-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { getCollectionItemWithChildren, hasChildren } from '@/utils/collection-util';
 import { exportAsJson } from '@/utils/download-util';
@@ -32,6 +31,7 @@ import {
 import { COMMANDS } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useResizeObserver } from '@/hooks/common/use-resize-observer';
 import { useWorkspaceCollectionItemMap } from '@/hooks/workspace/use-workspace-collection-item-map';
@@ -58,11 +58,8 @@ type TreeDataItem = CollectionItem | EmptyPlaceholder;
 function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeDataItem>) {
   const item = node.data;
 
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab, closeTab } = useTabNavigation();
+
   const { saveCollectionItem, deleteCollectionItem, cloneCollectionItem, updateCollectionItem } =
     useCollectionItemStore(
       useShallow((state) => ({
@@ -92,9 +89,10 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
       node.edit();
     });
 
-    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, async () => {
       if (activeTab?.id !== item.id) return;
-      cloneCollectionItem(item.id);
+      const clonedCollectionItem = await cloneCollectionItem(item.id);
+      openTab(clonedCollectionItem);
     });
 
     const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
@@ -104,7 +102,10 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
         message: `Are you sure you want to delete "${item.name}"?`,
         primaryLabel: 'Delete',
         onPrimaryAction: async () => {
-          await deleteCollectionItem(item.id);
+          const deletedCollectionItemIds = await deleteCollectionItem(item.id);
+          for (const deletedId of deletedCollectionItemIds) {
+            closeTab(deletedId);
+          }
         },
       });
     });
@@ -114,7 +115,7 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
       unsubscribeItemDuplicate?.();
       unsubscribeItemDelete?.();
     };
-  }, [item, cloneCollectionItem, deleteCollectionItem, node, activeTab]);
+  }, [item, cloneCollectionItem, deleteCollectionItem, node, activeTab, openTab, closeTab]);
 
   if (!item) return null;
 
@@ -191,7 +192,8 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
           onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              await cloneCollectionItem(item.id);
+              const clonedCollectionItem = await cloneCollectionItem(item.id);
+              openTab(clonedCollectionItem);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -226,7 +228,10 @@ function CollectionItemNode({ node, style, dragHandle }: NodeRendererProps<TreeD
               message: `Are you sure you want to delete "${item.name}"?`,
               primaryLabel: 'Delete',
               onPrimaryAction: async () => {
-                await deleteCollectionItem(item.id);
+                const deletedCollectionItemIds = await deleteCollectionItem(item.id);
+                for (const deletedId of deletedCollectionItemIds) {
+                  closeTab(deletedId);
+                }
               },
             });
           },
@@ -377,11 +382,7 @@ function CollectionTreeCursor({ top }: CursorProps) {
 function CollectionSidebarItem(props: RowRendererProps<TreeDataItem>) {
   const { node, innerRef, attrs, children } = props;
   const { activeTab } = useActiveItem();
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab } = useTabNavigation();
   const collectionItem = node.data as CollectionItem;
 
   const isEmptyPlaceholder = node.data && 'isEmptyPlaceholder' in node.data;
@@ -463,11 +464,7 @@ export default function CollectionSidebar() {
       activeWorkspaceId: state.activeWorkspaceId,
     }))
   );
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab } = useTabNavigation();
   const { saveCollectionItem, moveCollectionItem } = useCollectionItemStore(
     useShallow((state) => ({
       saveCollectionItem: state.saveCollectionItem,

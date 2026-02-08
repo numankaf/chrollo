@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useCommandSearchStore from '@/store/command-search-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasParent } from '@/utils/collection-util';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -26,6 +25,7 @@ import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
 import type { Tab, TabItem } from '@/types/layout';
 import { useCommandSearchData, type SearchFilterType } from '@/hooks/app/use-command-search-data';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
@@ -106,7 +106,7 @@ function CommandSearchDialog() {
     selectedTypes,
   });
 
-  const openTab = useTabsStore((state) => state.openTab);
+  const { openTab } = useTabNavigation();
 
   const { activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({

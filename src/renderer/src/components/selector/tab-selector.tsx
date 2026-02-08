@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import useTabsStore from '@/store/tab-store';
-import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
-import { confirmTabClose, getTabItem } from '@/utils/tab-util';
+import { getTabItem } from '@/utils/tab-util';
 import { ChevronDown, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { COMMANDS } from '@/types/command';
 import { commandBus } from '@/lib/command-bus';
+import { useConfirmTabClose } from '@/hooks/app/use-confirm-tab-close';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
 import {
@@ -23,20 +24,19 @@ import TabItemContent from '@/components/tab/tab-item-content';
 
 function TabSelector() {
   const [open, setOpen] = useState(false);
+
+  const { openTab } = useTabNavigation();
   const tabs = useWorkspaceTabs();
   const [search, setSearch] = useState('');
+
   const filteredTabs = applyTextSearch(tabs, search, (tab) => getTabItem(tab)!.name);
-  const { activeWorkspaceId } = useWorkspaceStore(
-    useShallow((state) => ({
-      activeWorkspaceId: state.activeWorkspaceId,
-    }))
-  );
-  const { dirtyBeforeSaveByTab, setActiveTabId } = useTabsStore(
+
+  const { dirtyBeforeSaveByTab } = useTabsStore(
     useShallow((state) => ({
       dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
-      setActiveTabId: state.setActiveTabId,
     }))
   );
+  const { confirmTabClose } = useConfirmTabClose();
 
   useEffect(() => {
     const unsubscribeTabSearch = commandBus.on(COMMANDS.TAB_SEARCH, () => {
@@ -75,9 +75,7 @@ function TabSelector() {
                   value={tab.id}
                   className="gap-2 py-1! pr-0.5 [&:hover>span]:opacity-100"
                   onSelect={() => {
-                    if (activeWorkspaceId) {
-                      setActiveTabId(activeWorkspaceId, tab.id);
-                    }
+                    openTab(tab);
                     setOpen(false);
                   }}
                 >

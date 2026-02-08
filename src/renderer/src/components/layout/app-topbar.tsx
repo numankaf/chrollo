@@ -6,6 +6,7 @@ import AppText from '@/resources/app-text.svg';
 import useCommandSearchStore from '@/store/command-search-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Minus, Search, X } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/common/button';
@@ -16,6 +17,7 @@ import ConnectionSelector from '@/components/selector/connection-selector';
 import WorkspaceSelector from '@/components/selector/workspace-selector';
 
 function Topbar() {
+  const navigate = useNavigate();
   const { appLoaded, workspacesLoaded } = use(AppContext);
   const { activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
@@ -43,6 +45,7 @@ function Topbar() {
           <Button
             variant="ghost"
             onClick={() => {
+              navigate('/home');
               setActiveWorkspace(undefined);
             }}
           >

@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import useTabsStore from '@/store/tab-store';
 import { ArrowRight, Download } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +17,8 @@ import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 function WorkspaceButton() {
   const { activeWorkspace } = useActiveItem();
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+
+  const { openTab } = useTabNavigation();
 
   return (
     <>
