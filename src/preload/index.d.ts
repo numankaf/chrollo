@@ -64,6 +64,7 @@ declare global {
       environment: {
         save: (environment: Environment) => Promise<void>;
         get: (id: string) => Promise<Environment | undefined>;
+        getGlobal: (workspaceId: string) => Promise<Environment | undefined>;
         delete: (id: string) => Promise<void>;
         load: (workspaceId: string) => Promise<Environment[]>;
         clear: () => Promise<void>;

@@ -80,6 +80,8 @@ const api = {
   environment: {
     save: (environment: Environment) => ipcRenderer.invoke('environments:save', environment) as Promise<void>,
     get: (id: string) => ipcRenderer.invoke('environments:get', id) as Promise<Environment | undefined>,
+    getGlobal: (workspaceId: string) =>
+      ipcRenderer.invoke('environments:getGlobal', workspaceId) as Promise<Environment | undefined>,
     delete: (id: string) => ipcRenderer.invoke('environments:delete', id) as Promise<void>,
     load: (workspaceId: string) => ipcRenderer.invoke('environments:load', workspaceId) as Promise<Environment[]>,
     clear: () => ipcRenderer.invoke('environments:clear') as Promise<void>,

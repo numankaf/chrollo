@@ -14,7 +14,7 @@ import { SearchBar } from '@/components/common/search-input';
 import { AddEnvironmentDialog } from '@/components/app/dialog/add-environment-dialog';
 
 function EnvironmentSelector() {
-  const environments = useWorkspaceEnvironments();
+  const { environments } = useWorkspaceEnvironments();
   const { updateWorkspaceSelection } = useWorkspaceStore(
     useShallow((state) => ({
       updateWorkspaceSelection: state.updateWorkspaceSelection,

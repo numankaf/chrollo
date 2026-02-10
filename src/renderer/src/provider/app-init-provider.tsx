@@ -61,7 +61,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       setLoadingText('Loading environments...');
       const environments = await window.api.environment.load(workspaceId);
-      await useEnvironmentStore.getState().initEnvironmentStore(environments);
+      const globalEnvironment = await window.api.environment.getGlobal(workspaceId);
+      await useEnvironmentStore.getState().initEnvironmentStore(environments, globalEnvironment);
 
       setLoadingText('Loading interception scripts...');
       const interceptionScripts = await window.api.interceptionScript.load(workspaceId);

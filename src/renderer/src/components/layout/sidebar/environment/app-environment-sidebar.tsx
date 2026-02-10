@@ -4,7 +4,7 @@ import useEnvironmentStore from '@/store/environment-store';
 import { exportAsJson } from '@/utils/download-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getTabItem } from '@/utils/tab-util';
-import { CircleCheck, Container, Plus } from 'lucide-react';
+import { CircleCheck, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -19,6 +19,7 @@ import { Button } from '@/components/common/button';
 import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { SearchBar } from '@/components/common/search-input';
+import { Separator } from '@/components/common/separator';
 import {
   SidebarContent,
   SidebarGroup,
@@ -31,6 +32,7 @@ import OperationsButton, { type OperationButtonItem } from '@/components/app/but
 import { AddEnvironmentDialog } from '@/components/app/dialog/add-environment-dialog';
 import NoEnvironmentFound from '@/components/app/empty/no-environment-found';
 import NoResultsFound from '@/components/app/empty/no-results-found';
+import { EnvironmentIcon } from '@/components/icon/environment-icon';
 
 function EnvironmentsSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -39,7 +41,7 @@ function EnvironmentsSidebar() {
   const { openTab, closeTab } = useTabNavigation();
   const { activeTab, activeEnvironment } = useActiveItem();
 
-  const environments = useWorkspaceEnvironments();
+  const { environments, globalEnvironment } = useWorkspaceEnvironments();
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue<string>(search, 300);
@@ -176,10 +178,38 @@ function EnvironmentsSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              {globalEnvironment && (
+                <SidebarMenuButton
+                  onClick={() => openTab(globalEnvironment)}
+                  className="[&:hover>.operations-trigger]:block [&>.operations-trigger[data-state=open]]:inline-block"
+                  isActive={globalEnvironment.id === activeTab?.id}
+                  key={globalEnvironment.id}
+                  size="sm"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setOperationsMenuOpenItemId(globalEnvironment.id);
+                  }}
+                >
+                  <EnvironmentIcon isGlobal size={16} />
+                  <InlineEditText
+                    value={globalEnvironment.name}
+                    editing={globalEnvironment.id === editingItemId}
+                    onComplete={(value) => {
+                      updateEnvironment({ ...globalEnvironment, name: value }, { persist: true });
+                      setEditingItemId(null);
+                    }}
+                  />
+                </SidebarMenuButton>
+              )}
+
+              <Separator className="my-1" />
+
               {environments.length === 0 && <NoEnvironmentFound />}
+
               {environments.length !== 0 && filteredEnvironments.length === 0 && (
                 <NoResultsFound searchTerm={debouncedSearch} />
               )}
+
               {filteredEnvironments.map((item) => (
                 <SidebarMenuButton
                   onClick={() => openTab(item)}
@@ -192,7 +222,7 @@ function EnvironmentsSidebar() {
                     setOperationsMenuOpenItemId(item.id);
                   }}
                 >
-                  <Container size={16} />
+                  <EnvironmentIcon size={16} />
                   <InlineEditText
                     value={item.name}
                     editing={item.id === editingItemId}

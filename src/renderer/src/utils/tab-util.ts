@@ -72,19 +72,19 @@ export function getTabRoute(tab: Tab | null | undefined): string {
 export function getTabItem(tab: Tab): TabItem | undefined {
   switch (tab.modelType) {
     case BASE_MODEL_TYPE.WORKSPACE:
-      return useWorkspaceStore.getState().workspaces.find((w) => w.id === tab.id);
+      return useWorkspaceStore.getState().getWorkspace(tab.id);
 
     case BASE_MODEL_TYPE.CONNECTION:
-      return useConnectionStore.getState().connections.find((c) => c.id === tab.id);
+      return useConnectionStore.getState().getConnection(tab.id);
 
     case BASE_MODEL_TYPE.COLLECTION:
       return useCollectionItemStore.getState().collectionItemMap.get(tab.id);
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
-      return useEnvironmentStore.getState().environments.find((e) => e.id === tab.id);
+      return useEnvironmentStore.getState().getEnvironment(tab.id);
 
     case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
-      return useInterceptionScriptStore.getState().interceptionScripts.find((e) => e.id === tab.id);
+      return useInterceptionScriptStore.getState().getInterceptionScript(tab.id);
 
     default:
       return undefined;

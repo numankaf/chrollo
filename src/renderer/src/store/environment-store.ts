@@ -8,7 +8,8 @@ import type { Environment } from '@/types/environment';
 
 interface EnvironmentStore {
   environments: Environment[];
-  initEnvironmentStore: (connections: Environment[]) => Promise<void>;
+  globalEnvironment: Environment | null;
+  initEnvironmentStore: (environments: Environment[], globalEnvironment: Environment | undefined) => Promise<void>;
   getEnvironment: (id: string) => Environment | undefined;
   createEnvironment: (environment: Environment) => Promise<Environment>;
   updateEnvironment: (
@@ -24,12 +25,17 @@ interface EnvironmentStore {
 
 const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   environments: [],
-  initEnvironmentStore: async (environments: Environment[]) =>
+  globalEnvironment: null,
+  initEnvironmentStore: async (environments: Environment[], globalEnvironment: Environment | undefined) =>
     set(() => {
-      return { environments: environments };
+      return { environments: environments, globalEnvironment: globalEnvironment };
     }),
   getEnvironment: (id: string) => {
-    return get().environments.find((e) => e.id === id)!;
+    const globalEnvironment = get().globalEnvironment;
+    if (globalEnvironment?.id === id) {
+      return globalEnvironment;
+    }
+    return get().environments.find((e) => e.id === id);
   },
   createEnvironment: async (environment) => {
     const newEnvironment = { ...environment, id: nanoid() };

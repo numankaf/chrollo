@@ -9,15 +9,15 @@ import { BASE_MODEL_TYPE } from '@/types/base';
 import type { Tab } from '@/types/layout';
 
 export function useTabItem(tab: Tab | null) {
-  const { workspaces } = useWorkspaceStore(
+  const { getWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
-      workspaces: state.workspaces,
+      getWorkspace: state.getWorkspace,
     }))
   );
 
-  const { connections } = useConnectionStore(
+  const { getConnection } = useConnectionStore(
     useShallow((state) => ({
-      connections: state.connections,
+      getConnection: state.getConnection,
     }))
   );
 
@@ -27,33 +27,33 @@ export function useTabItem(tab: Tab | null) {
     }))
   );
 
-  const { environments } = useEnvironmentStore(
+  const { getEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
-      environments: state.environments,
+      getEnvironment: state.getEnvironment,
     }))
   );
 
-  const { interceptionScripts } = useInterceptionScriptStore(
+  const { getInterceptionScript } = useInterceptionScriptStore(
     useShallow((state) => ({
-      interceptionScripts: state.interceptionScripts,
+      getInterceptionScript: state.getInterceptionScript,
     }))
   );
 
   switch (tab?.modelType) {
     case BASE_MODEL_TYPE.WORKSPACE:
-      return workspaces.find((w) => w.id === tab.id);
+      return getWorkspace(tab.id);
 
     case BASE_MODEL_TYPE.CONNECTION:
-      return connections.find((c) => c.id === tab.id);
+      return getConnection(tab.id);
 
     case BASE_MODEL_TYPE.COLLECTION:
       return collectionItemMap.get(tab.id);
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
-      return environments.find((e) => e.id === tab.id);
+      return getEnvironment(tab.id);
 
     case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
-      return interceptionScripts.find((e) => e.id === tab.id);
+      return getInterceptionScript(tab.id);
 
     default:
       return undefined;
