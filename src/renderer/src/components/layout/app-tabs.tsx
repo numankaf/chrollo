@@ -3,7 +3,7 @@ import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
-import { confirmTabClose, getNextTab, getPreviousTab } from '@/utils/tab-util';
+import { getNextTab, getPreviousTab } from '@/utils/tab-util';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToFirstScrollableAncestor, restrictToHorizontalAxis } from '@dnd-kit/modifiers';
@@ -23,6 +23,8 @@ import { COMMANDS } from '@/types/command';
 import type { Tab } from '@/types/layout';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useConfirmTabClose } from '@/hooks/app/use-confirm-tab-close';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { useWorkspaceTabs } from '@/hooks/workspace/use-workspace-tabs';
 import { Button } from '@/components/common/button';
 import { Separator } from '@/components/common/separator';
@@ -39,7 +41,9 @@ interface SortableTabItemProps {
 }
 
 function SortableTabItem({ tab, isActive, dirtyBeforeSave, onOpenTab, onCloseTab }: SortableTabItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tab.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: tab.id,
+  });
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -98,10 +102,11 @@ function AppTabs() {
     }))
   );
 
-  const { addTab, openTab, moveTabItem, dirtyBeforeSaveByTab } = useTabsStore(
+  const { openTab, addTab } = useTabNavigation();
+  const { confirmTabClose } = useConfirmTabClose();
+
+  const { moveTabItem, dirtyBeforeSaveByTab } = useTabsStore(
     useShallow((state) => ({
-      addTab: state.addTab,
-      openTab: state.openTab,
       moveTabItem: state.moveTabItem,
       dirtyBeforeSaveByTab: state.dirtyBeforeSaveByTab,
     }))
@@ -159,7 +164,7 @@ function AppTabs() {
       unsubscribeTabNext?.();
       unsubscribeTabPrevious?.();
     };
-  }, [activeTab, openTab, tabs]);
+  }, [activeTab, openTab, tabs, confirmTabClose]);
 
   useEffect(() => {
     const el = scrollRef.current;

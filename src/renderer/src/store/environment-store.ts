@@ -75,8 +75,6 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
 
     await window.api.environment.delete(id);
 
-    useTabsStore.getState().closeTab(id);
-
     set({ environments: newEnvironments });
   },
 
@@ -102,7 +100,6 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
 
     set({ environments: newEnvironments });
 
-    useTabsStore.getState().openTab(newEnvironment);
     return newEnvironment;
   },
 

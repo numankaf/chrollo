@@ -1,21 +1,14 @@
-import { useAppConfigStore } from '@/store/app-config-store';
 import useCollectionItemStore from '@/store/collection-item-store';
-import { confirmDialog } from '@/store/confirm-dialog-store';
 import useConnectionStore from '@/store/connection-store';
 import useEnvironmentStore from '@/store/environment-store';
 import useInterceptionScriptStore from '@/store/interception-script-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { hasParent } from '@/utils/collection-util';
-import { saveItem } from '@/utils/save-registry-util';
-import { toast } from 'sonner';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { COLLECTION_TYPE, NULL_PARENT_ID, type CollectionItem } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
+import { COLLECTION_TYPE, type CollectionItem } from '@/types/collection';
 import { CONNECTION_TYPE } from '@/types/connection';
 import type { Tab, TabItem } from '@/types/layout';
-import { commandBus } from '@/lib/command-bus';
 
 export const scrollToTab = (tabId: string | null) => {
   if (!tabId) return;
@@ -25,9 +18,12 @@ export const scrollToTab = (tabId: string | null) => {
   });
 };
 
-export function getTabRoute(tab: Tab): string {
-  const item = getTabItem(tab);
-  switch (item?.modelType) {
+export function getTabRoute(tab: Tab | null | undefined): string {
+  const item = tab ? getTabItem(tab) : null;
+
+  if (!item) return '/main/empty';
+
+  switch (item.modelType) {
     case BASE_MODEL_TYPE.COLLECTION: {
       switch (item.collectionItemType) {
         case COLLECTION_TYPE.COLLECTION:
@@ -137,64 +133,6 @@ export function getTabBreadcrumbs(tab: Tab) {
     }
     default:
       return [tab];
-  }
-}
-
-export function confirmTabClose(tabId: string) {
-  const tab = useTabsStore.getState().tabs.find((t) => t.id === tabId) ?? null;
-  if (!tab) {
-    useTabsStore.getState().closeTab(tabId);
-    return;
-  }
-  const tabItem = getTabItem(tab);
-  if (!tabItem) {
-    useTabsStore.getState().closeTab(tab.id);
-    return;
-  }
-
-  const dirty = useTabsStore.getState().dirtyBeforeSaveByTab[tab.id];
-
-  const discardUnsavedChangesOnClose = useAppConfigStore.getState().applicationSettings.discardUnsavedChangesOnClose;
-
-  if (dirty && !discardUnsavedChangesOnClose) {
-    confirmDialog({
-      header: 'Do you want to save?',
-      message: `The tab ${tabItem.name} has unsaved changes.
-                If you close it now, those changes might be lost when you close the app.
-                Save your changes to avoid losing your work.`,
-      primaryLabel: 'Save Changes',
-      onPrimaryAction: async () => {
-        if (!tabItem) return;
-
-        if (
-          tabItem.modelType === BASE_MODEL_TYPE.COLLECTION &&
-          hasParent(tabItem) &&
-          tabItem.parentId === NULL_PARENT_ID
-        ) {
-          commandBus.emit(COMMANDS.ITEM_REQUEST_SAVE_TO_COLLECTION);
-          return;
-        }
-
-        const savedItem = await saveItem(tabItem);
-        toast.success(`${savedItem?.name} saved.`, { duration: 1000 });
-        useTabsStore.getState().closeTab(tab.id);
-      },
-      primaryButtonProps: { variant: 'default' },
-      secondaryLabel: "Don't Save",
-      onSecondaryAction: () => {
-        if (
-          tabItem.modelType === BASE_MODEL_TYPE.COLLECTION &&
-          hasParent(tabItem) &&
-          tabItem.parentId === NULL_PARENT_ID
-        ) {
-          window.api.collection.delete(tabItem.id);
-        }
-        useTabsStore.getState().closeTab(tab.id);
-      },
-      cancelLabel: 'Close',
-    });
-  } else {
-    useTabsStore.getState().closeTab(tab.id);
   }
 }
 

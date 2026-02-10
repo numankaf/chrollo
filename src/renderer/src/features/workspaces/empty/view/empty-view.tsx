@@ -1,21 +1,17 @@
 import AppLogo from '@/resources/app-logo.svg';
 import useCollectionItemStore from '@/store/collection-item-store';
-import useTabsStore from '@/store/tab-store';
 import { LayoutDashboard, Zap } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import { NULL_PARENT_ID, REQUEST_DEFAULT_VALUES, type Request } from '@/types/collection';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { Button } from '@/components/common/button';
 
 function EmptyView() {
   const { activeWorkspace } = useActiveItem();
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab } = useTabNavigation();
 
   const { saveCollectionItem } = useCollectionItemStore(
     useShallow((state) => ({
@@ -23,11 +19,7 @@ function EmptyView() {
     }))
   );
 
-  const { addTab } = useTabsStore(
-    useShallow((state) => ({
-      addTab: state.addTab,
-    }))
-  );
+  const { addTab } = useTabNavigation();
 
   const handleAddRequest = async () => {
     if (activeWorkspace) {

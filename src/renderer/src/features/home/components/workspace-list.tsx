@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react';
 import useWorkspaceStore from '@/store/workspace-store';
 import { applyTextSearch } from '@/utils/search-util';
 import { ChevronDown, Lock, Users } from 'lucide-react';
-import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import { WORKSPACE_TYPE, type WorkspaceType } from '@/types/workspace';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
+import { useLoadAndNavigateWorkspace } from '@/hooks/workspace/use-load-and-navigate-workspace';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
 import {
@@ -23,11 +23,11 @@ import NoWorkspaceFound from '@/components/app/empty/no-workspace-found';
 import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 export function WorkspaceList() {
-  const navigate = useNavigate();
-  const { workspaces, setActiveWorkspace } = useWorkspaceStore(
+  const loadAndNavigateWorkspace = useLoadAndNavigateWorkspace();
+
+  const { workspaces } = useWorkspaceStore(
     useShallow((state) => ({
       workspaces: state.workspaces,
-      setActiveWorkspace: state.setActiveWorkspace,
     }))
   );
 
@@ -104,9 +104,8 @@ export function WorkspaceList() {
               variant="outline"
               key={ws.id}
               className="hover:border-primary/50 transition-colors group/ws-item cursor-pointer"
-              onClick={() => {
-                setActiveWorkspace(ws.id);
-                navigate('/main/workspace/' + ws.id);
+              onClick={async () => {
+                await loadAndNavigateWorkspace(ws.id);
               }}
             >
               <WorkspaceTypeIcon

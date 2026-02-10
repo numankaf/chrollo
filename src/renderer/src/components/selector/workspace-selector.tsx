@@ -5,7 +5,7 @@ import { Check, ChevronDown, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useLoadAndNavigateWorkspace } from '@/hooks/workspace/use-load-and-navigate-workspace';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { ScrollArea } from '@/components/common/scroll-area';
@@ -14,7 +14,9 @@ import { WorkspaceTypeIcon } from '@/components/icon/workspace-type-icon';
 
 function WorkspaceSelector() {
   const navigate = useNavigate();
-  const { activeWorkspace } = useActiveItem();
+
+  const loadAndNavigateWorkspace = useLoadAndNavigateWorkspace();
+
   const { workspaces, activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
       workspaces: state.workspaces,
@@ -61,9 +63,7 @@ function WorkspaceSelector() {
                 <Button
                   key={workspace.id}
                   onClick={async () => {
-                    await setActiveWorkspace(workspace.id);
-                    if (activeWorkspace?.id === workspace.id) return;
-                    navigate('/main/workspace/' + workspace.id);
+                    await loadAndNavigateWorkspace(workspace.id);
                   }}
                   variant="ghost"
                   className="w-full justify-start gap-2 text-sm"

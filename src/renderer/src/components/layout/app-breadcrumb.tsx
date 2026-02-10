@@ -1,14 +1,13 @@
 import { Fragment, useState } from 'react';
 import { APP_BREADCRUMB_OFFSET } from '@/constants/layout-constants';
-import useTabsStore from '@/store/tab-store';
 import { isSaveButtonVisible, renameItem } from '@/utils/save-registry-util';
 import { getTabBreadcrumbs } from '@/utils/tab-util';
-import { useShallow } from 'zustand/react/shallow';
 
 import { type Tab, type TabItem } from '@/types/layout';
 import { cn } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useTabItem } from '@/hooks/app/use-tab-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '@/components/common/breadcrumb';
 import InlineEditText from '@/components/common/inline-edit-text';
 import { ScrollArea, ScrollBar } from '@/components/common/scroll-area';
@@ -18,11 +17,7 @@ import TabItemContent from '@/components/tab/tab-item-content';
 function AppBreadcrumb() {
   const { activeTab } = useActiveItem();
   const breadcrumbItems = activeTab ? getTabBreadcrumbs(activeTab) : [];
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab } = useTabNavigation();
 
   const [renamingId, setRenamingId] = useState<string | null>(null);
 

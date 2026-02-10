@@ -121,7 +121,7 @@ function StompConnectionView() {
                   connectStomp(data as StompConnection);
                 })()
               }
-              onDisconnect={(conenctionId: string) => disconnectStomp(conenctionId)}
+              onDisconnect={(connectionId: string) => disconnectStomp(connectionId)}
             />
           </div>
           <Tabs defaultValue="settings" className="w-full mt-3 h-full flex-1" variant="link">

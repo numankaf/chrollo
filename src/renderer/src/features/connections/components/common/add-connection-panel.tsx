@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { STOMP_DEFAULT_VALUES } from '@/constants/connection/stomp/stomp-schema';
 import useConnectionStore from '@/store/connection-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Plus } from 'lucide-react';
 import { nanoid } from 'nanoid';
@@ -9,6 +8,7 @@ import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
 import { AddItemDialog } from '@/components/app/dialog/add-item-dialog';
@@ -30,11 +30,7 @@ function AddConnectionPanel() {
     setDialogInfo(null);
   }
 
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+  const { openTab } = useTabNavigation();
 
   const { saveConnection } = useConnectionStore(
     useShallow((state) => ({

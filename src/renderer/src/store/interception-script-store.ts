@@ -64,7 +64,7 @@ const useInterceptionScriptStore = create<InterceptionScriptStore>((set, get) =>
     const newInterceptionScripts = get().interceptionScripts.filter((e) => e.id !== id);
 
     await window.api.interceptionScript.delete(id);
-    useTabsStore.getState().closeTab(id);
+
     set({ interceptionScripts: newInterceptionScripts });
   },
 
@@ -94,7 +94,6 @@ const useInterceptionScriptStore = create<InterceptionScriptStore>((set, get) =>
 
     set({ interceptionScripts: newInterceptionScripts });
 
-    useTabsStore.getState().openTab(newInterceptionScript);
     return newInterceptionScript;
   },
 

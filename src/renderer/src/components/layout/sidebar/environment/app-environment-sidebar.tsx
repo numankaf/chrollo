@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useEnvironmentStore from '@/store/environment-store';
-import useTabsStore from '@/store/tab-store';
 import { exportAsJson } from '@/utils/download-util';
 import { applyTextSearch } from '@/utils/search-util';
 import { getTabItem } from '@/utils/tab-util';
@@ -13,6 +12,7 @@ import { COMMANDS } from '@/types/command';
 import type { Environment } from '@/types/environment';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceEnvironments } from '@/hooks/workspace/use-workspace-environments';
 import { Button } from '@/components/common/button';
@@ -35,11 +35,8 @@ import NoResultsFound from '@/components/app/empty/no-results-found';
 function EnvironmentsSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [operationsMenuOpenItemId, setOperationsMenuOpenItemId] = useState<string | null>(null);
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+
+  const { openTab, closeTab } = useTabNavigation();
   const { activeTab, activeEnvironment } = useActiveItem();
 
   const environments = useWorkspaceEnvironments();
@@ -63,8 +60,11 @@ function EnvironmentsSidebar() {
       if (activeTab) setEditingItemId(activeTab.id);
     });
 
-    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
-      if (activeTab) cloneEnvironment(activeTab.id);
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, async () => {
+      if (activeTab) {
+        const clonedEnvironment = await cloneEnvironment(activeTab.id);
+        openTab(clonedEnvironment);
+      }
     });
 
     const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
@@ -78,6 +78,7 @@ function EnvironmentsSidebar() {
           primaryLabel: 'Delete',
           onPrimaryAction: async () => {
             await deleteEnvironment(tabItem.id);
+            closeTab(tabItem.id);
           },
         });
       }
@@ -88,7 +89,7 @@ function EnvironmentsSidebar() {
       unsubscribeItemDuplicate?.();
       unsubscribeItemDelete?.();
     };
-  }, [activeTab, cloneEnvironment, deleteEnvironment]);
+  }, [activeTab, cloneEnvironment, closeTab, deleteEnvironment, openTab]);
 
   function getOperationItems(item: Environment): OperationButtonItem[] {
     return [
@@ -111,7 +112,8 @@ function EnvironmentsSidebar() {
           onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              await cloneEnvironment(item.id);
+              const clonedEnvironment = await cloneEnvironment(item.id);
+              openTab(clonedEnvironment);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -144,6 +146,7 @@ function EnvironmentsSidebar() {
               primaryLabel: 'Delete',
               onPrimaryAction: async () => {
                 await deleteEnvironment(item.id);
+                closeTab(item.id);
               },
             });
           },

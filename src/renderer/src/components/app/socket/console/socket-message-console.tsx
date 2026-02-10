@@ -276,7 +276,7 @@ function SocketMessageConsole() {
 
   return (
     <>
-      <header className="flex items-center gap-2 py-2 h-8 px-4">
+      <header className="flex items-center gap-2 py-2 h-8 px-3">
         <SearchBar
           placeholder="Search messages"
           className="flex-1 max-w-60"
@@ -320,7 +320,7 @@ function SocketMessageConsole() {
           Clear Messages
         </Button>
       </header>
-      <ScrollArea viewportRef={parentRef} className="h-full">
+      <ScrollArea viewportRef={parentRef} className="py-2 px-3" style={{ height: 'calc(100% - 2rem)' }}>
         <Accordion
           type="multiple"
           className="w-full max-w-full relative"
@@ -329,7 +329,7 @@ function SocketMessageConsole() {
           {messages.length === 0 && <NoSocketMessageFound />}
           {messages.length !== 0 && filteredMessages.length === 0 && <NoResultsFound searchTerm={debouncedSearch} />}
           <div
-            className="px-4 w-full absolute top-0 left-0"
+            className="w-full absolute top-0 left-0"
             style={{
               transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
             }}

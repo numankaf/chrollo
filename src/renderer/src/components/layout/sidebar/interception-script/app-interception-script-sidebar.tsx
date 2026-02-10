@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { confirmDialog } from '@/store/confirm-dialog-store';
 import useInterceptionScriptStore from '@/store/interception-script-store';
-import useTabsStore from '@/store/tab-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { exportAsJson } from '@/utils/download-util';
 import { applyTextSearch } from '@/utils/search-util';
@@ -16,6 +15,7 @@ import { COMMANDS } from '@/types/command';
 import type { InterceptionScript } from '@/types/interception-script';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useDebouncedValue from '@/hooks/common/use-debounced-value';
 import { useWorkspaceInterceptionScripts } from '@/hooks/workspace/use-workspace-interception-scripts';
 import { Button } from '@/components/common/button';
@@ -37,11 +37,8 @@ import NoResultsFound from '@/components/app/empty/no-results-found';
 
 function AppInterceptionScriptSidebar() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const { openTab } = useTabsStore(
-    useShallow((state) => ({
-      openTab: state.openTab,
-    }))
-  );
+
+  const { openTab, closeTab } = useTabNavigation();
   const { activeTab } = useActiveItem();
 
   const [operationsMenuOpenItemId, setOperationsMenuOpenItemId] = useState<string | null>(null);
@@ -96,8 +93,11 @@ function AppInterceptionScriptSidebar() {
       if (activeTab) setEditingItemId(activeTab.id);
     });
 
-    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, () => {
-      if (activeTab) cloneInterceptionScript(activeTab.id);
+    const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, async () => {
+      if (activeTab) {
+        const clonedScript = await cloneInterceptionScript(activeTab.id);
+        openTab(clonedScript);
+      }
     });
 
     const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
@@ -111,6 +111,7 @@ function AppInterceptionScriptSidebar() {
           primaryLabel: 'Delete',
           onPrimaryAction: async () => {
             await deleteInterceptionScript(tabItem.id);
+            closeTab(tabItem.id);
           },
         });
       }
@@ -121,7 +122,7 @@ function AppInterceptionScriptSidebar() {
       unsubscribeItemDuplicate?.();
       unsubscribeItemDelete?.();
     };
-  }, [activeTab, cloneInterceptionScript, deleteInterceptionScript]);
+  }, [activeTab, cloneInterceptionScript, closeTab, deleteInterceptionScript, openTab]);
 
   function getOperationItems(item: InterceptionScript): OperationButtonItem[] {
     return [
@@ -144,7 +145,8 @@ function AppInterceptionScriptSidebar() {
           onClick: async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation();
             try {
-              await cloneInterceptionScript(item.id);
+              const clonedScript = await cloneInterceptionScript(item.id);
+              openTab(clonedScript);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(error?.message);
@@ -177,6 +179,7 @@ function AppInterceptionScriptSidebar() {
               primaryLabel: 'Delete',
               onPrimaryAction: async () => {
                 await deleteInterceptionScript(item.id);
+                closeTab(item.id);
               },
             });
           },

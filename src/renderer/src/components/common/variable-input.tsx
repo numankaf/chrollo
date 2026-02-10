@@ -1,12 +1,14 @@
 import React from 'react';
-import useTabsStore from '@/store/tab-store';
 import { CodeXml } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
+import { nanoid } from 'nanoid';
 
+import { BASE_MODEL_TYPE } from '@/types/base';
 import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
+import type { Tab } from '@/types/layout';
 import { cn } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useUpdateEnvironmentVariable from '@/hooks/environment/use-update-environment-variable';
 import { Badge } from '@/components/common/badge';
 import { Button } from '@/components/common/button';
@@ -16,11 +18,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 type VariableInputTooltipContentProps = {
   variable?: EnvironmentVariable;
   resolveFromScript?: boolean;
+  onEnvironmentClick?: (tab: Tab) => void;
 };
 
-function VariableInputTooltipContent({ variable, resolveFromScript }: VariableInputTooltipContentProps) {
-  const { openTab } = useTabsStore(useShallow((s) => ({ openTab: s.openTab })));
-
+function VariableInputTooltipContent({
+  variable,
+  resolveFromScript,
+  onEnvironmentClick,
+}: VariableInputTooltipContentProps) {
   const { activeEnvironment, editingVariable, setEditingVariable } = useUpdateEnvironmentVariable();
 
   if (resolveFromScript && !variable) {
@@ -47,7 +52,10 @@ function VariableInputTooltipContent({ variable, resolveFromScript }: VariableIn
           variant="ghost"
           size="sm"
           className="h-5 px-1 text-sm"
-          onClick={() => activeEnvironment && openTab(activeEnvironment)}
+          onClick={() =>
+            activeEnvironment &&
+            onEnvironmentClick?.({ id: activeEnvironment.id, modelType: BASE_MODEL_TYPE.ENVIRONMENT })
+          }
         >
           {activeEnvironment?.name || 'No environment'}
         </Button>
@@ -78,11 +86,12 @@ interface VariableInputProps extends React.ComponentProps<'input'> {
 function VariableInput({ className, containerClassName, value, onChange, ...props }: VariableInputProps) {
   const currentText = String(value || '');
   const { activeEnvironment } = useActiveItem();
+  const { openTab } = useTabNavigation();
   const variables = activeEnvironment?.variables || [];
 
   const renderMirror = () => {
     const parts = currentText.split(new RegExp(`(${ENVIRONMENT_VARIABLE_MATCH_REGEX.source})`, 'g'));
-    return parts.map((part, i) => {
+    return parts.map((part) => {
       const match = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(part);
       if (match) {
         const varKey = match[1].trim();
@@ -90,8 +99,7 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
         const exists = !!variable;
 
         return (
-          /* eslint-disable-next-line react/no-array-index-key */
-          <Tooltip key={`var-${i}`} delayDuration={500}>
+          <Tooltip key={nanoid()} delayDuration={500}>
             <TooltipTrigger asChild>
               <span
                 className={cn(
@@ -107,13 +115,12 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
               align="start"
               className="z-100 max-w-80 p-3 overflow-hidden min-w-64 shadow-xl border bg-card text-foreground animate-none"
             >
-              <VariableInputTooltipContent variable={variable} />
+              <VariableInputTooltipContent variable={variable} onEnvironmentClick={(tab) => openTab(tab)} />
             </TooltipContent>
           </Tooltip>
         );
       }
-      /* eslint-disable-next-line react/no-array-index-key */
-      return <span key={`text-${i}`}>{part}</span>;
+      return <span key={nanoid()}>{part}</span>;
     });
   };
 

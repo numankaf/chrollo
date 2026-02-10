@@ -123,7 +123,7 @@ export function initStompIpc() {
 
     const { id, name, prefix, url, connectHeaders, subscriptions } = connection;
     if (stompClients[id]) {
-      stompClients[id].deactivate();
+      await stompClients[id].deactivate();
       delete stompClients[id];
     }
 
@@ -376,26 +376,26 @@ export function initStompIpc() {
   // ------------------------------
   // DISCONNECT
   // ------------------------------
-  ipcMain.on('stomp:disconnect', (_, id: string) => {
+  ipcMain.on('stomp:disconnect', async (_, id: string) => {
     const client = stompClients[id];
     if (client) {
-      client.deactivate();
+      await client.deactivate();
       delete stompClients[id];
-      mainWindow.webContents.send('stomp:status', {
-        connectionId: id,
-        status: CONNECTION_STATUS.DISCONNECTED,
-        timestamp: Date.now(),
-      } as ConnectionStatusData);
       logger.info(`Disconnected STOMP (${id})`);
     }
+    mainWindow.webContents.send('stomp:status', {
+      connectionId: id,
+      status: CONNECTION_STATUS.DISCONNECTED,
+      timestamp: Date.now(),
+    } as ConnectionStatusData);
   });
 
   // ------------------------------
   // DISCONNECT ALL
   // ------------------------------
   ipcMain.on('stomp:disconnectAll', () => {
-    Object.entries(stompClients).forEach(([id, client]) => {
-      client.deactivate();
+    Object.entries(stompClients).forEach(async ([id, client]) => {
+      await client.deactivate();
       delete stompClients[id];
     });
     logger.info(`All STOMP connections closed`);

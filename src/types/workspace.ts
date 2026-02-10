@@ -2,6 +2,8 @@ import { BASE_MODEL_TYPE, type BaseAuditModel } from '@/types/base';
 
 export const ACTIVE_WORKSPACE_ID_KEY = 'activeWorkspaceIdKey';
 
+export const WORKSPACE_SELECTION_KEY = 'workspaceSelectionKey';
+
 export const WORKSPACE_TYPE = {
   PUBLIC: 'PUBLIC',
   INTERNAL: 'INTERNAL',
@@ -27,7 +29,6 @@ export interface Workspace extends BaseAuditModel {
 export type WorkspaceSelectionValue = {
   activeConnectionId?: string | undefined;
   activeEnvironmentId?: string | undefined;
-  activeTabId?: string | undefined;
 };
 
 export type WorkspaceSelection = Record<string, WorkspaceSelectionValue>;
@@ -35,6 +36,7 @@ export type WorkspaceSelection = Record<string, WorkspaceSelectionValue>;
 export type WorkspaceFile = {
   workspaces: Workspace[];
   activeWorkspaceId: string | undefined;
+  workspaceSelection: WorkspaceSelection;
 };
 
 export const WORKSPACE_DEFAULT_VALUES: Omit<Workspace, 'id' | 'name' | 'type'> = {

@@ -1,4 +1,3 @@
-import useTabsStore from '@/store/tab-store';
 import { cloneCollectionItemDeep, deleteItemAndChildren, hasChildren, hasParent } from '@/utils/collection-util';
 import { create } from 'zustand';
 
@@ -14,7 +13,7 @@ interface CollectionItemStore {
       persist?: boolean;
     }
   ) => Promise<CollectionItem>;
-  deleteCollectionItem: (id: string) => Promise<void>;
+  deleteCollectionItem: (id: string) => Promise<string[]>;
   cloneCollectionItem: (id: string) => Promise<CollectionItem>;
   saveCollectionItem: (collection: CollectionItem) => Promise<CollectionItem>;
   moveCollectionItem: (id: string, parentId: string | null, index: number) => Promise<void>;
@@ -109,9 +108,7 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
 
     set({ collectionItemMap: currentMap });
 
-    for (const deletedId of deletedIds) {
-      useTabsStore.getState().closeTab(deletedId);
-    }
+    return deletedIds;
   },
 
   cloneCollectionItem: async (id: string) => {
@@ -145,8 +142,6 @@ const useCollectionItemStore = create<CollectionItemStore>((set, get) => ({
     if (!clonedCollectionItem) {
       throw new Error(`Failed to clone collection item with id: ${id}`);
     }
-
-    useTabsStore.getState().openTab(clonedCollectionItem);
 
     return clonedCollectionItem;
   },
