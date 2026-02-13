@@ -10,10 +10,10 @@ import { cn } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import useUpdateEnvironmentVariable from '@/hooks/environment/use-update-environment-variable';
-import { Badge } from '@/components/common/badge';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
+import { EnvironmentIcon } from '@/components/icon/environment-icon';
 
 type VariableInputTooltipContentProps = {
   variable?: EnvironmentVariable;
@@ -26,15 +26,13 @@ function VariableInputTooltipContent({
   resolveFromScript,
   onEnvironmentClick,
 }: VariableInputTooltipContentProps) {
-  const { activeEnvironment, editingVariable, setEditingVariable } = useUpdateEnvironmentVariable();
+  const { activeEnvironment, globalEnvironment, editingVariable, setEditingVariable } = useUpdateEnvironmentVariable();
 
   if (resolveFromScript && !variable) {
     return (
       <div className="flex flex-col gap-3 pointer-events-auto">
         <div className="flex items-center gap-1">
-          <Badge variant="primary-bordered-ghost">
-            <CodeXml />
-          </Badge>
+          <CodeXml size={14} />
           <div className="text-sm">Local</div>
         </div>
         <div className="text-sm h-8 border border-border rounded px-2 py-1 flex items-center">Resolved via script</div>
@@ -42,27 +40,28 @@ function VariableInputTooltipContent({
     );
   }
 
-  const exists = !!variable;
+  const isGlobal = globalEnvironment?.variables.some((v) => v.id === variable?.id);
+  const targetEnvironment = isGlobal ? globalEnvironment : activeEnvironment;
 
   return (
     <div className="flex flex-col gap-3 pointer-events-auto">
       <div className="flex items-center gap-1">
-        <Badge variant="primary-bordered-ghost">E</Badge>
         <Button
           variant="ghost"
           size="sm"
-          className="h-5 px-1 text-sm"
+          className="h-5 pl-1! text-sm font-medium"
           onClick={() =>
-            activeEnvironment &&
-            onEnvironmentClick?.({ id: activeEnvironment.id, modelType: BASE_MODEL_TYPE.ENVIRONMENT })
+            targetEnvironment &&
+            onEnvironmentClick?.({ id: targetEnvironment.id, modelType: BASE_MODEL_TYPE.ENVIRONMENT })
           }
         >
-          {activeEnvironment?.name || 'No environment'}
+          <EnvironmentIcon isGlobal={isGlobal} size={14} />
+          {targetEnvironment?.name || (isGlobal ? 'Global' : 'No environment')}
         </Button>
       </div>
 
       <div className="flex flex-col">
-        {exists && variable ? (
+        {variable ? (
           <Input
             className="h-8 text-sm focus-visible:ring-primary/30"
             value={editingVariable?.id === variable.id ? editingVariable.value : variable.value}
@@ -71,7 +70,7 @@ function VariableInputTooltipContent({
           />
         ) : (
           <div className="text-sm text-muted-foreground">
-            {activeEnvironment ? 'Variable not found in selected environment' : 'No environment selected'}
+            {targetEnvironment ? 'Variable not found' : 'No environment selected'}
           </div>
         )}
       </div>
@@ -85,9 +84,13 @@ interface VariableInputProps extends React.ComponentProps<'input'> {
 
 function VariableInput({ className, containerClassName, value, onChange, ...props }: VariableInputProps) {
   const currentText = String(value || '');
-  const { activeEnvironment } = useActiveItem();
+  const { activeEnvironment, globalEnvironment } = useActiveItem();
   const { openTab } = useTabNavigation();
-  const variables = activeEnvironment?.variables || [];
+  const envVars = activeEnvironment?.variables || [];
+  const globalVars = globalEnvironment?.variables || [];
+
+  // Environment precedence is higher, so environment variables come first
+  const variables = [...envVars, ...globalVars];
 
   const renderMirror = () => {
     const parts = currentText.split(new RegExp(`(${ENVIRONMENT_VARIABLE_MATCH_REGEX.source})`, 'g'));

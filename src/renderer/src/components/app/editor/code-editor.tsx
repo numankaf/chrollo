@@ -67,7 +67,7 @@ function CodeEditor({
   ...props
 }: CodeEditorProps) {
   const { activeTheme } = use(ActiveThemeProviderContext);
-  const { activeEnvironment } = useActiveItem();
+  const { activeEnvironment, globalEnvironment } = useActiveItem();
   const { openTab } = useTabNavigation();
   const { resolvedTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
@@ -111,12 +111,17 @@ function CodeEditor({
         break;
     }
     if (enableVariables) {
-      const enabledVariables = activeEnvironment?.variables.filter((v) => v.enabled);
-      _extensions.push(variableExtension(enabledVariables, enableResolveFromScript, openTab));
+      const globalVars = globalEnvironment?.variables.filter((v) => v.enabled) || [];
+      const envVars = activeEnvironment?.variables.filter((v) => v.enabled) || [];
+
+      // Environment precedence is higher, so environment variables come first in the merged list
+      const mergedVariables = [...envVars, ...globalVars];
+
+      _extensions.push(variableExtension(mergedVariables, enableResolveFromScript, openTab));
     }
 
     return _extensions;
-  }, [bodyType, readOnly, enableVariables, activeEnvironment, enableResolveFromScript, openTab]);
+  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, enableResolveFromScript, openTab]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;
