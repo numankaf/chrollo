@@ -52,12 +52,13 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
     let updatedEnvironment = environment;
 
     set((state) => {
-      const existing = state.environments.find((e) => e.id === environment.id);
-
+      const existing = get().getEnvironment(environment.id);
       if (existing) {
         updatedEnvironment = { ...existing, ...environment };
       }
-
+      if (updatedEnvironment.id === get().globalEnvironment?.id) {
+        return { globalEnvironment: updatedEnvironment };
+      }
       return {
         environments: state.environments.map((e) => (e.id === environment.id ? updatedEnvironment : e)),
       };
@@ -72,6 +73,9 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   },
 
   deleteEnvironment: async (id) => {
+    if (id === get().globalEnvironment?.id) {
+      return;
+    }
     const newEnvironments = get().environments.filter((e) => e.id !== id);
     const currentActiveEnvironmentId = getActiveWorkspaceSelection('activeEnvironmentId');
 
@@ -110,7 +114,8 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   },
 
   saveEnvironment: async (environment) => {
-    const exists = get().environments.some((e) => e.id === environment.id);
+    const exists =
+      get().environments.some((e) => e.id === environment.id) || get().globalEnvironment?.id === environment.id;
     const updatedEnvironment = exists
       ? await get().updateEnvironment(environment, { persist: true })
       : await get().createEnvironment(environment);

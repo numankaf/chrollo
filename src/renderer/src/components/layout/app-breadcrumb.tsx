@@ -1,7 +1,9 @@
 import { Fragment, useState } from 'react';
 import { APP_BREADCRUMB_OFFSET } from '@/constants/layout-constants';
+import useEnvironmentStore from '@/store/environment-store';
 import { isSaveButtonVisible, renameItem } from '@/utils/save-registry-util';
 import { getTabBreadcrumbs } from '@/utils/tab-util';
+import { useShallow } from 'zustand/react/shallow';
 
 import { type Tab, type TabItem } from '@/types/layout';
 import { cn } from '@/lib/utils';
@@ -16,6 +18,11 @@ import TabItemContent from '@/components/tab/tab-item-content';
 
 function AppBreadcrumb() {
   const { activeTab } = useActiveItem();
+  const { globalEnvironment } = useEnvironmentStore(
+    useShallow((state) => ({
+      globalEnvironment: state.globalEnvironment,
+    }))
+  );
   const breadcrumbItems = activeTab ? getTabBreadcrumbs(activeTab) : [];
   const { openTab } = useTabNavigation();
 
@@ -43,7 +50,7 @@ function AppBreadcrumb() {
                   >
                     <BreadcrumbItemEditable
                       tab={crumb}
-                      isEditing={isLast && isRenaming}
+                      isEditing={isLast && isRenaming && crumb.id !== globalEnvironment?.id}
                       onComplete={() => setRenamingId(null)}
                     />
                   </BreadcrumbItem>

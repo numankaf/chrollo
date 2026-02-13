@@ -63,14 +63,14 @@ function EnvironmentsSidebar() {
     });
 
     const unsubscribeItemDuplicate = commandBus.on(COMMANDS.ITEM_DUPLICATE, async () => {
-      if (activeTab) {
+      if (activeTab && activeTab.id !== globalEnvironment?.id) {
         const clonedEnvironment = await cloneEnvironment(activeTab.id);
         openTab(clonedEnvironment);
       }
     });
 
     const unsubscribeItemDelete = commandBus.on(COMMANDS.ITEM_DELETE, () => {
-      if (activeTab) {
+      if (activeTab && activeTab.id !== globalEnvironment?.id) {
         const tabItem = getTabItem(activeTab);
         if (!tabItem) return;
 
@@ -91,7 +91,7 @@ function EnvironmentsSidebar() {
       unsubscribeItemDuplicate?.();
       unsubscribeItemDelete?.();
     };
-  }, [activeTab, cloneEnvironment, closeTab, deleteEnvironment, openTab]);
+  }, [activeTab, cloneEnvironment, closeTab, deleteEnvironment, globalEnvironment?.id, openTab]);
 
   function getOperationItems(item: Environment): OperationButtonItem[] {
     return [
