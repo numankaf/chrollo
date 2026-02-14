@@ -5,7 +5,12 @@ import { REQUESTS_API } from '@/components/app/editor/code-mirror/completions/ap
 import { makeInfo } from '@/components/app/editor/code-mirror/completions/api/shared';
 import { STOMP_API } from '@/components/app/editor/code-mirror/completions/api/stomp';
 import { UTILS_API } from '@/components/app/editor/code-mirror/completions/api/utils';
-import { VARIABLES_API } from '@/components/app/editor/code-mirror/completions/api/variables';
+import {
+  VARIABLES_API,
+  VARIABLES_ENVIRONMENT_API,
+  VARIABLES_GLOBALS_API,
+  VARIABLES_LOCAL_API,
+} from '@/components/app/editor/code-mirror/completions/api/variables';
 
 const CHROLLO_API = {
   stomp: {
@@ -77,6 +82,27 @@ export function chrolloCompletions(context: CompletionContext): CompletionResult
     };
   }
 
+  if (word.text === 'chrollo.variables.globals.') {
+    return {
+      from: word.to,
+      options: VARIABLES_GLOBALS_API,
+    };
+  }
+
+  if (word.text === 'chrollo.variables.environment.') {
+    return {
+      from: word.to,
+      options: VARIABLES_ENVIRONMENT_API,
+    };
+  }
+
+  if (word.text === 'chrollo.variables.local.') {
+    return {
+      from: word.to,
+      options: VARIABLES_LOCAL_API,
+    };
+  }
+
   if (word.text === 'chrollo.utils.') {
     return {
       from: word.to,
@@ -130,6 +156,24 @@ export function chrolloCompletions(context: CompletionContext): CompletionResult
       return {
         from: word.from + lastDotIndex + 1,
         options: VARIABLES_API,
+      };
+    }
+    if (parent === 'chrollo.variables.globals') {
+      return {
+        from: word.from + lastDotIndex + 1,
+        options: VARIABLES_GLOBALS_API,
+      };
+    }
+    if (parent === 'chrollo.variables.environment') {
+      return {
+        from: word.from + lastDotIndex + 1,
+        options: VARIABLES_ENVIRONMENT_API,
+      };
+    }
+    if (parent === 'chrollo.variables.local') {
+      return {
+        from: word.from + lastDotIndex + 1,
+        options: VARIABLES_LOCAL_API,
       };
     }
     if (parent === 'chrollo.utils') {

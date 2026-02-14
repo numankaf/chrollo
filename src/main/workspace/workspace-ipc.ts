@@ -62,7 +62,7 @@ async function deleteWorkspace(id: string): Promise<void> {
   }
 }
 
-async function getWorkspaceSelection(): Promise<WorkspaceSelection> {
+export async function getWorkspaceSelection(): Promise<WorkspaceSelection> {
   try {
     const data = await workspaceMetaDb.get(WORKSPACE_SELECTION_KEY);
     if (!data) return {};

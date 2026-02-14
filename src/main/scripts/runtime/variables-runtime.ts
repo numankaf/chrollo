@@ -1,23 +1,103 @@
 export class VariablesRuntime {
-  private store = new Map<string, unknown>();
+  private globalsStore = new Map<string, string>();
+  private environmentStore = new Map<string, string>();
+  private localStore = new Map<string, unknown>();
 
-  get<T = unknown>(key: string): T | undefined {
-    return this.store.get(key) as T | undefined;
+  private globalsDirty = false;
+  private environmentDirty = false;
+
+  // --- Globals ---
+  setGlobals(variables: Record<string, string>) {
+    this.globalsStore = new Map(Object.entries(variables));
+    this.globalsDirty = false;
   }
 
-  set(key: string, value: unknown): void {
-    this.store.set(key, value);
+  getGlobal<T = string>(key: string): T | undefined {
+    return this.globalsStore.get(key) as T | undefined;
   }
 
-  unset(key: string): void {
-    this.store.delete(key);
+  setGlobal(key: string, value: string): void {
+    if (this.globalsStore.get(key) !== value) {
+      this.globalsStore.set(key, value);
+      this.globalsDirty = true;
+    }
   }
 
-  all(): Record<string, unknown> {
-    return Object.fromEntries(this.store.entries());
+  unsetGlobal(key: string): void {
+    if (this.globalsStore.has(key)) {
+      this.globalsStore.delete(key);
+      this.globalsDirty = true;
+    }
   }
 
-  clear() {
-    this.store.clear();
+  isGlobalsDirty() {
+    return this.globalsDirty;
+  }
+
+  getAllGlobals(): Record<string, string> {
+    return Object.fromEntries(this.globalsStore.entries());
+  }
+
+  clearGlobals(): void {
+    this.globalsStore.clear();
+    this.globalsDirty = true;
+  }
+
+  // --- Environment ---
+  setEnvironment(variables: Record<string, string>) {
+    this.environmentStore = new Map(Object.entries(variables));
+    this.environmentDirty = false;
+  }
+
+  getEnvironment<T = string>(key: string): T | undefined {
+    return this.environmentStore.get(key) as T | undefined;
+  }
+
+  setEnvironmentVar(key: string, value: string): void {
+    if (this.environmentStore.get(key) !== value) {
+      this.environmentStore.set(key, value);
+      this.environmentDirty = true;
+    }
+  }
+
+  unsetEnvironmentVar(key: string): void {
+    if (this.environmentStore.has(key)) {
+      this.environmentStore.delete(key);
+      this.environmentDirty = true;
+    }
+  }
+
+  isEnvironmentDirty() {
+    return this.environmentDirty;
+  }
+
+  getAllEnvironment(): Record<string, string> {
+    return Object.fromEntries(this.environmentStore.entries());
+  }
+
+  clearEnvironment(): void {
+    this.environmentStore.clear();
+    this.environmentDirty = true;
+  }
+
+  // --- Local Variables ---
+  getLocal<T = unknown>(key: string): T | undefined {
+    return this.localStore.get(key) as T | undefined;
+  }
+
+  setLocal(key: string, value: unknown): void {
+    this.localStore.set(key, value);
+  }
+
+  unsetLocal(key: string): void {
+    this.localStore.delete(key);
+  }
+
+  getAllLocal(): Record<string, unknown> {
+    return Object.fromEntries(this.localStore.entries());
+  }
+
+  clearLocal(): void {
+    this.localStore.clear();
   }
 }

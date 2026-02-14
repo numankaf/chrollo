@@ -16,11 +16,11 @@ export function getGlobalId(workspaceId: string) {
   return `GLOBAL-${workspaceId}`;
 }
 
-async function saveEnvironment(environment: Environment) {
+export async function saveEnvironment(environment: Environment) {
   await environmentDb.put(environment.id, environment);
 }
 
-async function getEnvironment(id: string): Promise<Environment | undefined> {
+export async function getEnvironment(id: string): Promise<Environment | undefined> {
   try {
     return await environmentDb.get(id);
   } catch {
