@@ -27,9 +27,10 @@ export function useTabItem(tab: Tab | null) {
     }))
   );
 
-  const { environments } = useEnvironmentStore(
+  const { environments, globalEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       environments: state.environments,
+      globalEnvironment: state.globalEnvironment,
     }))
   );
 
@@ -50,7 +51,7 @@ export function useTabItem(tab: Tab | null) {
       return collectionItemMap.get(tab.id);
 
     case BASE_MODEL_TYPE.ENVIRONMENT:
-      return environments.find((e) => e.id === tab.id);
+      return environments.find((e) => e.id === tab.id) || globalEnvironment;
 
     case BASE_MODEL_TYPE.INTERCEPTION_SCRIPT:
       return interceptionScripts.find((e) => e.id === tab.id);

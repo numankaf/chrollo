@@ -3,7 +3,7 @@ import path from 'path';
 import { deleteWorkspaceCollections } from '@/main/collection/collection-ipc';
 import { deleteWorkspaceConnections } from '@/main/connection/connection-ipc';
 import { BASE_STORAGE_DIR } from '@/main/constants/storage-constants';
-import { deleteWorkspaceEnvironments } from '@/main/environment/environment-ipc';
+import { deleteWorkspaceEnvironments, ensureGlobalExist } from '@/main/environment/environment-ipc';
 import { getMainWindow } from '@/main/index';
 import { deleteWorkspaceInterceptionScripts } from '@/main/interception-script/interception-script-ipc';
 import logger from '@/main/lib/logger';
@@ -62,7 +62,7 @@ async function deleteWorkspace(id: string): Promise<void> {
   }
 }
 
-async function getWorkspaceSelection(): Promise<WorkspaceSelection> {
+export async function getWorkspaceSelection(): Promise<WorkspaceSelection> {
   try {
     const data = await workspaceMetaDb.get(WORKSPACE_SELECTION_KEY);
     if (!data) return {};
@@ -133,7 +133,9 @@ export function initWorkspaceIpc() {
 
   ipcMain.handle('workspaces:save', async (_, workspace) => {
     const auditedWorkspace = applyAuditFields(workspace);
-    return await saveWorkspace(auditedWorkspace);
+    const result = await saveWorkspace(auditedWorkspace);
+    await ensureGlobalExist(workspace.id);
+    return result;
   });
 
   ipcMain.handle('workspaces:get', async (_, id) => {
@@ -158,5 +160,11 @@ export function initWorkspaceIpc() {
 
   ipcMain.handle('workspaces:updateSelection', async (_, workspaceId, values) => {
     return await saveWorkspaceSelection(workspaceId, values);
+  });
+
+  loadWorkspaces().then(async (result) => {
+    for (const workspace of result.workspaces) {
+      await ensureGlobalExist(workspace.id);
+    }
   });
 }

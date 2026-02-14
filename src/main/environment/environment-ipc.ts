@@ -12,16 +12,36 @@ import type { Environment } from '@/types/environment';
 const environmentDatabasePath = path.join(BASE_STORAGE_DIR, 'environment');
 const environmentDb = new Level<string, Environment>(environmentDatabasePath, { valueEncoding: 'json' });
 
-async function saveEnvironment(environment: Environment) {
+export function getGlobalId(workspaceId: string) {
+  return `GLOBAL-${workspaceId}`;
+}
+
+export async function saveEnvironment(environment: Environment) {
   await environmentDb.put(environment.id, environment);
 }
 
-async function getEnvironment(id: string): Promise<Environment | undefined> {
+export async function getEnvironment(id: string): Promise<Environment | undefined> {
   try {
     return await environmentDb.get(id);
-  } catch (error: unknown) {
-    logger.error(error);
+  } catch {
     return undefined;
+  }
+}
+
+export async function ensureGlobalExist(workspaceId: string) {
+  const globalId = getGlobalId(workspaceId);
+  const existing = await getEnvironment(globalId);
+  if (!existing) {
+    const global: Environment = applyAuditFields({
+      id: globalId,
+      workspaceId,
+      name: 'Globals',
+      modelType: 'ENVIRONMENT',
+      isGlobal: true,
+      variables: [],
+    } as Environment);
+    await saveEnvironment(global);
+    logger.info(`Created global environment for workspace: ${workspaceId}`);
   }
 }
 
@@ -36,9 +56,11 @@ async function deleteEnvironment(id: string): Promise<void> {
 
 async function loadEnvironments(workspaceId: string): Promise<Environment[]> {
   const results: Environment[] = [];
+  const globalId = getGlobalId(workspaceId);
 
   for await (const [, value] of environmentDb.iterator()) {
     if (value.workspaceId !== workspaceId) continue;
+    if (value.id === globalId) continue;
     results.push(value);
   }
   return sortByDate(results, 'createdDate');
@@ -69,6 +91,11 @@ export function initEnvironmentIpc() {
 
   ipcMain.handle('environments:get', async (_, id) => {
     return await getEnvironment(id);
+  });
+
+  ipcMain.handle('environments:getGlobal', async (_, workspaceId) => {
+    await ensureGlobalExist(workspaceId);
+    return await getEnvironment(getGlobalId(workspaceId));
   });
 
   ipcMain.handle('environments:delete', async (_, id) => {

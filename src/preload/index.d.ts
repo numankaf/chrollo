@@ -64,6 +64,7 @@ declare global {
       environment: {
         save: (environment: Environment) => Promise<void>;
         get: (id: string) => Promise<Environment | undefined>;
+        getGlobal: (workspaceId: string) => Promise<Environment | undefined>;
         delete: (id: string) => Promise<void>;
         load: (workspaceId: string) => Promise<Environment[]>;
         clear: () => Promise<void>;
@@ -85,6 +86,9 @@ declare global {
         onMessage: (callback: (data: SocketMessage) => void) => () => void;
         onRequestPending: (callback: (data: RequestPendingEvent) => void) => () => void;
         onRequestResolved: (callback: (data: RequestResolvedEvent) => void) => () => void;
+      };
+      environment: {
+        onUpdated: (callback: (data: Environment) => void) => () => void;
       };
       console: {
         log: (callback: (data: unknown) => void) => () => void;

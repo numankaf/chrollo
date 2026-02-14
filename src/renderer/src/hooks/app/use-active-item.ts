@@ -26,9 +26,10 @@ export function useActiveItem() {
     }))
   );
 
-  const { environments } = useEnvironmentStore(
+  const { environments, globalEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       environments: state.environments,
+      globalEnvironment: state.globalEnvironment,
     }))
   );
 
@@ -51,6 +52,7 @@ export function useActiveItem() {
     activeWorkspace,
     activeConnection,
     activeEnvironment,
+    globalEnvironment,
     activeTab,
   };
 }

@@ -30,7 +30,7 @@ function EnvironmentView() {
   const { environment, updateEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       updateEnvironment: state.updateEnvironment,
-      environment: state.environments.find((e) => e.id === activeTab?.id),
+      environment: state.environments.find((e) => e.id === activeTab?.id) || state.globalEnvironment,
     }))
   );
   const variables = environment ? environment.variables : [];

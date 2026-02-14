@@ -8,7 +8,8 @@ import type { Environment } from '@/types/environment';
 
 interface EnvironmentStore {
   environments: Environment[];
-  initEnvironmentStore: (connections: Environment[]) => Promise<void>;
+  globalEnvironment: Environment | null;
+  initEnvironmentStore: (environments: Environment[], globalEnvironment: Environment | undefined) => Promise<void>;
   getEnvironment: (id: string) => Environment | undefined;
   createEnvironment: (environment: Environment) => Promise<Environment>;
   updateEnvironment: (
@@ -24,12 +25,17 @@ interface EnvironmentStore {
 
 const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   environments: [],
-  initEnvironmentStore: async (environments: Environment[]) =>
+  globalEnvironment: null,
+  initEnvironmentStore: async (environments: Environment[], globalEnvironment: Environment | undefined) =>
     set(() => {
-      return { environments: environments };
+      return { environments: environments, globalEnvironment: globalEnvironment };
     }),
   getEnvironment: (id: string) => {
-    return get().environments.find((e) => e.id === id)!;
+    const globalEnvironment = get().globalEnvironment;
+    if (globalEnvironment?.id === id) {
+      return globalEnvironment;
+    }
+    return get().environments.find((e) => e.id === id);
   },
   createEnvironment: async (environment) => {
     const newEnvironment = { ...environment, id: nanoid() };
@@ -46,12 +52,13 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
     let updatedEnvironment = environment;
 
     set((state) => {
-      const existing = state.environments.find((e) => e.id === environment.id);
-
+      const existing = get().getEnvironment(environment.id);
       if (existing) {
         updatedEnvironment = { ...existing, ...environment };
       }
-
+      if (updatedEnvironment.id === get().globalEnvironment?.id) {
+        return { globalEnvironment: updatedEnvironment };
+      }
       return {
         environments: state.environments.map((e) => (e.id === environment.id ? updatedEnvironment : e)),
       };
@@ -66,6 +73,9 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   },
 
   deleteEnvironment: async (id) => {
+    if (id === get().globalEnvironment?.id) {
+      return;
+    }
     const newEnvironments = get().environments.filter((e) => e.id !== id);
     const currentActiveEnvironmentId = getActiveWorkspaceSelection('activeEnvironmentId');
 
@@ -104,7 +114,8 @@ const useEnvironmentStore = create<EnvironmentStore>((set, get) => ({
   },
 
   saveEnvironment: async (environment) => {
-    const exists = get().environments.some((e) => e.id === environment.id);
+    const exists =
+      get().environments.some((e) => e.id === environment.id) || get().globalEnvironment?.id === environment.id;
     const updatedEnvironment = exists
       ? await get().updateEnvironment(environment, { persist: true })
       : await get().createEnvironment(environment);

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import useConnectionStatusStore from '@/store/connection-status-store';
+import useEnvironmentStore from '@/store/environment-store';
 import useRequestResponseStore from '@/store/request-response-store';
 import useSocketMessageStatusStore from '@/store/socket-message-store';
 
@@ -7,6 +8,10 @@ export function useAppSubscriptions() {
   useEffect(() => {
     const unsubscribeConsoleError = window.listener.console.error((data) => {
       console.error(data);
+    });
+
+    const unsubscribeEnvironmentUpdated = window.listener.environment.onUpdated((environment) => {
+      useEnvironmentStore.getState().updateEnvironment(environment);
     });
 
     const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
@@ -31,6 +36,7 @@ export function useAppSubscriptions() {
 
     return () => {
       unsubscribeConsoleError();
+      unsubscribeEnvironmentUpdated();
       unsubscribeStompStatus();
       unsubscribeStompMessage();
       unsubscribeRequestPending();

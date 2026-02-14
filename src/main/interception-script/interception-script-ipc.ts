@@ -59,7 +59,7 @@ async function loadEngineScripts(workspaceId?: string) {
   const workspaceScripts = await loadInterceptionScripts(activeWorkspaceId);
   const userScripts = workspaceScripts.filter((s) => s.enabled).map((s) => s.script);
 
-  chrolloEngine.reloadScripts(userScripts);
+  await chrolloEngine.reloadScripts(userScripts, activeWorkspaceId);
 }
 
 onWorkspaceChanged((workspaceId) => {

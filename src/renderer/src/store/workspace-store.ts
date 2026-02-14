@@ -8,6 +8,7 @@ interface WorkspaceStore {
   activeWorkspaceId: string | undefined;
   workspaceSelection: WorkspaceSelection;
 
+  getWorkspace: (id: string) => Workspace | undefined;
   setWorkspaces: (workspaces: Workspace[]) => void;
   createWorkspace: (workspace: Workspace) => Promise<Workspace>;
   updateWorkspace: (workspace: Workspace, options?: { persist?: boolean }) => Promise<Workspace>;
@@ -24,6 +25,10 @@ const useWorkspaceStore = create<WorkspaceStore>()((set, get) => ({
   activeWorkspaceId: undefined,
 
   workspaceSelection: {},
+
+  getWorkspace: (id: string) => {
+    return get().workspaces.find((e) => e.id === id);
+  },
 
   setWorkspaces: (workspaces) =>
     set(() => ({

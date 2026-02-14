@@ -48,23 +48,26 @@ export function formatJs(text: string) {
 
 export function formatJson(text: string): string {
   try {
-    // JSON.parse will fail if variables are used outside of quotes: {"a": {{VAR}}}
-    // We protect them by wrapping in placeholders that look like strings if they aren't already
-    const placeholders: string[] = [];
-    const protectedText = text.replace(ENVIRONMENT_VARIABLE_MATCH_REGEX, (match) => {
-      placeholders.push(match);
-      return `"__CHROLLO_VAR_${placeholders.length - 1}__"`;
-    });
+    const placeholders: { original: string; quoted: boolean }[] = [];
+    // Match {{VAR}} both inside quotes ("{{VAR}}") and unquoted ({{VAR}}).
+    // Both are replaced with a quoted placeholder string for valid JSON parsing.
+    const protectedText = text.replace(
+      /"(\{\{\s*[a-zA-Z_][\w.-]*\s*\}\})"|(\{\{\s*[a-zA-Z_][\w.-]*\s*\}\})/g,
+      (_, quoted, unquoted) => {
+        placeholders.push({ original: quoted || unquoted, quoted: !!quoted });
+        return `"__CHROLLO_VAR_${placeholders.length - 1}__"`;
+      }
+    );
 
     const parsed = JSON.parse(protectedText);
     const formatted = JSON.stringify(parsed, null, 2) + '\n';
 
-    // Restore original tokens
+    // Restore original tokens, re-wrapping in quotes if originally quoted
     return formatted.replace(/"__CHROLLO_VAR_(\d+)__"/g, (_, index) => {
-      return placeholders[parseInt(index, 10)];
+      const { original, quoted } = placeholders[parseInt(index, 10)];
+      return quoted ? `"${original}"` : original;
     });
   } catch {
-    // Fallback if parsing still fails (e.g. invalid JSON even with placeholders)
     return text;
   }
 }

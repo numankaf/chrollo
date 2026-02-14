@@ -4,12 +4,12 @@ import { chrolloEngine } from '@/main/scripts/engine';
 import type { StompMessageCtx } from '@/main/scripts/runtime/stomp-runtime';
 import { stripAllWhitespace } from '@/main/utils/common-util';
 import { CONTENT_TYPE_MAP, isJsonContentType } from '@/main/utils/message-util';
+import { resolveJsonPayload, resolveVariables } from '@/main/utils/variable-resolver-util';
 import { Client, type IFrame, type Message } from '@stomp/stompjs';
 import { ipcMain } from 'electron';
 import SockJS from 'sockjs-client';
 
-import { type Request } from '@/types/collection';
-import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
+import { REQUEST_BODY_TYPE, type Request } from '@/types/collection';
 import {
   CONNECTION_STATUS,
   CONNECTION_TYPE,
@@ -24,6 +24,7 @@ let seq = 0;
 const nextSeq = () => ++seq;
 
 const stompClients: Record<string, Client> = {};
+const connectionWorkspaceMap: Record<string, string> = {};
 
 function subscribeInternal(connectionId: string, subscriptionId: string, topic: string) {
   const mainWindow = getMainWindow();
@@ -32,35 +33,35 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
   if (client && client.connected && client.active) {
     client.subscribe(
       topic.trim(),
-      (msg: Message) => {
-        const socketReceivedMessage: SocketMessage = {
-          id: nextSeq(),
-          connectionId,
-          connectionType: CONNECTION_TYPE.STOMP,
-          type: SOCKET_MESSAGE_TYPE.RECEIVED,
-          timestamp: Date.now(),
-          data: msg.body,
-          meta: {
-            command: msg.command,
-            headers: msg.headers,
-            isBinaryBody: msg.isBinaryBody,
-            binaryBody: msg.binaryBody,
-          },
-        };
+      async (msg: Message) => {
+        await chrolloEngine.executeWithContext(connectionWorkspaceMap[connectionId], () => {
+          const socketReceivedMessage: SocketMessage = {
+            id: nextSeq(),
+            connectionId,
+            connectionType: CONNECTION_TYPE.STOMP,
+            type: SOCKET_MESSAGE_TYPE.RECEIVED,
+            timestamp: Date.now(),
+            data: msg.body,
+            meta: {
+              command: msg.command,
+              headers: msg.headers,
+              isBinaryBody: msg.isBinaryBody,
+              binaryBody: msg.binaryBody,
+            },
+          };
 
-        const runtime = chrolloEngine.getRuntime();
-        const ctx: StompMessageCtx = { message: socketReceivedMessage };
+          const runtime = chrolloEngine.getRuntime();
+          const ctx: StompMessageCtx = { message: socketReceivedMessage };
 
-        // Set message context so resolveRequestKey works in user scripts
-        runtime.request.beginMessageContext(socketReceivedMessage);
-        runtime.stomp.runMessage(ctx);
-        runtime.request.endMessageContext();
+          runtime.request.beginMessageContext(socketReceivedMessage);
+          runtime.stomp.runMessage(ctx);
+          runtime.request.endMessageContext();
 
-        mainWindow.webContents.send('stomp:message', socketReceivedMessage);
+          mainWindow.webContents.send('stomp:message', socketReceivedMessage);
 
-        const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
-
-        logger.info(data);
+          const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
+          logger.info(data);
+        });
       },
       { id: subscriptionId }
     );
@@ -116,12 +117,15 @@ export function initStompIpc() {
   // CONNECT
   // ------------------------------
   ipcMain.on('stomp:connect', async (_, connection: StompConnection) => {
-    const runtime = chrolloEngine.getRuntime();
+    await chrolloEngine.executeWithContext(connection.workspaceId, () => {
+      const runtime = chrolloEngine.getRuntime();
 
-    const ctx = { connection };
-    runtime.stomp.runPreConnect(ctx);
+      const ctx = { connection };
+      runtime.stomp.runPreConnect(ctx);
+    });
 
     const { id, name, prefix, url, connectHeaders, subscriptions } = connection;
+    connectionWorkspaceMap[id] = connection.workspaceId;
     if (stompClients[id]) {
       await stompClients[id].deactivate();
       delete stompClients[id];
@@ -269,108 +273,103 @@ export function initStompIpc() {
   // ------------------------------
   // SUBSCRIBE
   // ------------------------------
-  ipcMain.on('stomp:subscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
-    const runtime = chrolloEngine.getRuntime();
+  ipcMain.on('stomp:subscribe', async (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
     const { connectionId, subscriptionId, topic } = data;
-    const ctx = {
-      connectionId,
-      subscriptionId,
-      topic,
-      subscribe: subscribeInternal,
-    };
-    const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
-    if (defaultDisabled) return;
-    subscribeInternal(connectionId, subscriptionId, topic);
+
+    await chrolloEngine.executeWithContext(connectionWorkspaceMap[connectionId], () => {
+      const runtime = chrolloEngine.getRuntime();
+      const ctx = {
+        connectionId,
+        subscriptionId,
+        topic,
+        subscribe: subscribeInternal,
+      };
+      const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
+      if (defaultDisabled) return;
+
+      subscribeInternal(connectionId, subscriptionId, topic);
+    });
   });
 
   // ------------------------------
   // UNSUBSCRIBE
   // ------------------------------
-  ipcMain.on('stomp:unsubscribe', (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
-    const runtime = chrolloEngine.getRuntime();
-
+  ipcMain.on('stomp:unsubscribe', async (_, data: { connectionId: string; subscriptionId: string; topic: string }) => {
     const { connectionId, subscriptionId, topic } = data;
-    const ctx = {
-      connectionId,
-      subscriptionId,
-      topic,
-      unsubscribe: unSubscribeInternal,
-    };
-    const { defaultDisabled } = runtime.stomp.runPreUnsubscribe(ctx);
-    if (defaultDisabled) return;
-    unSubscribeInternal(connectionId, subscriptionId, topic);
+
+    await chrolloEngine.executeWithContext(connectionWorkspaceMap[connectionId], () => {
+      const runtime = chrolloEngine.getRuntime();
+
+      const ctx = {
+        connectionId,
+        subscriptionId,
+        topic,
+        unsubscribe: unSubscribeInternal,
+      };
+      const { defaultDisabled } = runtime.stomp.runPreUnsubscribe(ctx);
+      if (defaultDisabled) return;
+
+      unSubscribeInternal(connectionId, subscriptionId, topic);
+    });
   });
 
   // ------------------------------
   // SEND
   // ------------------------------
-  ipcMain.on('stomp:send', (_, id: string, request: Request) => {
-    const runtime = chrolloEngine.getRuntime();
-    const mainWindow = getMainWindow();
+  ipcMain.on('stomp:send', async (_, id: string, request: Request) => {
+    await chrolloEngine.executeWithContext(connectionWorkspaceMap[id], () => {
+      const runtime = chrolloEngine.getRuntime();
+      const mainWindow = getMainWindow();
 
-    runtime.request.beginSendContext(id, request);
+      runtime.request.beginSendContext(id, request);
 
-    const ctx = { connectionId: id, request };
-    runtime.stomp.runPreSend(ctx);
+      const ctx = { connectionId: id, request };
+      runtime.stomp.runPreSend(ctx);
 
-    // Run request's pre-request script
-    if (request.scripts?.preRequest) {
-      chrolloEngine.loadScript(request.scripts.preRequest);
-    }
-
-    const allVariables = runtime.variables.all();
-    const { body, destination, headers } = request;
-    let payload = body.data;
-
-    // Resolve variables in payload
-    payload = payload.replace(ENVIRONMENT_VARIABLE_MATCH_REGEX, (match) => {
-      const capture = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(match);
-      if (!capture) return match;
-      const key = capture[1];
-      const val = allVariables[key];
-
-      if (val === undefined) return match;
-
-      if (typeof val === 'object') {
-        return JSON.stringify(val);
+      // Run request's pre-request script
+      if (request.scripts?.preRequest) {
+        chrolloEngine.loadScript(request.scripts.preRequest);
       }
-      return String(val);
-    });
 
-    runtime.request.endSendContext();
+      const { body, destination, headers } = request;
+      const payload =
+        body.type === REQUEST_BODY_TYPE.JSON ? resolveJsonPayload(body.data) : resolveVariables(body.data);
 
-    const client = stompClients[id];
+      runtime.request.endSendContext();
 
-    const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
-    if (client && client.connected) {
-      client.publish({
-        destination: destination.trim(),
-        body: payload,
-        headers: requestHeaders,
-      });
-      const socketSentMessage: SocketMessage = {
-        id: nextSeq(),
-        connectionId: id,
-        connectionType: CONNECTION_TYPE.STOMP,
-        type: SOCKET_MESSAGE_TYPE.SENT,
-        timestamp: Date.now(),
-        data: payload,
-        meta: {
-          command: 'SEND',
-          headers: {
-            destination,
-            ...requestHeaders,
-            'content-length': String(payload.length),
-            'content-type': CONTENT_TYPE_MAP[request.body.type],
+      const client = stompClients[id];
+
+      const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+      if (client && client.connected) {
+        client.publish({
+          destination: destination.trim(),
+          body: payload,
+          headers: requestHeaders,
+        });
+        const socketSentMessage: SocketMessage = {
+          id: nextSeq(),
+          connectionId: id,
+          connectionType: CONNECTION_TYPE.STOMP,
+          type: SOCKET_MESSAGE_TYPE.SENT,
+          timestamp: Date.now(),
+          data: payload,
+          meta: {
+            command: 'SEND',
+            headers: {
+              destination,
+              ...requestHeaders,
+              'content-length': String(payload.length),
+              'content-type': CONTENT_TYPE_MAP[request.body.type],
+            },
           },
-        },
-      };
-      if (mainWindow) {
-        mainWindow.webContents.send('stomp:message', socketSentMessage);
+        };
+        if (mainWindow) {
+          mainWindow.webContents.send('stomp:message', socketSentMessage);
+        }
+      } else {
+        logger.info(` STOMP (${id}) not connected`);
       }
-    } else {
-      logger.info(` STOMP (${id}) not connected`);
-    }
+    });
   });
 
   // ------------------------------
@@ -381,6 +380,7 @@ export function initStompIpc() {
     if (client) {
       await client.deactivate();
       delete stompClients[id];
+      delete connectionWorkspaceMap[id];
       logger.info(`Disconnected STOMP (${id})`);
     }
     mainWindow.webContents.send('stomp:status', {
@@ -397,6 +397,7 @@ export function initStompIpc() {
     Object.entries(stompClients).forEach(async ([id, client]) => {
       await client.deactivate();
       delete stompClients[id];
+      delete connectionWorkspaceMap[id];
     });
     logger.info(`All STOMP connections closed`);
   });
