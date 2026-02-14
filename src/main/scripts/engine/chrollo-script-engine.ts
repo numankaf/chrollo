@@ -9,7 +9,7 @@ import { createVariablesAPI } from '@/main/scripts/api/variables-api';
 import { executeUserScript } from '@/main/scripts/engine/execute-user-script';
 import { ChrolloRuntime } from '@/main/scripts/runtime/chrollo-runtime';
 
-import type { EnvironmentVariable } from '@/types/environment';
+import type { Environment, EnvironmentVariable } from '@/types/environment';
 
 interface ChrolloContext {
   chrollo: {
@@ -103,6 +103,7 @@ export class ChrolloScriptEngine {
         });
         await saveEnvironment(globalEnv);
         logger.info(`Persisted globals for workspace: ${this.activeWorkspaceId}`);
+        this.notifyEnvironmentUpdated(globalEnv);
       }
     }
 
@@ -123,7 +124,15 @@ export class ChrolloScriptEngine {
         });
         await saveEnvironment(env);
         logger.info(`Persisted environment variables for: ${this.activeEnvironmentId}`);
+        this.notifyEnvironmentUpdated(env);
       }
+    }
+  }
+
+  private notifyEnvironmentUpdated(environment: Environment) {
+    const mainWindow = getMainWindow();
+    if (mainWindow) {
+      mainWindow.webContents.send('environment:updated', environment);
     }
   }
 

@@ -4,6 +4,7 @@ import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
 
 const REQUEST_VALIDATION_SCHEMA = z.object({
   id: z.string(),
+  workspaceId: z.string(),
   destination: z.string().min(1, 'Request path is required.'),
   headers: z.array(
     z.object({

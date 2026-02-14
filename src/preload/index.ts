@@ -127,6 +127,14 @@ const listener = {
     },
   },
 
+  environment: {
+    onUpdated: (callback: (data: Environment) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: Environment) => callback(data);
+      ipcRenderer.on('environment:updated', handler);
+      return () => ipcRenderer.removeListener('environment:updated', handler);
+    },
+  },
+
   console: {
     log: (callback: (data: unknown) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);

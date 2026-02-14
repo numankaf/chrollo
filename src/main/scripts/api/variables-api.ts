@@ -21,7 +21,7 @@ export function createVariablesAPI(runtime: VariablesRuntime) {
     },
     environment: {
       get(key: string) {
-        return runtime.getEnvironment(key);
+        return runtime.getEnvironmentVar(key);
       },
       set(key: string, value: string) {
         runtime.setEnvironmentVar(key, value);

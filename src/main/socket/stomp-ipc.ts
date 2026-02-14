@@ -317,7 +317,7 @@ export function initStompIpc() {
   // SEND
   // ------------------------------
   ipcMain.on('stomp:send', async (_, id: string, request: Request) => {
-    await chrolloEngine.executeWithContext(request.workspaceId, () => {
+    await chrolloEngine.executeWithContext(connectionWorkspaceMap[id], () => {
       const runtime = chrolloEngine.getRuntime();
       const mainWindow = getMainWindow();
 

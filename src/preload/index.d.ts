@@ -87,6 +87,9 @@ declare global {
         onRequestPending: (callback: (data: RequestPendingEvent) => void) => () => void;
         onRequestResolved: (callback: (data: RequestResolvedEvent) => void) => () => void;
       };
+      environment: {
+        onUpdated: (callback: (data: Environment) => void) => () => void;
+      };
       console: {
         log: (callback: (data: unknown) => void) => () => void;
         error: (callback: (data: unknown) => void) => () => void;

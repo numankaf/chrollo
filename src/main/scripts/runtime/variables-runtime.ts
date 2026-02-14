@@ -49,7 +49,7 @@ export class VariablesRuntime {
     this.environmentDirty = false;
   }
 
-  getEnvironment<T = string>(key: string): T | undefined {
+  getEnvironmentVar<T = string>(key: string): T | undefined {
     return this.environmentStore.get(key) as T | undefined;
   }
 
