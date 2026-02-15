@@ -52,7 +52,6 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   },
 ];
 
-
 function ShortcutsPanel() {
   const { applicationSettings, updateApplicationSetting } = useAppConfigStore(
     useShallow((state) => ({

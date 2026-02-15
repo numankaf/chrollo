@@ -29,7 +29,11 @@ function getKeyFromCode(code: string): string | undefined {
   if (code.startsWith('Key')) return code.slice(3);
   if (code.startsWith('Digit')) return code.slice(5);
   if (code.startsWith('Numpad')) return code.slice(6);
-  if (code.startsWith('Arrow') || code.startsWith('F') || ['Tab', 'Enter', 'Backspace', 'Delete', 'Escape', 'Space'].includes(code)) {
+  if (
+    code.startsWith('Arrow') ||
+    code.startsWith('F') ||
+    ['Tab', 'Enter', 'Backspace', 'Delete', 'Escape', 'Space'].includes(code)
+  ) {
     return code;
   }
   return undefined;
