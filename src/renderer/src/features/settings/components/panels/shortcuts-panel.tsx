@@ -1,12 +1,11 @@
 import { useAppConfigStore } from '@/store/app-config-store';
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { SHORTCUTS } from '@/types/command';
+import { SHORTCUTS } from '@/lib/command';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/common/item';
-import { Kbd, KbdGroup } from '@/components/common/kbd';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Separator } from '@/components/common/separator';
+import { Shortcut } from '@/components/common/shortcut';
 import { Switch } from '@/components/common/switch';
 
 interface ShortcutGroup {
@@ -53,20 +52,6 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   },
 ];
 
-function getKeyContent(key: string) {
-  switch (key) {
-    case 'ArrowUp':
-      return <ArrowUp className="size-3" />;
-    case 'ArrowDown':
-      return <ArrowDown className="size-3" />;
-    case 'ArrowLeft':
-      return <ArrowLeft className="size-3" />;
-    case 'ArrowRight':
-      return <ArrowRight className="size-3" />;
-    default:
-      return key;
-  }
-}
 
 function ShortcutsPanel() {
   const { applicationSettings, updateApplicationSetting } = useAppConfigStore(
@@ -100,11 +85,7 @@ function ShortcutsPanel() {
               {group.items.map((item) => (
                 <div key={item.label} className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">{item.label}</span>
-                  <KbdGroup>
-                    {item.shortcut.split('+').map((key) => (
-                      <Kbd key={key}>{getKeyContent(key)}</Kbd>
-                    ))}
-                  </KbdGroup>
+                  <Shortcut shortcut={item.shortcut} />
                 </div>
               ))}
             </div>

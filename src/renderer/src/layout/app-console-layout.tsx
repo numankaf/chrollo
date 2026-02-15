@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { ImperativePanelHandle } from 'react-resizable-panels';
 import { Outlet } from 'react-router';
 
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/common/resizeable';
 import SocketConsole from '@/components/app/socket/console/socket-console';

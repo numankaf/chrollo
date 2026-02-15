@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { FOOTER_BOTTOM_OFFSET } from '@/constants/layout-constants';
 import { CircleQuestionMark, GalleryHorizontalEnd, SquareChevronRight, WifiOff } from 'lucide-react';
 
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { Button } from '@/components/common/button';
 import { SidebarTrigger } from '@/components/common/sidebar';

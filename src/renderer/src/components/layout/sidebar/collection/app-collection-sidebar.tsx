@@ -28,7 +28,7 @@ import {
   type Folder,
   type Request,
 } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';

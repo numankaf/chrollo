@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { useShallow } from 'zustand/react/shallow';
 
-import { SHORTCUT_TO_COMMAND } from '@/types/command';
+import { SHORTCUT_TO_COMMAND } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 
 export function normalizeShortcut(e: KeyboardEvent): string {

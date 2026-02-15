@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { NULL_PARENT_ID } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 

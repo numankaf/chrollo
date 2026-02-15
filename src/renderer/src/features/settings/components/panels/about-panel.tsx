@@ -3,10 +3,11 @@ import AppLogo from '@/resources/app-logo.svg';
 import AppText from '@/resources/app-text.svg';
 import numankaf from '@/resources/avatar/numankaf.png';
 
+import { getPlatform } from '@/lib/platform';
 import { ScrollArea } from '@/components/common/scroll-area';
 
 function AboutPanel() {
-  const about = window.api.about;
+  const { platform, electron, chrome, arch, osVersion } = getPlatform();
   return (
     <ScrollArea style={{ height: 'calc(100% - 2rem)' }}>
       <div className="m-4 flex flex-col items-center h-full gap-3 text-sm">
@@ -20,20 +21,20 @@ function AboutPanel() {
         </div>
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground">Electron Platform</span>
-          <span>{about.electron}</span>
+          <span>{electron}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground">Chromium Platform</span>
-          <span>{about.chrome}</span>
+          <span>{chrome}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground">Architecture</span>
-          <span>{about.arch}</span>
+          <span>{arch}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground">OS platform</span>
           <span>
-            {about.platform} {about.osVersion}
+            {platform} {osVersion}
           </span>
         </div>
         <div className="flex flex-col items-center">

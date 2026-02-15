@@ -6,7 +6,7 @@ import useWorkspaceStore from '@/store/workspace-store';
 import { Outlet } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useAppSubscriptions } from '@/hooks/app/use-app-subscriptions';
 import { useNavigationSync } from '@/hooks/app/use-navigation-sync';

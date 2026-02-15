@@ -10,8 +10,8 @@ import { ChevronDown, Maximize2, Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage, type SocketMessageType } from '@/types/socket';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { deepParseJson } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
