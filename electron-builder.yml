@@ -2,14 +2,16 @@ appId: com.chrollo.app
 productName: Chrollo
 directories:
   buildResources: build
+  output: dist
 files:
+  - '!node_modules/**/*'
   - '!**/.vscode/*'
+  - '!**/.github/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
-  - out/**/*
 asarUnpack:
   - resources/**
   - assets/**
@@ -34,6 +36,10 @@ mac:
       arch:
         - x64
         - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
@@ -47,6 +53,19 @@ mac:
 
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
+  title: ${productName} ${version}
+  icon: build/icon.icns
+  window:
+    width: 540
+    height: 380
+  contents:
+    - x: 140
+      y: 180
+      type: file
+    - x: 400
+      y: 180
+      type: link
+      path: /Applications
 
 linux:
   icon: build/icon.png
@@ -54,10 +73,13 @@ linux:
     - AppImage
     - snap
     - deb
-  maintainer: electronjs.org
-  category: Utility
+  maintainer: numankafadar97@gmail.com
+  category: Development
+  description: WebSocket Inspector and Debugger
+
 appImage:
   artifactName: ${name}-${version}.${ext}
+
 npmRebuild: false
 # publish:
 #   provider: generic
