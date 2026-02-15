@@ -110,6 +110,14 @@ app.whenReady().then(() => {
     mainWindow.webContents.send('window:maximize-changed', false);
   });
 
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow.webContents.send('window:fullscreen-changed', true);
+  });
+
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow.webContents.send('window:fullscreen-changed', false);
+  });
+
   ipcMain.on('window:close', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) win.close();

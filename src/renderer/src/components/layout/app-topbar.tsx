@@ -16,9 +16,44 @@ import SettingsButton from '@/components/app/button/settings-button';
 import ConnectionSelector from '@/components/selector/connection-selector';
 import WorkspaceSelector from '@/components/selector/workspace-selector';
 
+const { isMac } = getPlatform();
+
+function WindowControls() {
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  useEffect(() => {
+    window.api.window.isMaximized().then(setIsMaximized);
+    window.listener.window.onMaximizeChange(setIsMaximized);
+  }, []);
+
+  return (
+    <>
+      <Button variant="ghost" size="icon" onClick={() => window.api.window.minimize()} aria-label="Minimize">
+        <Minus />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => (isMaximized ? window.api.window.unmaximize() : window.api.window.maximize())}
+        aria-label={isMaximized ? 'Restore' : 'Maximize'}
+      >
+        {isMaximized ? <Minimize /> : <Maximize />}
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hover:bg-red-400!"
+        onClick={() => window.api.window.close()}
+        aria-label="Close"
+      >
+        <X />
+      </Button>
+    </>
+  );
+}
+
 function Topbar() {
   const navigate = useNavigate();
-  const { isMac } = getPlatform();
   const { appLoaded, workspacesLoaded } = use(AppContext);
   const { activeWorkspaceId, setActiveWorkspace } = useWorkspaceStore(
     useShallow((state) => ({
@@ -28,21 +63,14 @@ function Topbar() {
   );
   const setIsOpen = useCommandSearchStore((state) => state.setIsOpen);
 
-  const [isMaximized, setIsMaximized] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    window.api.window.isMaximized().then(setIsMaximized);
-
-    window.listener.window.onMaximizeChange(setIsMaximized);
+    window.listener.window.onFullscreenChange(setIsFullscreen);
   }, []);
 
-  const handleClick = () => {
-    if (isMaximized) {
-      window.api.window.unmaximize();
-    } else {
-      window.api.window.maximize();
-    }
-  };
+  const showTrafficLightPadding = isMac && !isFullscreen;
+
   return (
     <nav
       style={
@@ -52,7 +80,7 @@ function Topbar() {
       }
       className="h-(--sidebar-top-offset) fixed w-full bg-sidebar border flex items-center justify-between"
     >
-      <div className={cn('flex items-center gap-2 px-2 flex-1 draggable', isMac && !isMaximized && 'pl-15')}>
+      <div className={cn('flex items-center gap-2 px-2 flex-1 draggable', showTrafficLightPadding && 'pl-20')}>
         {workspacesLoaded && (
           <Button
             variant="ghost"
@@ -82,27 +110,9 @@ function Topbar() {
         </div>
       )}
 
-      <div className="flex items-center justify-end flex-1 draggable">
+      <div className={cn('flex items-center justify-end flex-1 draggable', isMac && 'pr-2')}>
         <SettingsButton />
-        {!isMac && (
-          <>
-            <Button variant="ghost" size="icon" onClick={() => window.api.window.minimize()} aria-label="Minimize">
-              <Minus />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleClick} aria-label={isMaximized ? 'Restore' : 'Maximize'}>
-              {isMaximized ? <Minimize /> : <Maximize />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-red-400!"
-              onClick={() => window.api.window.close()}
-              aria-label="Close"
-            >
-              <X />
-            </Button>
-          </>
-        )}
+        {!isMac && <WindowControls />}
       </div>
     </nav>
   );
