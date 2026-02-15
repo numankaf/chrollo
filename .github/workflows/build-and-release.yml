@@ -33,9 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build app
-        run: pnpm build
-
       - name: Package Linux
         run: pnpm build:linux
 
@@ -72,9 +69,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build app
-        run: pnpm build
-
       - name: Package macOS (${{ matrix.arch }})
         run: pnpm build:mac -- --${{ matrix.arch }}
 
@@ -107,9 +101,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Build app
-        run: pnpm build
 
       - name: Package Windows
         run: pnpm build:win
