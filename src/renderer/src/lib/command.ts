@@ -1,17 +1,11 @@
-export const MODIFIER_KEYS = {
-  META: 'Meta',
-  CONTROL: 'Ctrl',
-} as const;
-
 const isMac = window.api.about.platform === 'darwin';
-
-export const MODIFIER_KEY = isMac ? MODIFIER_KEYS.META : MODIFIER_KEYS.CONTROL;
 
 const MACOS_SHORTCUTS = {
   TAB_CLOSE: 'Meta+W',
-  TAB_NEXT: 'Meta+Tab',
-  TAB_PREVIOUS: 'Meta+Shift+Tab',
-  TAB_SEARCH: 'Meta+Shift+A',
+  TAB_NEXT: 'Meta+Alt+ArrowRight',
+  TAB_PREVIOUS: 'Meta+Alt+ArrowLeft',
+  TAB_SEARCH: 'Meta+Alt+A',
+
   GLOBAL_SEARCH: 'Meta+K',
 
   REQUEST_SEND: 'Meta+Enter',
@@ -25,7 +19,7 @@ const MACOS_SHORTCUTS = {
   ITEM_RENAME: 'Meta+E',
   ITEM_DUPLICATE: 'Meta+D',
   ITEM_DELETE: 'Backspace',
-  TOGGLE_SIDEBAR: 'Meta+\\',
+  TOGGLE_SIDEBAR: 'Meta+B',
 
   SEARCH_COMMANDS: 'Meta+K',
 
@@ -39,6 +33,7 @@ const WINDOWS_SHORTCUTS = {
   TAB_NEXT: 'Ctrl+Tab',
   TAB_PREVIOUS: 'Ctrl+Shift+Tab',
   TAB_SEARCH: 'Ctrl+Shift+A',
+
   GLOBAL_SEARCH: 'Ctrl+K',
 
   REQUEST_SEND: 'Ctrl+Enter',
@@ -52,7 +47,7 @@ const WINDOWS_SHORTCUTS = {
   ITEM_RENAME: 'Ctrl+E',
   ITEM_DUPLICATE: 'Ctrl+D',
   ITEM_DELETE: 'Delete',
-  TOGGLE_SIDEBAR: 'Ctrl+\\',
+  TOGGLE_SIDEBAR: 'Ctrl+B',
 
   SEARCH_COMMANDS: 'Ctrl+K',
 

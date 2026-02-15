@@ -1,6 +1,5 @@
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Command, Delete, Option } from 'lucide-react';
 
-import { MODIFIER_KEYS } from '@/lib/command';
 import { getPlatform } from '@/lib/platform';
 import { cn } from '@/lib/utils';
 import { Kbd, KbdGroup } from '@/components/common/kbd';
@@ -28,10 +27,10 @@ export function ShortcutKey({ children, className, ...props }: ShortcutKeyProps)
   const { isMac } = getPlatform();
 
   if (typeof children === 'string') {
-    if (children === MODIFIER_KEYS.META) {
+    if (children === 'Meta') {
       return (
         <Kbd className={cn(className)} {...props}>
-          {isMac ? <Command className="size-3" /> : MODIFIER_KEYS.CONTROL}
+          <Command className="size-3" />
         </Kbd>
       );
     }
