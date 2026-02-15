@@ -10,8 +10,9 @@ import { logger } from '@/main/lib/logger';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage, shell } from 'electron';
 
+import iconFilled from '../../resources/app-logo-macos-filled.png?asset';
 import icon from '../../resources/app-logo.png?asset';
 
 logger.info('Chrollo application starting...');
@@ -78,6 +79,10 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window);
   });
+
+  if (process.platform === 'darwin') {
+    app.dock?.setIcon(nativeImage.createFromPath(iconFilled));
+  }
 
   createWindow();
 
