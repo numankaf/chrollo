@@ -10,8 +10,8 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
 import { NULL_PARENT_ID } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
 import type { TabItem } from '@/types/layout';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { normalizeForCompare } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';

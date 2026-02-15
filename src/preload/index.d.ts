@@ -80,6 +80,7 @@ declare global {
     listener: {
       window: {
         onMaximizeChange: (callback: (data: boolean) => void) => () => void;
+        onFullscreenChange: (callback: (data: boolean) => void) => () => void;
       };
       stomp: {
         onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;

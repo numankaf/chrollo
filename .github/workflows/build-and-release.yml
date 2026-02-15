@@ -33,9 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build app
-        run: pnpm build
-
       - name: Package Linux
         run: pnpm build:linux
 
@@ -47,6 +44,9 @@ jobs:
 
   build-mac:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x64, arm64]
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -69,16 +69,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build app
-        run: pnpm build
+      - name: Package macOS (${{ matrix.arch }})
+        run: pnpm build:mac -- --${{ matrix.arch }}
 
-      - name: Package macOS
-        run: pnpm build:mac
-
-      - name: Upload macOS artifact
+      - name: Upload macOS artifact (${{ matrix.arch }})
         uses: actions/upload-artifact@v4
         with:
-          name: mac
+          name: mac-${{ matrix.arch }}
           path: dist/*.dmg
 
   build-windows:
@@ -105,9 +102,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build app
-        run: pnpm build
-
       - name: Package Windows
         run: pnpm build:win
 
@@ -122,10 +116,7 @@ jobs:
       contents: write
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs:
-      - build-linux
-      - build-mac
-      - build-windows
+    needs: [build-linux, build-mac, build-windows]
 
     steps:
       - name: Download artifacts

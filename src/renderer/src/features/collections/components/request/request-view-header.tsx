@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { Request } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useConnection } from '@/hooks/connection/use-connection';
 import { Button } from '@/components/common/button';

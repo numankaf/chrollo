@@ -103,6 +103,9 @@ const listener = {
     onMaximizeChange: (callback: (maximized: boolean) => void) => {
       ipcRenderer.on('window:maximize-changed', (_, value) => callback(value));
     },
+    onFullscreenChange: (callback: (fullscreen: boolean) => void) => {
+      ipcRenderer.on('window:fullscreen-changed', (_, value) => callback(value));
+    },
   },
   stomp: {
     onStatus: (callback: (data: ConnectionStatusData) => void) => {

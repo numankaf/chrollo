@@ -5,7 +5,7 @@ import { getTabItem } from '@/utils/tab-util';
 import { ChevronDown, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { COMMANDS } from '@/types/command';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useConfirmTabClose } from '@/hooks/app/use-confirm-tab-close';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';

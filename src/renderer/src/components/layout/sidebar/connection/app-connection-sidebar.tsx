@@ -9,8 +9,8 @@ import { getTabItem } from '@/utils/tab-util';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
-import { COMMANDS } from '@/types/command';
 import type { Connection } from '@/types/connection';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';

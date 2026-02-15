@@ -19,8 +19,8 @@ import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
 
 import { NULL_PARENT_ID, REQUEST_DEFAULT_VALUES, type Request } from '@/types/collection';
-import { COMMANDS } from '@/types/command';
 import type { Tab } from '@/types/layout';
+import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useConfirmTabClose } from '@/hooks/app/use-confirm-tab-close';

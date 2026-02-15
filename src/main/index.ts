@@ -10,8 +10,9 @@ import { logger } from '@/main/lib/logger';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage, shell } from 'electron';
 
+import iconFilled from '../../resources/app-logo-macos-filled.png?asset';
 import icon from '../../resources/app-logo.png?asset';
 
 logger.info('Chrollo application starting...');
@@ -35,6 +36,10 @@ function createWindow(): void {
     autoHideMenuBar: true,
     frame: false,
     titleBarStyle: 'hidden',
+    trafficLightPosition: {
+      x: 10,
+      y: 15,
+    },
     icon: icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.mjs'),
@@ -75,6 +80,10 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
+  if (process.platform === 'darwin') {
+    app.dock?.setIcon(nativeImage.createFromPath(iconFilled));
+  }
+
   createWindow();
 
   ipcMain.on('window:minimize', (event) => {
@@ -104,6 +113,14 @@ app.whenReady().then(() => {
 
   mainWindow.on('unmaximize', () => {
     mainWindow.webContents.send('window:maximize-changed', false);
+  });
+
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow.webContents.send('window:fullscreen-changed', true);
+  });
+
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow.webContents.send('window:fullscreen-changed', false);
   });
 
   ipcMain.on('window:close', (event) => {
