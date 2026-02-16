@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import { getConnectionButtonVariant } from '@/utils/connection-util';
 
+import { COMMANDS } from '@/lib/command';
+import { commandBus } from '@/lib/command-bus';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/select';
@@ -18,7 +21,7 @@ export type ConsoleType = (typeof CONSOLE_TYPE)[keyof typeof CONSOLE_TYPE];
 
 const SOCKET_CONSOLE_TYPE_STORAGE_KEY = 'socket-console-view';
 
-function SocketConsole() {
+function SocketConsole({ isCollapsed }: { isCollapsed: boolean }) {
   const { activeConnection, activeTab } = useActiveItem();
   const status = useConnectionStatusStore((s) => (activeConnection ? s.statuses[activeConnection.id] : undefined));
   const { variant } = getConnectionButtonVariant(status);
@@ -53,12 +56,24 @@ function SocketConsole() {
             {activeConnection?.name || 'No Active Connection'}
           </Button>
         </div>
-        {activeConnection && <ConnectionStatusBadge connectionId={activeConnection.id} showLabel />}
+        <div className="flex items-center gap-2">
+          {activeConnection && <ConnectionStatusBadge connectionId={activeConnection.id} showLabel />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={() => commandBus.emit(COMMANDS.TOGGLE_REQUEST_CONSOLE)}
+          >
+            {isCollapsed ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+        </div>
       </header>
-      <div className="flex-1 min-h-0">
-        {consoleType === CONSOLE_TYPE.MESSAGE && <SocketMessageConsole />}
-        {consoleType === CONSOLE_TYPE.RESPONSE && <SocketResponseConsole key={activeTab?.id} />}
-      </div>
+      {!isCollapsed && (
+        <div className="flex-1 min-h-0">
+          {consoleType === CONSOLE_TYPE.MESSAGE && <SocketMessageConsole />}
+          {consoleType === CONSOLE_TYPE.RESPONSE && <SocketResponseConsole key={activeTab?.id} />}
+        </div>
+      )}
     </div>
   );
 }

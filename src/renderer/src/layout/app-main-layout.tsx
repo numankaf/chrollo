@@ -1,5 +1,6 @@
 import { APP_BREADCRUMB_OFFSET, SIDEBAR_WIDTH_ICON, SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import { LayoutProvider } from '@/provider/layout-provider';
+import { useDefaultLayout } from 'react-resizable-panels';
 import { Outlet } from 'react-router';
 
 import { useLayout } from '@/hooks/layout/use-layout';
@@ -12,6 +13,10 @@ import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 
 function AppMainLayoutInner() {
   const { activeItem, sidebarRef } = useLayout();
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: 'main-content-group',
+    storage: localStorage,
+  });
 
   return (
     <SidebarProvider
@@ -23,19 +28,20 @@ function AppMainLayoutInner() {
     >
       <AppSidebar />
       <SidebarInset>
-        <ResizablePanelGroup direction="horizontal" autoSaveId="main-content-group">
+        <ResizablePanelGroup orientation="horizontal" defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
           <ResizablePanel
-            ref={sidebarRef}
+            id="main-sidebar"
+            panelRef={sidebarRef}
             collapsible
-            defaultSize={20}
-            minSize={20}
-            maxSize={50}
+            defaultSize="20%"
+            minSize="20%"
+            maxSize="50%"
             className="bg-sidebar relative h-full"
           >
             {activeItem.component && <activeItem.component />}
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
+          <ResizablePanel id="main-content">
             <AppTabs />
             <AppBreadcrumb />
             <div
