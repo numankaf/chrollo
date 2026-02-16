@@ -1,5 +1,6 @@
 import { type CompletionContext, type CompletionResult } from '@codemirror/autocomplete';
 
+import { CONSOLE_API } from '@/components/app/editor/code-mirror/completions/api/console';
 import { FAKER_METHODS, FAKER_MODULES } from '@/components/app/editor/code-mirror/completions/api/faker';
 import { REQUESTS_API } from '@/components/app/editor/code-mirror/completions/api/request';
 import { makeInfo } from '@/components/app/editor/code-mirror/completions/api/shared';
@@ -60,6 +61,13 @@ const CHROLLO_API = {
 export function chrolloCompletions(context: CompletionContext): CompletionResult | null {
   const word = context.matchBefore(/[\w.]*/);
   if (!word) return null;
+
+  if (word.text === 'console.') {
+    return {
+      from: word.to,
+      options: CONSOLE_API,
+    };
+  }
 
   if (word.text === 'chrollo.') {
     return {
@@ -140,6 +148,12 @@ export function chrolloCompletions(context: CompletionContext): CompletionResult
   if (lastDotIndex > -1) {
     const parent = word.text.slice(0, lastDotIndex);
 
+    if (parent === 'console') {
+      return {
+        from: word.from + lastDotIndex + 1,
+        options: CONSOLE_API,
+      };
+    }
     if (parent === 'chrollo') {
       return {
         from: word.from + lastDotIndex + 1,
@@ -206,11 +220,20 @@ export function chrolloCompletions(context: CompletionContext): CompletionResult
     }
   }
 
-  if ('chrollo'.startsWith(word.text) && word.text.length > 0) {
-    return {
-      from: word.from,
-      options: [{ label: 'chrollo', type: 'class', info: 'Chrollo Scripting API' }],
-    };
+  if (word.text.length > 0) {
+    const options: { label: string; type: string; info: string }[] = [];
+    if ('chrollo'.startsWith(word.text)) {
+      options.push({ label: 'chrollo', type: 'class', info: 'Chrollo Scripting API' });
+    }
+    if ('console'.startsWith(word.text)) {
+      options.push({ label: 'console', type: 'class', info: 'Console output to dev tools' });
+    }
+    if (options.length > 0) {
+      return {
+        from: word.from,
+        options,
+      };
+    }
   }
 
   return null;

@@ -6,8 +6,20 @@ import useSocketMessageStatusStore from '@/store/socket-message-store';
 
 export function useAppSubscriptions() {
   useEffect(() => {
-    const unsubscribeConsoleError = window.listener.console.error((data) => {
-      console.error(data);
+    const unsubscribeConsoleLog = window.listener.console.log((...args) => {
+      console.log(...args);
+    });
+
+    const unsubscribeConsoleInfo = window.listener.console.info((...args) => {
+      console.info(...args);
+    });
+
+    const unsubscribeConsoleWarn = window.listener.console.warn((...args) => {
+      console.warn(...args);
+    });
+
+    const unsubscribeConsoleError = window.listener.console.error((...args) => {
+      console.error(...args);
     });
 
     const unsubscribeEnvironmentUpdated = window.listener.environment.onUpdated((environment) => {
@@ -35,6 +47,9 @@ export function useAppSubscriptions() {
     });
 
     return () => {
+      unsubscribeConsoleLog();
+      unsubscribeConsoleInfo();
+      unsubscribeConsoleWarn();
       unsubscribeConsoleError();
       unsubscribeEnvironmentUpdated();
       unsubscribeStompStatus();
