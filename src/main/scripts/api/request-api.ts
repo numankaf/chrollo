@@ -11,3 +11,19 @@ export function createRequestAPI(runtime: RequestRuntime) {
     },
   });
 }
+
+export function createResponseAPI(runtime: RequestRuntime) {
+  return {
+    get data() {
+      const raw = runtime.getMessage()?.data ?? null;
+      if (raw === null) return null;
+      return {
+        raw: () => raw,
+        json: () => JSON.parse(raw),
+      };
+    },
+    get meta() {
+      return runtime.getMessage()?.meta ?? null;
+    },
+  };
+}

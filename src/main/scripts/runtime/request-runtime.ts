@@ -1,8 +1,15 @@
 import { getMainWindow } from '@/main/index';
+import logger from '@/main/lib/logger';
 
 import type { Request } from '@/types/collection';
-import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
+import type { RequestPendingEvent } from '@/types/request-response';
 import type { SocketMessage } from '@/types/socket';
+
+export interface ResolvedRequest {
+  requestKey: string;
+  request: Request;
+  message: SocketMessage;
+}
 
 export class RequestRuntime {
   // Context for current execution - set before running preSend/message handlers
@@ -10,6 +17,12 @@ export class RequestRuntime {
   private currentConnectionId: string | null = null;
   private currentRequest: Request | null = null;
   private currentMessage: SocketMessage | null = null;
+
+  // Pending requests waiting for resolution (requestKey -> Request)
+  private pendingRequests = new Map<string, Request>();
+
+  // Deferred resolutions - populated by resolveRequestKey, consumed by stomp-ipc
+  private resolvedRequests: ResolvedRequest[] = [];
 
   /**
    * Called before running preSend handlers to set context
@@ -36,6 +49,7 @@ export class RequestRuntime {
    */
   beginMessageContext(message: SocketMessage) {
     this.currentMessage = message;
+    this.resolvedRequests = [];
   }
 
   /**
@@ -45,17 +59,22 @@ export class RequestRuntime {
     this.currentMessage = null;
   }
 
+  getMessage(): SocketMessage | null {
+    return this.currentMessage;
+  }
+
   /**
-   * Called by user script in onPreSend to set the correlation key
-   * Emits REQUEST_PENDING event to renderer
+   * Called by user script in onPreSend to set the correlation key.
+   * Stores the request for later retrieval and emits REQUEST_PENDING event.
    */
   setRequestKey(requestKey: string) {
     if (!this.currentConnectionId || !this.currentRequest) {
-      console.warn('[RequestsRuntime] setRequestKey called outside of send context');
+      logger.warn('[RequestsRuntime] setRequestKey called outside of send context');
       return;
     }
 
     this.currentRequestKey = requestKey;
+    this.pendingRequests.set(requestKey, this.currentRequest);
 
     const mainWindow = getMainWindow();
     if (mainWindow) {
@@ -71,23 +90,45 @@ export class RequestRuntime {
   }
 
   /**
-   * Called by user script in onMessage to resolve a pending request
-   * Emits REQUEST_RESOLVED event to renderer
+   * Called by user script in onMessage to resolve a pending request.
+   * Defers IPC emission — stores resolved state for stomp-ipc to consume
+   * after running postResponse scripts.
    */
   resolveRequestKey(requestKey: string) {
     if (!this.currentMessage) {
-      console.warn('[RequestsRuntime] resolveRequestKey called outside of message context');
+      logger.warn('[RequestsRuntime] resolveRequestKey called outside of message context');
       return;
     }
 
-    const mainWindow = getMainWindow();
-    if (mainWindow) {
-      const event: RequestResolvedEvent = {
-        requestKey,
-        response: this.currentMessage,
-        timestamp: Date.now(),
-      };
-      mainWindow.webContents.send('stomp:request-resolved', event);
+    const request = this.pendingRequests.get(requestKey);
+    if (!request) {
+      logger.warn(`[RequestsRuntime] No pending request found for key: ${requestKey}`);
+      return;
     }
+
+    this.resolvedRequests.push({
+      requestKey,
+      request,
+      message: this.currentMessage,
+    });
+
+    this.pendingRequests.delete(requestKey);
+  }
+
+  /**
+   * Consume all deferred resolved requests (called by stomp-ipc after running postResponse).
+   * Returns empty array if no requests were resolved in this message context.
+   */
+  consumeResolvedRequests(): ResolvedRequest[] {
+    const resolved = this.resolvedRequests;
+    this.resolvedRequests = [];
+    return resolved;
+  }
+
+  /**
+   * Clear all pending requests. Called on disconnect to prevent memory leaks.
+   */
+  clearPendingRequests() {
+    this.pendingRequests.clear();
   }
 }

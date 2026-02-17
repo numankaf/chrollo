@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import ConnectionStatusBadge from '@/features/connections/components/common/connection-status-badge';
 import useConnectionStatusStore from '@/store/connection-status-store';
 import { getConnectionButtonVariant } from '@/utils/connection-util';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { COMMANDS } from '@/lib/command';
 import { commandBus } from '@/lib/command-bus';
