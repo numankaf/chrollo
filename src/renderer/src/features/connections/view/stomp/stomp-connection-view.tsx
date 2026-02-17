@@ -10,11 +10,11 @@ import { connectStomp, disconnectStomp } from '@/utils/stomp-util';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDownIcon } from 'lucide-react';
 import { Controller, FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
+import { useParams } from 'react-router';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { WS_URL_SCHEME, type StompConnection } from '@/types/connection';
-import { useActiveItem } from '@/hooks/app/use-active-item';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,11 +27,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ta
 import { VariableInput } from '@/components/common/variable-input';
 
 function StompConnectionView() {
-  const { activeTab } = useActiveItem();
+  const { id } = useParams();
   const { connection, updateConnection } = useConnectionStore(
     useShallow((state) => ({
       updateConnection: state.updateConnection,
-      connection: state.connections.find((c) => c.id === activeTab?.id),
+      connection: state.connections.find((c) => c.id === id),
     }))
   );
   const form = useForm<z.infer<typeof STOMP_VALIDATION_SCHEMA>>({
@@ -124,7 +124,12 @@ function StompConnectionView() {
               onDisconnect={(connectionId: string) => disconnectStomp(connectionId)}
             />
           </div>
-          <Tabs defaultValue="settings" className="w-full mt-3 h-full flex-1" variant="link">
+          <Tabs
+            defaultValue="settings"
+            selectionId="stomp-connection-view-tab"
+            className="w-full mt-3 h-full flex-1"
+            variant="link"
+          >
             <TabsList className="mx-2">
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>

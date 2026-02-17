@@ -18,7 +18,11 @@ function RequestScripts() {
 
   return (
     <div className="w-full h-full px-2">
-      <Tabs defaultValue="pre-request" className="gap-1 flex-1 min-h-0 flex flex-col h-full">
+      <Tabs
+        defaultValue="pre-request"
+        selectionId="request-view-scripts-tab"
+        className="gap-1 flex-1 min-h-0 flex flex-col h-full"
+      >
         <div className="flex items-center justify-between">
           <TabsList>
             <TabsTrigger value="pre-request" className="text-sm">

@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import useEnvironmentStore from '@/store/environment-store';
 import { MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { useParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import { ENVIRONMENT_KEY_REGEX } from '@/types/common';
 import type { EnvironmentVariable } from '@/types/environment';
-import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useColumnVisibility } from '@/hooks/common/use-column-visibility';
 import { Button } from '@/components/common/button';
 import { Checkbox } from '@/components/common/checkbox';
@@ -25,12 +25,12 @@ import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 const COLUMN_VISIBILITY_STORAGE_KEY = 'environment-column-visibility';
 
 function EnvironmentView() {
-  const { activeTab } = useActiveItem();
+  const { id } = useParams();
   const [columnVisibility, setColumnVisibility] = useColumnVisibility(COLUMN_VISIBILITY_STORAGE_KEY);
   const { environment, updateEnvironment } = useEnvironmentStore(
     useShallow((state) => ({
       updateEnvironment: state.updateEnvironment,
-      environment: state.environments.find((e) => e.id === activeTab?.id) || state.globalEnvironment,
+      environment: state.environments.find((e) => e.id === id) || state.globalEnvironment,
     }))
   );
   const variables = environment ? environment.variables : [];

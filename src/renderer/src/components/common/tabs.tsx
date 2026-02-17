@@ -22,14 +22,41 @@ const tabVariants = cva(
 
 const TabsVariantContext = React.createContext<VariantProps<typeof tabVariants>['variant']>('default');
 
+const tabSelections = new Map<string, string>();
+
 function Tabs({
   className,
   variant,
+  selectionId,
+  defaultValue,
+  value,
+  onValueChange,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root> & VariantProps<typeof tabVariants>) {
+}: React.ComponentProps<typeof TabsPrimitive.Root> & VariantProps<typeof tabVariants> & { selectionId?: string }) {
+  const [initialStoredValue] = React.useState(() => (selectionId ? tabSelections.get(selectionId) : undefined));
+
+  const handleValueChange = React.useCallback(
+    (newValue: string) => {
+      if (selectionId) {
+        tabSelections.set(selectionId, newValue);
+      }
+      onValueChange?.(newValue);
+    },
+    [selectionId, onValueChange]
+  );
+
+  const resolvedDefault = selectionId ? (initialStoredValue ?? defaultValue) : defaultValue;
+
   return (
     <TabsVariantContext.Provider value={variant ?? 'default'}>
-      <TabsPrimitive.Root data-slot="tabs" className={cn('flex flex-col gap-2', className)} {...props} />
+      <TabsPrimitive.Root
+        data-slot="tabs"
+        className={cn('flex flex-col gap-2', className)}
+        defaultValue={resolvedDefault}
+        value={value}
+        onValueChange={handleValueChange}
+        {...props}
+      />
     </TabsVariantContext.Provider>
   );
 }
