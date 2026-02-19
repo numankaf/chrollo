@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { formatJs } from '@/utils/editor-util';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -7,10 +8,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ta
 import { BeautifyButton } from '@/components/app/button/beautify-button';
 import CodeEditor, { EDITOR_BODY_TYPE } from '@/components/app/editor/code-editor';
 
+const TAB_FIELD_MAP: Record<string, string> = {
+  'pre-request': 'scripts.preRequest',
+  'post-response': 'scripts.postResponse',
+};
+
 function RequestScripts() {
   const form = useFormContext();
+  const [activeTab, setActiveTab] = useState('pre-request');
 
-  const handleBeautify = (field: string) => {
+  const handleBeautify = () => {
+    const field = TAB_FIELD_MAP[activeTab];
     const value = form.getValues(field);
     const formatted = formatJs(value);
     form.setValue(field, formatted, { shouldDirty: true });
@@ -22,6 +30,7 @@ function RequestScripts() {
         defaultValue="pre-request"
         selectionId="request-view-scripts-tab"
         className="gap-1 flex-1 min-h-0 flex flex-col h-full"
+        onValueChange={setActiveTab}
       >
         <div className="flex items-center justify-between">
           <TabsList>
@@ -36,7 +45,7 @@ function RequestScripts() {
             <Button variant="ghost" size="sm" className="h-6 gap-1.5 pointer-events-none!">
               {EDITOR_BODY_TYPE.JAVASCRIPT}
             </Button>
-            <BeautifyButton onClick={() => handleBeautify('scripts.preRequest')} />
+            <BeautifyButton onClick={handleBeautify} />
           </div>
         </div>
 

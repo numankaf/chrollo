@@ -97,6 +97,16 @@ export class VariablesRuntime {
     return Object.fromEntries(this.localStore.entries());
   }
 
+  /** @internal — infrastructure for pre-request → post-response locals handoff */
+  snapshotLocal(): Map<string, unknown> {
+    return new Map([...this.localStore].map(([k, v]) => [k, structuredClone(v)]));
+  }
+
+  /** @internal — infrastructure for pre-request → post-response locals handoff */
+  restoreLocal(snapshot: Map<string, unknown>): void {
+    this.localStore = new Map(snapshot);
+  }
+
   clearLocal(): void {
     this.localStore.clear();
   }

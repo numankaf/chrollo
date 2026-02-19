@@ -60,7 +60,11 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
           // Check if any requests were resolved during message handlers
           const resolvedRequests = runtime.request.consumeResolvedRequests();
 
+          // restoreLocal temporarily replaces the shared localStore for each resolved
+          // request's post-response script. This is safe because executeWithContext
+          // serializes all callbacks — no two scripts run concurrently.
           for (const resolved of resolvedRequests) {
+            runtime.variables.restoreLocal(resolved.locals);
             runtime.test.beginContext();
             if (resolved.request.scripts?.postResponse) {
               chrolloEngine.loadScript(resolved.request.scripts.postResponse);
@@ -359,7 +363,9 @@ export function initStompIpc() {
       const payload =
         body.type === REQUEST_BODY_TYPE.JSON ? resolveJsonPayload(body.data) : resolveVariables(body.data);
 
-      runtime.request.endSendContext();
+      // Snapshot locals after the full pre-request script has run so every
+      // local set during the script (including after setRequestKey) is captured.
+      runtime.request.endSendContext(runtime.variables.snapshotLocal());
 
       const client = stompClients[id];
 

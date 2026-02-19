@@ -9,6 +9,12 @@ export interface ResolvedRequest {
   requestKey: string;
   request: Request;
   message: SocketMessage;
+  locals: Map<string, unknown>;
+}
+
+interface PendingRequest {
+  request: Request;
+  locals: Map<string, unknown>;
 }
 
 export class RequestRuntime {
@@ -18,8 +24,8 @@ export class RequestRuntime {
   private currentRequest: Request | null = null;
   private currentMessage: SocketMessage | null = null;
 
-  // Pending requests waiting for resolution (requestKey -> Request)
-  private pendingRequests = new Map<string, Request>();
+  // Pending requests waiting for resolution (requestKey -> PendingRequest)
+  private pendingRequests = new Map<string, PendingRequest>();
 
   // Deferred resolutions - populated by resolveRequestKey, consumed by stomp-ipc
   private resolvedRequests: ResolvedRequest[] = [];
@@ -34,10 +40,16 @@ export class RequestRuntime {
   }
 
   /**
-   * Called after preSend handlers complete. Returns the requestKey if set.
+   * Called after the full pre-request script completes.
+   * Attaches the final locals snapshot to the pending request, then clears context.
+   * Returns the requestKey if set.
    */
-  endSendContext(): string | null {
+  endSendContext(locals: Map<string, unknown>): string | null {
     const requestKey = this.currentRequestKey;
+    if (requestKey) {
+      const pending = this.pendingRequests.get(requestKey);
+      if (pending) pending.locals = locals;
+    }
     this.currentConnectionId = null;
     this.currentRequest = null;
     this.currentRequestKey = null;
@@ -66,6 +78,7 @@ export class RequestRuntime {
   /**
    * Called by user script in onPreSend to set the correlation key.
    * Stores the request for later retrieval and emits REQUEST_PENDING event.
+   * locals are attached later by endSendContext after the full script completes.
    */
   setRequestKey(requestKey: string) {
     if (!this.currentConnectionId || !this.currentRequest) {
@@ -74,7 +87,7 @@ export class RequestRuntime {
     }
 
     this.currentRequestKey = requestKey;
-    this.pendingRequests.set(requestKey, this.currentRequest);
+    this.pendingRequests.set(requestKey, { request: this.currentRequest, locals: new Map() });
 
     const mainWindow = getMainWindow();
     if (mainWindow) {
@@ -100,16 +113,17 @@ export class RequestRuntime {
       return;
     }
 
-    const request = this.pendingRequests.get(requestKey);
-    if (!request) {
+    const pending = this.pendingRequests.get(requestKey);
+    if (!pending) {
       logger.warn(`[RequestsRuntime] No pending request found for key: ${requestKey}`);
       return;
     }
 
     this.resolvedRequests.push({
       requestKey,
-      request,
+      request: pending.request,
       message: this.currentMessage,
+      locals: pending.locals,
     });
 
     this.pendingRequests.delete(requestKey);
