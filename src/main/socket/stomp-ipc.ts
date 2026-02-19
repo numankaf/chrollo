@@ -65,6 +65,7 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
           // serializes all callbacks — no two scripts run concurrently.
           for (const resolved of resolvedRequests) {
             runtime.variables.restoreLocal(resolved.locals);
+            runtime.request.setCurrentResponseTime(resolved.responseTime);
             runtime.test.beginContext();
             if (resolved.request.scripts?.postResponse) {
               chrolloEngine.loadScript(resolved.request.scripts.postResponse);
@@ -74,6 +75,7 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
               requestKey: resolved.requestKey,
               response: resolved.message,
               testResults: runtime.test.getResults(),
+              responseTime: resolved.responseTime,
               timestamp: Date.now(),
             };
             mainWindow.webContents.send('stomp:request-resolved', event);

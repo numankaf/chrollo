@@ -25,5 +25,8 @@ export function createResponseAPI(runtime: RequestRuntime) {
     get meta() {
       return runtime.getMessage()?.meta ?? null;
     },
+    get responseTime() {
+      return runtime.getResponseTime();
+    },
   };
 }

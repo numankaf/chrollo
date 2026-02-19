@@ -10,11 +10,13 @@ export interface ResolvedRequest {
   request: Request;
   message: SocketMessage;
   locals: Map<string, unknown>;
+  responseTime: number;
 }
 
 interface PendingRequest {
   request: Request;
   locals: Map<string, unknown>;
+  sentAt: number;
 }
 
 export class RequestRuntime {
@@ -23,6 +25,7 @@ export class RequestRuntime {
   private currentConnectionId: string | null = null;
   private currentRequest: Request | null = null;
   private currentMessage: SocketMessage | null = null;
+  private currentResponseTime: number | null = null;
 
   // Pending requests waiting for resolution (requestKey -> PendingRequest)
   private pendingRequests = new Map<string, PendingRequest>();
@@ -69,10 +72,19 @@ export class RequestRuntime {
    */
   endMessageContext() {
     this.currentMessage = null;
+    this.currentResponseTime = null;
   }
 
   getMessage(): SocketMessage | null {
     return this.currentMessage;
+  }
+
+  setCurrentResponseTime(responseTime: number) {
+    this.currentResponseTime = responseTime;
+  }
+
+  getResponseTime(): number | null {
+    return this.currentResponseTime;
   }
 
   /**
@@ -86,8 +98,9 @@ export class RequestRuntime {
       return;
     }
 
+    const sentAt = Date.now();
     this.currentRequestKey = requestKey;
-    this.pendingRequests.set(requestKey, { request: this.currentRequest, locals: new Map() });
+    this.pendingRequests.set(requestKey, { request: this.currentRequest, locals: new Map(), sentAt });
 
     const mainWindow = getMainWindow();
     if (mainWindow) {
@@ -96,7 +109,7 @@ export class RequestRuntime {
         requestId: this.currentRequest.id,
         connectionId: this.currentConnectionId,
         request: this.currentRequest,
-        timestamp: Date.now(),
+        timestamp: sentAt,
       };
       mainWindow.webContents.send('stomp:request-pending', event);
     }
@@ -124,6 +137,7 @@ export class RequestRuntime {
       request: pending.request,
       message: this.currentMessage,
       locals: pending.locals,
+      responseTime: this.currentMessage.timestamp - pending.sentAt,
     });
 
     this.pendingRequests.delete(requestKey);

@@ -42,9 +42,8 @@ export function useAppSubscriptions() {
     });
 
     const unsubscribeRequestResolved = window.listener.stomp.onRequestResolved((data) => {
-      const { requestKey, response } = data;
-      console.log(data);
-      useRequestResponseStore.getState().resolveRequest(requestKey, response);
+      const { requestKey, response, responseTime, testResults } = data;
+      useRequestResponseStore.getState().resolveRequest(requestKey, response, responseTime, testResults);
     });
 
     return () => {

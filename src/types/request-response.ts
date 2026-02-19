@@ -24,6 +24,7 @@ export interface TrackedRequest {
   request: Request;
   response?: SocketMessage;
   testResults?: TestResult[];
+  responseTime?: number;
   startTime: number;
   endTime?: number;
 }
@@ -40,5 +41,6 @@ export interface RequestResolvedEvent {
   requestKey: string;
   response: SocketMessage;
   testResults: TestResult[];
+  responseTime: number;
   timestamp: number;
 }

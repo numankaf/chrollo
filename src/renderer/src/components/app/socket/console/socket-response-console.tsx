@@ -1,14 +1,15 @@
-import { useEffect, useEffectEvent, useMemo, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { formatCode } from '@/utils/editor-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Ellipsis, Loader2Icon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
-import { REQUEST_STATUS, type TrackedRequest } from '@/types/request-response';
+import { REQUEST_STATUS, type TestResult, type TrackedRequest } from '@/types/request-response';
 import { SOCKET_MESSAGE_TYPE } from '@/types/socket';
-import { calculateStringSize, deepParseJson, formatBytes } from '@/lib/utils';
+import { calculateStringSize, cn, deepParseJson, formatBytes } from '@/lib/utils';
 import { useActiveItem } from '@/hooks/app/use-active-item';
 import { useRequestResponse } from '@/hooks/connection/use-request-response';
 import { Badge } from '@/components/common/badge';
@@ -24,8 +25,8 @@ import { Separator } from '@/components/common/seperator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
 import CodeEditor from '@/components/app/editor/code-editor';
-import ComingSoon from '@/components/app/empty/coming-soon';
 import NoResponseFound from '@/components/app/empty/no-response-found';
+import NoTestResultsFound from '@/components/app/empty/no-test-results-found';
 import { BodyTypeSelector } from '@/components/app/socket/console/common/body-type-selector';
 import { MessageHeadersTable } from '@/components/app/socket/console/common/message-headers-table';
 import { SocketConsoleMessageIcon } from '@/components/icon/socket-console-message-icon';
@@ -66,7 +67,7 @@ function TrackedRequestStatusBadge({ trackedRequest }: { trackedRequest: Tracked
 }
 
 function ResponseStatusBar({ trackedRequest }: { trackedRequest: TrackedRequest }) {
-  const { request, response, startTime, endTime } = trackedRequest;
+  const { request, response, responseTime } = trackedRequest;
   const { activeConnection } = useActiveItem();
   const { clearRequest } = useRequestResponse(activeConnection?.id);
 
@@ -75,10 +76,6 @@ function ResponseStatusBar({ trackedRequest }: { trackedRequest: TrackedRequest 
       clearRequest(trackedRequest?.requestId);
     }
   };
-  const duration = useMemo(() => {
-    if (!startTime || !endTime) return null;
-    return endTime - startTime;
-  }, [startTime, endTime]);
 
   const requestStats = useMemo(() => {
     if (!request) return { headers: 0, body: 0, total: 0 };
@@ -116,8 +113,8 @@ function ResponseStatusBar({ trackedRequest }: { trackedRequest: TrackedRequest 
     <div className="flex items-center gap-2 text-sm">
       <TrackedRequestStatusBadge trackedRequest={trackedRequest} />
       <Separator orientation="vertical" className="h-3.5!" />
-      {duration !== null && (
-        <span className="text-muted-foreground hover:text-foreground cursor-default">{duration} ms</span>
+      {responseTime && (
+        <span className="text-muted-foreground hover:text-foreground cursor-default">{responseTime} ms</span>
       )}
       <Separator orientation="vertical" className="h-3.5!" />
       <TooltipProvider delayDuration={500}>
@@ -195,6 +192,62 @@ function ResponseStatusBar({ trackedRequest }: { trackedRequest: TrackedRequest 
   );
 }
 
+function TestResultsPanel({ testResults }: { testResults: TestResult[] }) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const virtualizer = useVirtualizer({
+    count: testResults.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 40,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+
+  if (testResults.length === 0) {
+    return <NoTestResultsFound />;
+  }
+
+  return (
+    <ScrollArea viewportRef={parentRef} className="h-full px-1">
+      <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
+        <div
+          className="absolute top-0 left-0 w-full"
+          style={{ transform: `translateY(${virtualItems[0]?.start ?? 0}px)` }}
+        >
+          {virtualItems.map((virtualRow) => {
+            const result = testResults[virtualRow.index];
+            return (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                className="border-b"
+              >
+                <div className="flex items-start gap-2 px-3 py-2">
+                  <Badge className="w-14" variant={result.passed ? 'success-bordered-ghost' : 'error-bordered-ghost'}>
+                    {result.passed ? 'PASSED' : 'FAILED'}
+                  </Badge>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm truncate block" title={result.name}>
+                      {result.name}
+                      {result.error && (
+                        <span className="text-muted-foreground" title={result.error}>
+                          - {result.error}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </ScrollArea>
+  );
+}
+
 function SocketResponseConsole() {
   const { activeConnection } = useActiveItem();
   const { activeTab } = useActiveItem();
@@ -229,6 +282,9 @@ function SocketResponseConsole() {
 
   const message = lastTrackedRequest?.response;
   const headers = message?.meta?.headers || {};
+  const testResults = lastTrackedRequest?.testResults || [];
+  const passCount = testResults.filter((r) => r.passed).length;
+  const hasFailed = testResults.some((r) => !r.passed);
   const bodyTypeRetrieved = getMessageContentType(headers);
 
   const [bodyType, setBodyType] = useState<RequestBodyType>(bodyTypeRetrieved);
@@ -278,8 +334,17 @@ function SocketResponseConsole() {
           <div className="flex items-center justify-between">
             <TabsList>
               <TabsTrigger value="body">Body</TabsTrigger>
-              <TabsTrigger value="headers">Headers</TabsTrigger>
-              <TabsTrigger value="test-results">Test Results</TabsTrigger>
+              <TabsTrigger value="headers">
+                Headers <span className="text-primary">({Object.keys(headers).length})</span>
+              </TabsTrigger>
+              <TabsTrigger value="test-results">
+                Test Results
+                {testResults.length > 0 && (
+                  <span className={cn(hasFailed ? 'text-destructive' : 'text-green-600 dark:text-green-400')}>
+                    ({passCount}/{testResults.length})
+                  </span>
+                )}
+              </TabsTrigger>
             </TabsList>
             {!isLoading && <ResponseStatusBar trackedRequest={lastTrackedRequest} />}
             {isLoading && (
@@ -316,9 +381,9 @@ function SocketResponseConsole() {
             <MessageHeadersTable headers={headers as Record<string, unknown>} />
           </TabsContent>
 
-          <TabsContent value="test-results" className="relative">
+          <TabsContent value="test-results" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
             <LoadingOverlay isLoading={isLoading} />
-            <ComingSoon />
+            <TestResultsPanel testResults={testResults} />
           </TabsContent>
         </Tabs>
       )}
