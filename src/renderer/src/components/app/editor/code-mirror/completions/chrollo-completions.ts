@@ -5,6 +5,7 @@ import { FAKER_METHODS, FAKER_MODULES } from '@/components/app/editor/code-mirro
 import { REQUESTS_API } from '@/components/app/editor/code-mirror/completions/api/request';
 import { makeInfo } from '@/components/app/editor/code-mirror/completions/api/shared';
 import { STOMP_API } from '@/components/app/editor/code-mirror/completions/api/stomp';
+import { EXPECT_CHAIN_API } from '@/components/app/editor/code-mirror/completions/api/test';
 import { UTILS_API } from '@/components/app/editor/code-mirror/completions/api/utils';
 import {
   VARIABLES_API,
@@ -56,11 +57,73 @@ const CHROLLO_API = {
           </div>
         `),
   },
+  test: {
+    label: 'test',
+    type: 'function',
+    info: () =>
+      makeInfo(`
+          <div>
+            <b>chrollo.test(name, fn)</b><br/>
+            <small>(name: string, fn: () =&gt; void) =&gt; void</small><br/><br/>
+            Runs <code>fn()</code> and records a named test result.<br/>
+            The test passes if <code>fn</code> completes without throwing.<br/>
+            Use <code>chrollo.expect()</code> inside for assertions.<br/><br/>
+            <b>Example:</b><br/>
+            <code>chrollo.test('has userId', () =&gt; {</code><br/>
+            <code>&nbsp;&nbsp;const data = chrollo.response.data.json();</code><br/>
+            <code>&nbsp;&nbsp;chrollo.expect(data.userId).to.exist;</code><br/>
+            <code>});</code>
+          </div>
+        `),
+  },
+  expect: {
+    label: 'expect',
+    type: 'function',
+    info: () =>
+      makeInfo(`
+          <div>
+            <b>chrollo.expect(value, message?)</b><br/>
+            <small>(val: any, message?: string) =&gt; Assertion</small><br/><br/>
+            Chrollo uses <b>Chai Expect</b> for BDD-style assertions.<br/>
+            Returns a chainable Assertion object. Use inside <code>chrollo.test()</code>.<br/>
+            <a href="https://www.chaijs.com/api/bdd/" target="_blank">Chai BDD API Reference</a><br/><br/>
+            <b>Examples:</b><br/>
+            <code>chrollo.expect(status).to.equal(200)</code><br/>
+            <code>chrollo.expect(body).to.have.property('id')</code><br/>
+            <code>chrollo.expect(arr).to.have.lengthOf(3)</code><br/>
+            <code>chrollo.expect(str).to.include('hello')</code><br/>
+            <code>chrollo.expect(value).to.be.a('string')</code><br/>
+            <code>chrollo.expect(value).to.not.be.null</code><br/><br/>
+            <b>Key chain operators:</b><br/>
+            • <code>to be have not deep</code> — modifiers / language chains<br/>
+            • <code>equal eql include property</code> — equality / containment<br/>
+            • <code>above below least most within</code> — numeric range<br/>
+            • <code>a an lengthOf match keys oneOf</code> — type / shape<br/>
+            • <code>ok true false null undefined exist empty</code> — boolean getters<br/>
+          </div>
+        `),
+  },
 };
 
 export function chrolloCompletions(context: CompletionContext): CompletionResult | null {
   const word = context.matchBefore(/[\w.]*/);
   if (!word) return null;
+
+  // ── Chai expect chain detection ────────────────────────────────────────────
+  // Detects patterns like: expect(value). / expect(value).to. / expect(value).to.eq
+  // word.text only captures [\w.]* and breaks at '(' / ')', so we fall back to
+  // scanning the text on the current line up to the cursor for '.expect(...).'.
+  const lineFrom = context.state.doc.lineAt(context.pos).from;
+  const lineUpToCursor = context.state.sliceDoc(lineFrom, context.pos);
+  const expectChainMatch = lineUpToCursor.match(/\.expect\(.*\).*\.(\w*)$/);
+  if (expectChainMatch) {
+    const partial = expectChainMatch[1];
+    return {
+      from: context.pos - partial.length,
+      options: EXPECT_CHAIN_API,
+    };
+  }
+  // ── End Chai expect chain detection ───────────────────────────────────────
 
   if (word.text === 'console.') {
     return {
