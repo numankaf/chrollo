@@ -18,6 +18,7 @@ import {
   type ConnectionStatusData,
   type StompConnection,
 } from '@/types/connection';
+import type { RequestResolvedEvent } from '@/types/request-response';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
 
 let seq = 0;
@@ -55,12 +56,41 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
 
           runtime.request.beginMessageContext(socketReceivedMessage);
           runtime.stomp.runMessage(ctx);
+
+          // Check if any requests were resolved during message handlers
+          const resolvedRequests = runtime.request.consumeResolvedRequests();
+
+          // restoreLocal temporarily replaces the shared localStore for each resolved
+          // request's post-response script. This is safe because executeWithContext
+          // serializes all callbacks — no two scripts run concurrently.
+          for (const resolved of resolvedRequests) {
+            runtime.variables.restoreLocal(resolved.locals);
+            runtime.request.setCurrentResponseTime(resolved.responseTime);
+            runtime.test.beginContext();
+            if (resolved.request.scripts?.postResponse) {
+              chrolloEngine.loadScript(resolved.request.scripts.postResponse);
+            }
+
+            const event: RequestResolvedEvent = {
+              requestKey: resolved.requestKey,
+              response: resolved.message,
+              testResults: runtime.test.getResults(),
+              responseTime: resolved.responseTime,
+              timestamp: Date.now(),
+            };
+            mainWindow.webContents.send('stomp:request-resolved', event);
+          }
+
           runtime.request.endMessageContext();
 
           mainWindow.webContents.send('stomp:message', socketReceivedMessage);
 
-          const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
-          logger.info(data);
+          try {
+            const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
+            logger.info(data);
+          } catch {
+            logger.info(msg.body);
+          }
         });
       },
       { id: subscriptionId }
@@ -164,8 +194,8 @@ export function initStompIpc() {
     });
 
     let lastStompStatus: ConnectionStatus | null = null;
-    lastStompStatus = CONNECTION_STATUS.CONNECTED;
     client.onConnect = (frame) => {
+      lastStompStatus = CONNECTION_STATUS.CONNECTED;
       mainWindow.webContents.send('stomp:status', {
         connectionId: id,
         status: lastStompStatus,
@@ -335,7 +365,9 @@ export function initStompIpc() {
       const payload =
         body.type === REQUEST_BODY_TYPE.JSON ? resolveJsonPayload(body.data) : resolveVariables(body.data);
 
-      runtime.request.endSendContext();
+      // Snapshot locals after the full pre-request script has run so every
+      // local set during the script (including after setRequestKey) is captured.
+      runtime.request.endSendContext(runtime.variables.snapshotLocal());
 
       const client = stompClients[id];
 
@@ -383,6 +415,8 @@ export function initStompIpc() {
       delete connectionWorkspaceMap[id];
       logger.info(`Disconnected STOMP (${id})`);
     }
+    const runtime = chrolloEngine.getRuntime();
+    runtime.request.clearPendingRequests();
     mainWindow.webContents.send('stomp:status', {
       connectionId: id,
       status: CONNECTION_STATUS.DISCONNECTED,
@@ -393,12 +427,16 @@ export function initStompIpc() {
   // ------------------------------
   // DISCONNECT ALL
   // ------------------------------
-  ipcMain.on('stomp:disconnectAll', () => {
-    Object.entries(stompClients).forEach(async ([id, client]) => {
-      await client.deactivate();
-      delete stompClients[id];
-      delete connectionWorkspaceMap[id];
-    });
-    logger.info(`All STOMP connections closed`);
+  ipcMain.on('stomp:disconnectAll', async () => {
+    await Promise.all(
+      Object.entries(stompClients).map(async ([id, client]) => {
+        await client.deactivate();
+        delete stompClients[id];
+        delete connectionWorkspaceMap[id];
+      })
+    );
+    const runtime = chrolloEngine.getRuntime();
+    runtime.request.clearPendingRequests();
+    logger.info('All STOMP connections closed');
   });
 }

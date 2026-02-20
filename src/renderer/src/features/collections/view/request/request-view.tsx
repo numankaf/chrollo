@@ -8,20 +8,20 @@ import RequestViewHeader from '@/features/collections/components/request/request
 import useCollectionItemStore from '@/store/collection-item-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
+import { useParams } from 'react-router';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
 import { type Request } from '@/types/collection';
-import { useActiveItem } from '@/hooks/app/use-active-item';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 
 function RequestView() {
-  const { activeTab } = useActiveItem();
+  const { id } = useParams();
   const { request, updateCollectionItem } = useCollectionItemStore(
     useShallow((state) => ({
       updateCollectionItem: state.updateCollectionItem,
-      request: activeTab?.id ? (state.collectionItemMap.get(activeTab.id) as Request) : undefined,
+      request: id ? (state.collectionItemMap.get(id) as Request) : undefined,
     }))
   );
   const form = useForm<z.infer<typeof REQUEST_VALIDATION_SCHEMA>>({
@@ -57,7 +57,12 @@ function RequestView() {
       <FormProvider {...form}>
         <form className="h-full flex flex-col overflow-hidden" noValidate>
           <RequestViewHeader />
-          <Tabs defaultValue="body" className="w-full mt-3 flex-1 min-h-0 flex flex-col" variant="link">
+          <Tabs
+            defaultValue="body"
+            selectionId="request-view-tab"
+            className="w-full mt-3 flex-1 min-h-0 flex flex-col"
+            variant="link"
+          >
             <TabsList className="mx-2 shrink-0">
               <TabsTrigger value="docs">Docs</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>

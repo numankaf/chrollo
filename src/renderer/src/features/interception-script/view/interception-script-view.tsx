@@ -1,8 +1,8 @@
 import useInterceptionScriptStore from '@/store/interception-script-store';
 import { formatJs } from '@/utils/editor-util';
+import { useParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Button } from '@/components/common/button';
 import { Label } from '@/components/common/label';
 import { ScrollArea } from '@/components/common/scroll-area';
@@ -11,11 +11,11 @@ import { BeautifyButton } from '@/components/app/button/beautify-button';
 import CodeEditor, { EDITOR_BODY_TYPE } from '@/components/app/editor/code-editor';
 
 function InterceptionScriptView() {
-  const { activeTab } = useActiveItem();
+  const { id } = useParams();
 
   const { script, updateInterceptionScript } = useInterceptionScriptStore(
     useShallow((state) => ({
-      script: state.interceptionScripts.find((s) => s.id === activeTab?.id),
+      script: state.interceptionScripts.find((s) => s.id === id),
       updateInterceptionScript: state.updateInterceptionScript,
     }))
   );

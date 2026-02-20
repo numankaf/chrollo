@@ -9,6 +9,13 @@ export const REQUEST_STATUS = {
 
 export type RequestStatus = (typeof REQUEST_STATUS)[keyof typeof REQUEST_STATUS];
 
+export interface TestResult {
+  name: string;
+  passed: boolean;
+  error?: string;
+  timestamp: number;
+}
+
 export interface TrackedRequest {
   requestKey: string;
   requestId: string;
@@ -16,6 +23,8 @@ export interface TrackedRequest {
   status: RequestStatus;
   request: Request;
   response?: SocketMessage;
+  testResults?: TestResult[];
+  responseTime?: number;
   startTime: number;
   endTime?: number;
 }
@@ -31,5 +40,7 @@ export interface RequestPendingEvent {
 export interface RequestResolvedEvent {
   requestKey: string;
   response: SocketMessage;
+  testResults: TestResult[];
+  responseTime: number;
   timestamp: number;
 }

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import type { Request } from '@/types/collection';
-import { REQUEST_STATUS, type RequestStatus, type TrackedRequest } from '@/types/request-response';
+import { REQUEST_STATUS, type RequestStatus, type TestResult, type TrackedRequest } from '@/types/request-response';
 import type { SocketMessage } from '@/types/socket';
 
 interface RequestResponseStore {
@@ -14,7 +14,12 @@ interface RequestResponseStore {
   // Actions
   addPendingRequest: (requestKey: string, requestId: string, connectionId: string, request: Request) => void;
 
-  resolveRequest: (requestKey: string, response: SocketMessage) => void;
+  resolveRequest: (
+    requestKey: string,
+    response: SocketMessage,
+    responseTime: number,
+    testResults: TestResult[]
+  ) => void;
 
   cancelRequest: (requestId: string) => void;
   clearAll: () => void;
@@ -45,7 +50,7 @@ const useRequestResponseStore = create<RequestResponseStore>((set) => ({
       };
     }),
 
-  resolveRequest: (requestKey, response) =>
+  resolveRequest: (requestKey, response, responseTime, testResults) =>
     set((state) => {
       // Find the requestId by scanning map values for matching requestKey
       let requestId: string | undefined;
@@ -69,6 +74,8 @@ const useRequestResponseStore = create<RequestResponseStore>((set) => ({
         ...existing,
         status: REQUEST_STATUS.RESOLVED as RequestStatus,
         response,
+        responseTime,
+        testResults,
         endTime: Date.now(),
       };
 

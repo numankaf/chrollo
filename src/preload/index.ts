@@ -12,6 +12,7 @@ import type { Workspace, WorkspaceFile, WorkspaceSelectionValue } from '@/types/
 interface Window {
   electron: ElectronAPI;
   api: unknown;
+  listener: unknown;
 }
 
 declare const window: Window & typeof globalThis;
@@ -139,13 +140,23 @@ const listener = {
   },
 
   console: {
-    log: (callback: (data: unknown) => void) => {
-      const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);
+    log: (callback: (...args: unknown[]) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
       ipcRenderer.on('console:log', handler);
       return () => ipcRenderer.removeListener('console:log', handler);
     },
-    error: (callback: (data: unknown) => void) => {
-      const handler = (_: Electron.IpcRendererEvent, data: unknown) => callback(data);
+    info: (callback: (...args: unknown[]) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
+      ipcRenderer.on('console:info', handler);
+      return () => ipcRenderer.removeListener('console:info', handler);
+    },
+    warn: (callback: (...args: unknown[]) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
+      ipcRenderer.on('console:warn', handler);
+      return () => ipcRenderer.removeListener('console:warn', handler);
+    },
+    error: (callback: (...args: unknown[]) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
       ipcRenderer.on('console:error', handler);
       return () => ipcRenderer.removeListener('console:error', handler);
     },
@@ -166,4 +177,5 @@ if (process.contextIsolated) {
   // fallback for disabled contextIsolation
   window.electron = electronAPI;
   window.api = api;
+  window.listener = listener;
 }

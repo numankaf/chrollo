@@ -2,8 +2,9 @@ import { getGlobalId } from '@/main/environment/environment-ipc';
 import { getMainWindow } from '@/main/index';
 import logger from '@/main/lib/logger';
 import { createFakerAPI } from '@/main/scripts/api/faker-api';
-import { createRequestAPI } from '@/main/scripts/api/request-api';
+import { createRequestAPI, createResponseAPI } from '@/main/scripts/api/request-api';
 import { createStompAPI } from '@/main/scripts/api/stomp-api';
+import { createTestAPI } from '@/main/scripts/api/test-api';
 import { createUtilsAPI } from '@/main/scripts/api/utils-api';
 import { createVariablesAPI } from '@/main/scripts/api/variables-api';
 import { executeUserScript } from '@/main/scripts/engine/execute-user-script';
@@ -17,7 +18,10 @@ interface ChrolloContext {
     variables: ReturnType<typeof createVariablesAPI>;
     utils: ReturnType<typeof createUtilsAPI>;
     request: ReturnType<typeof createRequestAPI>;
+    response: ReturnType<typeof createResponseAPI>;
     faker: ReturnType<typeof createFakerAPI>;
+    test: ReturnType<typeof createTestAPI>['test'];
+    expect: ReturnType<typeof createTestAPI>['expect'];
   };
 }
 
@@ -29,18 +33,25 @@ export class ChrolloScriptEngine {
   private activeWorkspaceId?: string;
   private activeEnvironmentId?: string;
 
+  // Serializes executeWithContext calls to prevent re-entrancy corruption
+  private executionQueue: Promise<unknown> = Promise.resolve();
+
   constructor() {
     this.initializeContext();
   }
 
   private initializeContext() {
+    const testAPI = createTestAPI(this.runtime.test);
     this.context = {
       chrollo: {
         stomp: createStompAPI(this.runtime.stomp),
         variables: createVariablesAPI(this.runtime.variables),
         utils: createUtilsAPI(this.runtime.utils),
         request: createRequestAPI(this.runtime.request),
+        response: createResponseAPI(this.runtime.request),
         faker: createFakerAPI(this.runtime.faker),
+        test: testAPI.test,
+        expect: testAPI.expect,
       },
     };
   }
@@ -169,14 +180,20 @@ export class ChrolloScriptEngine {
       return callback();
     }
 
-    const activeEnvironmentId = await this.getActiveEnvironmentId(workspaceId);
-    await this.initVariables(workspaceId, activeEnvironmentId);
-    try {
-      const result = await callback();
-      return result;
-    } finally {
-      await this.persistVariables();
-    }
+    const next = this.executionQueue.then(async () => {
+      const activeEnvironmentId = await this.getActiveEnvironmentId(workspaceId);
+      await this.initVariables(workspaceId, activeEnvironmentId);
+      try {
+        return await callback();
+      } finally {
+        await this.persistVariables();
+      }
+    });
+
+    // Advance queue even if this execution throws, so it doesn't jam
+    this.executionQueue = next.catch(() => undefined);
+
+    return next;
   }
 
   async reloadScripts(scripts: string[], workspaceId?: string) {

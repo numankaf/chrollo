@@ -92,8 +92,10 @@ declare global {
         onUpdated: (callback: (data: Environment) => void) => () => void;
       };
       console: {
-        log: (callback: (data: unknown) => void) => () => void;
-        error: (callback: (data: unknown) => void) => () => void;
+        log: (callback: (...args: unknown[]) => void) => () => void;
+        info: (callback: (...args: unknown[]) => void) => () => void;
+        warn: (callback: (...args: unknown[]) => void) => () => void;
+        error: (callback: (...args: unknown[]) => void) => () => void;
       };
     };
     electron: ElectronAPI;

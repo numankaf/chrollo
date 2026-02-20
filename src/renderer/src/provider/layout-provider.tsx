@@ -1,7 +1,7 @@
 import React, { createContext, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { Cable, Columns3Cog, History, LibraryBig, Waypoints } from 'lucide-react';
-import type { ImperativePanelHandle } from 'react-resizable-panels';
+import type { PanelImperativeHandle } from 'react-resizable-panels';
 import { useShallow } from 'zustand/react/shallow';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
@@ -59,7 +59,7 @@ export type LayoutProviderState = {
   sidebarItems: SidebarItem[];
   activeItem: SidebarItem;
   setActiveItem: (item: SidebarItem) => void;
-  sidebarRef: RefObject<ImperativePanelHandle | null>;
+  sidebarRef: RefObject<PanelImperativeHandle | null>;
   toggleSidebar: () => void;
 };
 
@@ -68,7 +68,7 @@ export const LayoutProviderContext = createContext<LayoutProviderState | null>(n
 export function LayoutProvider({ children }: LayoutProviderProps) {
   const [activeItem, setActiveItem] = useState<SidebarItem>(SIDEBAR_ITEMS[0]);
   const { activeTab } = useActiveItem();
-  const sidebarRef = useRef<ImperativePanelHandle>(null);
+  const sidebarRef = useRef<PanelImperativeHandle>(null);
   const { applicationSettings } = useAppConfigStore(
     useShallow((state) => ({
       applicationSettings: state.applicationSettings,
