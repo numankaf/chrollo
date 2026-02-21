@@ -163,9 +163,9 @@ export function initStompIpc() {
 
     const headers = connectHeaders
       .filter((h) => h.enabled)
-      .reduce((acc, h) => ({ ...acc, [h.key]: h.value.trim() }), {});
+      .reduce((acc, h) => ({ ...acc, [resolveVariables(h.key)]: resolveVariables(h.value.trim()) }), {});
 
-    const connectionUrl = stripAllWhitespace(prefix + url);
+    const connectionUrl = stripAllWhitespace(prefix + resolveVariables(url));
 
     let socketFactory: () => WebSocket | InstanceType<typeof SockJS>;
     switch (prefix) {
@@ -221,15 +221,16 @@ export function initStompIpc() {
       // ------------------------------
       for (const subscription of subscriptions) {
         if (subscription.enabled) {
+          const resolvedTopic = resolveVariables(subscription.topic);
           const ctx = {
             connectionId: id,
             subscriptionId: subscription.id,
-            topic: subscription.topic,
+            topic: resolvedTopic,
             subscribe: subscribeInternal,
           };
           const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
           if (!defaultDisabled) {
-            subscribeInternal(id, subscription.id, subscription.topic);
+            subscribeInternal(id, subscription.id, resolvedTopic);
           }
         }
       }
@@ -308,16 +309,17 @@ export function initStompIpc() {
 
     await chrolloEngine.executeWithContext(connectionWorkspaceMap[connectionId], () => {
       const runtime = chrolloEngine.getRuntime();
+      const resolvedTopic = resolveVariables(topic);
       const ctx = {
         connectionId,
         subscriptionId,
-        topic,
+        topic: resolvedTopic,
         subscribe: subscribeInternal,
       };
       const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
       if (defaultDisabled) return;
 
-      subscribeInternal(connectionId, subscriptionId, topic);
+      subscribeInternal(connectionId, subscriptionId, resolvedTopic);
     });
   });
 
@@ -329,17 +331,17 @@ export function initStompIpc() {
 
     await chrolloEngine.executeWithContext(connectionWorkspaceMap[connectionId], () => {
       const runtime = chrolloEngine.getRuntime();
-
+      const resolvedTopic = resolveVariables(topic);
       const ctx = {
         connectionId,
         subscriptionId,
-        topic,
+        topic: resolvedTopic,
         unsubscribe: unSubscribeInternal,
       };
       const { defaultDisabled } = runtime.stomp.runPreUnsubscribe(ctx);
       if (defaultDisabled) return;
 
-      unSubscribeInternal(connectionId, subscriptionId, topic);
+      unSubscribeInternal(connectionId, subscriptionId, resolvedTopic);
     });
   });
 
@@ -364,6 +366,7 @@ export function initStompIpc() {
       const { body, destination, headers } = request;
       const payload =
         body.type === REQUEST_BODY_TYPE.JSON ? resolveJsonPayload(body.data) : resolveVariables(body.data);
+      const resolvedDestination = resolveVariables(destination).trim();
 
       // Snapshot locals after the full pre-request script has run so every
       // local set during the script (including after setRequestKey) is captured.
@@ -371,10 +374,12 @@ export function initStompIpc() {
 
       const client = stompClients[id];
 
-      const requestHeaders = headers.filter((h) => h.enabled).reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+      const requestHeaders = headers
+        .filter((h) => h.enabled)
+        .reduce((acc, h) => ({ ...acc, [resolveVariables(h.key)]: resolveVariables(h.value) }), {});
       if (client && client.connected) {
         client.publish({
-          destination: destination.trim(),
+          destination: resolvedDestination,
           body: payload,
           headers: requestHeaders,
         });
@@ -388,7 +393,7 @@ export function initStompIpc() {
           meta: {
             command: 'SEND',
             headers: {
-              destination,
+              destination: resolvedDestination,
               ...requestHeaders,
               'content-length': String(payload.length),
               'content-type': CONTENT_TYPE_MAP[request.body.type],

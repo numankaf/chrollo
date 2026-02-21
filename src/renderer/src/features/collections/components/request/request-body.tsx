@@ -63,7 +63,6 @@ function RequestBody() {
             render={({ field }) => (
               <CodeEditor
                 enableVariables
-                enableResolveFromScript
                 value={field.value}
                 bodyType={bodyType}
                 onChange={(value) => {

@@ -17,18 +17,13 @@ import { EnvironmentIcon } from '@/components/icon/environment-icon';
 
 type VariableInputTooltipContentProps = {
   variable?: EnvironmentVariable;
-  resolveFromScript?: boolean;
   onEnvironmentClick?: (tab: Tab) => void;
 };
 
-function VariableInputTooltipContent({
-  variable,
-  resolveFromScript,
-  onEnvironmentClick,
-}: VariableInputTooltipContentProps) {
+function VariableInputTooltipContent({ variable, onEnvironmentClick }: VariableInputTooltipContentProps) {
   const { activeEnvironment, globalEnvironment, editingVariable, setEditingVariable } = useUpdateEnvironmentVariable();
 
-  if (resolveFromScript && !variable) {
+  if (!variable) {
     return (
       <div className="flex flex-col gap-3 pointer-events-auto">
         <div className="flex items-center gap-1">

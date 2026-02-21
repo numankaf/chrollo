@@ -56,16 +56,8 @@ export type EditorBodyType = (typeof EDITOR_BODY_TYPE)[keyof typeof EDITOR_BODY_
 export type CodeEditorProps = React.ComponentPropsWithRef<typeof CodeMirror> & {
   bodyType: EditorBodyType;
   enableVariables?: boolean;
-  enableResolveFromScript?: boolean;
 };
-function CodeEditor({
-  readOnly,
-  height,
-  bodyType,
-  enableVariables = false,
-  enableResolveFromScript = false,
-  ...props
-}: CodeEditorProps) {
+function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...props }: CodeEditorProps) {
   const { activeTheme } = use(ActiveThemeProviderContext);
   const { activeEnvironment, globalEnvironment } = useActiveItem();
   const { openTab } = useTabNavigation();
@@ -117,11 +109,11 @@ function CodeEditor({
       // Environment precedence is higher, so environment variables come first in the merged list
       const mergedVariables = [...envVars, ...globalVars];
 
-      _extensions.push(variableExtension(mergedVariables, enableResolveFromScript, openTab));
+      _extensions.push(variableExtension(mergedVariables, openTab));
     }
 
     return _extensions;
-  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, enableResolveFromScript, openTab]);
+  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, openTab]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;

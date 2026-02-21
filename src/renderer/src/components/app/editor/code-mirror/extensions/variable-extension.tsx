@@ -16,14 +16,13 @@ import { VariableInputTooltipContent } from '@/components/common/variable-input'
 
 export function variableExtension(
   enabledVariables: EnvironmentVariable[] | undefined,
-  resolveFromScript?: boolean,
   onEnvironmentClick?: (tab: Tab) => void
 ) {
   const variableMatcher = new MatchDecorator({
     regexp: ENVIRONMENT_VARIABLE_MATCH_REGEX,
     decoration: (match: RegExpExecArray) => {
       const varName = match[0].slice(2, -2).trim();
-      const exists = enabledVariables?.find((v) => v.key === varName && v.enabled) || resolveFromScript;
+      const exists = enabledVariables?.find((v) => v.key === varName && v.enabled);
 
       return Decoration.mark({
         class: exists ? 'cm-variable-exists' : 'cm-variable-not-exists',
@@ -64,11 +63,7 @@ export function variableExtension(
 
           root.render(
             <div className="p-3 min-w-64 bg-card border rounded-md shadow-xl text-foreground">
-              <VariableInputTooltipContent
-                variable={variable}
-                resolveFromScript={resolveFromScript}
-                onEnvironmentClick={onEnvironmentClick}
-              />
+              <VariableInputTooltipContent variable={variable} onEnvironmentClick={onEnvironmentClick} />
             </div>
           );
 
