@@ -4,9 +4,6 @@ directories:
   buildResources: build
   output: dist
 files:
-  - '!node_modules/**/*'
-  - '!**/.vscode/*'
-  - '!**/.github/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
@@ -48,7 +45,7 @@ mac:
   hardenedRuntime: true
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
-  notarize: false
+  notarize: true
 
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
