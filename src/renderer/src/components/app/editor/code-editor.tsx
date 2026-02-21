@@ -12,6 +12,7 @@ import globals from 'globals';
 import { useTheme } from 'next-themes';
 
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import useActiveRequestLocalVarKeys from '@/hooks/app/use-active-request-local-var-keys';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { chrolloCompletions } from '@/components/app/editor/code-mirror/completions/chrollo-completions';
 import { variableExtension } from '@/components/app/editor/code-mirror/extensions/variable-extension';
@@ -56,21 +57,14 @@ export type EditorBodyType = (typeof EDITOR_BODY_TYPE)[keyof typeof EDITOR_BODY_
 export type CodeEditorProps = React.ComponentPropsWithRef<typeof CodeMirror> & {
   bodyType: EditorBodyType;
   enableVariables?: boolean;
-  enableResolveFromScript?: boolean;
 };
-function CodeEditor({
-  readOnly,
-  height,
-  bodyType,
-  enableVariables = false,
-  enableResolveFromScript = false,
-  ...props
-}: CodeEditorProps) {
+function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...props }: CodeEditorProps) {
   const { activeTheme } = use(ActiveThemeProviderContext);
   const { activeEnvironment, globalEnvironment } = useActiveItem();
   const { openTab } = useTabNavigation();
   const { resolvedTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
+  const scriptLocalVarKeys = useActiveRequestLocalVarKeys();
 
   const extensions = useMemo(() => {
     const _extensions = [lineWrap, keymap.of([indentWithTab])];
@@ -113,15 +107,20 @@ function CodeEditor({
     if (enableVariables) {
       const globalVars = globalEnvironment?.variables.filter((v) => v.enabled) || [];
       const envVars = activeEnvironment?.variables.filter((v) => v.enabled) || [];
-
-      // Environment precedence is higher, so environment variables come first in the merged list
-      const mergedVariables = [...envVars, ...globalVars];
-
-      _extensions.push(variableExtension(mergedVariables, enableResolveFromScript, openTab));
+      _extensions.push(
+        variableExtension(
+          envVars,
+          globalVars,
+          scriptLocalVarKeys,
+          openTab,
+          activeEnvironment ?? undefined,
+          globalEnvironment ?? undefined
+        )
+      );
     }
 
     return _extensions;
-  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, enableResolveFromScript, openTab]);
+  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, scriptLocalVarKeys, openTab]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;

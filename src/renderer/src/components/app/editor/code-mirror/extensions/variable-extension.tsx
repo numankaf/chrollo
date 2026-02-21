@@ -1,3 +1,4 @@
+import { resolveVariableSource } from '@/utils/script-util';
 import {
   Decoration,
   EditorView,
@@ -9,24 +10,29 @@ import {
 } from '@uiw/react-codemirror';
 import { createRoot } from 'react-dom/client';
 
-import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
-import type { EnvironmentVariable } from '@/types/environment';
+import { ENVIRONMENT_VARIABLE_CAPTURE_REGEX, ENVIRONMENT_VARIABLE_MATCH_REGEX, VARIABLE_SOURCE } from '@/types/common';
+import type { Environment, EnvironmentVariable } from '@/types/environment';
 import type { Tab } from '@/types/layout';
 import { VariableInputTooltipContent } from '@/components/common/variable-input';
 
 export function variableExtension(
-  enabledVariables: EnvironmentVariable[] | undefined,
-  resolveFromScript?: boolean,
-  onEnvironmentClick?: (tab: Tab) => void
+  envVars: EnvironmentVariable[],
+  globalVars: EnvironmentVariable[],
+  scriptLocalVarKeys: string[],
+  onEnvironmentClick?: (tab: Tab) => void,
+  activeEnvironment?: Environment,
+  globalEnvironment?: Environment
 ) {
   const variableMatcher = new MatchDecorator({
     regexp: ENVIRONMENT_VARIABLE_MATCH_REGEX,
     decoration: (match: RegExpExecArray) => {
       const varName = match[0].slice(2, -2).trim();
-      const exists = enabledVariables?.find((v) => v.key === varName && v.enabled) || resolveFromScript;
+      const { source } = resolveVariableSource(varName, envVars, globalVars, scriptLocalVarKeys);
+
+      const cls = source === undefined ? 'cm-variable-not-exists' : 'cm-variable-exists';
 
       return Decoration.mark({
-        class: exists ? 'cm-variable-exists' : 'cm-variable-not-exists',
+        class: cls,
         attributes: { 'data-variable': varName },
       });
     },
@@ -49,8 +55,8 @@ export function variableExtension(
       if (!match) return null;
 
       const varKey = match[1];
-
-      const variable = enabledVariables?.find((v) => v.key === varKey && v.enabled);
+      const { source, variable } = resolveVariableSource(varKey, envVars, globalVars, scriptLocalVarKeys);
+      const resolvedEnv = source === VARIABLE_SOURCE.ENVIRONMENT ? activeEnvironment : globalEnvironment;
 
       return {
         pos: start,
@@ -66,7 +72,8 @@ export function variableExtension(
             <div className="p-3 min-w-64 bg-card border rounded-md shadow-xl text-foreground">
               <VariableInputTooltipContent
                 variable={variable}
-                resolveFromScript={resolveFromScript}
+                source={source}
+                environment={resolvedEnv}
                 onEnvironmentClick={onEnvironmentClick}
               />
             </div>
