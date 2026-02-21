@@ -44,9 +44,6 @@ jobs:
 
   build-mac:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        arch: [x64, arm64]
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
@@ -74,13 +71,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Package macOS (${{ matrix.arch }})
-        run: pnpm build:mac -- --${{ matrix.arch }}
+      - name: Package macOS
+        run: pnpm build:mac
 
-      - name: Upload macOS artifact (${{ matrix.arch }})
+      - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mac-${{ matrix.arch }}
+          name: mac
           path: dist/*.dmg
 
   build-windows:
