@@ -28,13 +28,6 @@
   border-radius: 0.25rem !important;
 }
 
-.cm-variable-script,
-.cm-variable-script * {
-  background-color: color-mix(in srgb, #f59e0b, transparent 90%) !important;
-  color: #f59e0b !important;
-  border-radius: 0.25rem !important;
-}
-
 .cm-variable-not-exists,
 .cm-variable-not-exists * {
   background-color: color-mix(in srgb, var(--destructive), transparent 90%) !important;

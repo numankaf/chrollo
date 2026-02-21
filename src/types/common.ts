@@ -27,3 +27,11 @@ export const ENVIRONMENT_VARIABLE_MATCH_REGEX = /\{\{\s*[a-zA-Z_][\w.-]*\s*}}/g;
 // Match EXACTLY ONE placeholder and CAPTURE the key
 // Use for: hover, tooltip, single-token parsing
 export const ENVIRONMENT_VARIABLE_CAPTURE_REGEX = /^\{\{\s*([a-zA-Z_][\w.-]*)\s*}}$/;
+
+export const VARIABLE_SOURCE = {
+  GLOBAL: 'global',
+  ENVIRONMENT: 'environment',
+  SCRIPT: 'script',
+} as const;
+
+export type VariableSource = (typeof VARIABLE_SOURCE)[keyof typeof VARIABLE_SOURCE];

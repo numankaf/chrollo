@@ -12,6 +12,7 @@ import globals from 'globals';
 import { useTheme } from 'next-themes';
 
 import { useActiveItem } from '@/hooks/app/use-active-item';
+import useActiveRequestLocalVarKeys from '@/hooks/app/use-active-request-local-var-keys';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { chrolloCompletions } from '@/components/app/editor/code-mirror/completions/chrollo-completions';
 import { variableExtension } from '@/components/app/editor/code-mirror/extensions/variable-extension';
@@ -63,6 +64,7 @@ function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...pr
   const { openTab } = useTabNavigation();
   const { resolvedTheme } = useTheme();
   const [editorTheme, setEditorTheme] = useState(() => getEditorTheme(resolvedTheme));
+  const scriptLocalVarKeys = useActiveRequestLocalVarKeys();
 
   const extensions = useMemo(() => {
     const _extensions = [lineWrap, keymap.of([indentWithTab])];
@@ -105,15 +107,20 @@ function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...pr
     if (enableVariables) {
       const globalVars = globalEnvironment?.variables.filter((v) => v.enabled) || [];
       const envVars = activeEnvironment?.variables.filter((v) => v.enabled) || [];
-
-      // Environment precedence is higher, so environment variables come first in the merged list
-      const mergedVariables = [...envVars, ...globalVars];
-
-      _extensions.push(variableExtension(mergedVariables, openTab));
+      _extensions.push(
+        variableExtension(
+          envVars,
+          globalVars,
+          scriptLocalVarKeys,
+          openTab,
+          activeEnvironment ?? undefined,
+          globalEnvironment ?? undefined
+        )
+      );
     }
 
     return _extensions;
-  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, openTab]);
+  }, [bodyType, readOnly, enableVariables, activeEnvironment, globalEnvironment, scriptLocalVarKeys, openTab]);
 
   useLayoutEffect(() => {
     if (!resolvedTheme) return;
