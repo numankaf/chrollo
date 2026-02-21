@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- Required for Electron's V8 JIT compiler under Hardened Runtime -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <!-- Required for Electron's Node.js integration under Hardened Runtime -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <!-- Required for outbound WebSocket / HTTP connections -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <!-- Required for inbound connections (local STOMP server / proxy) -->
+    <key>com.apple.security.network.server</key>
+    <true/>
+  </dict>
+</plist>
