@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { URL_SCHEME_COLORS } from '@/constants/color-constants';
 import { STOMP_VALIDATION_SCHEMA } from '@/constants/connection/stomp/stomp-schema';
 import ConnectionButton from '@/features/connections/components/common/connection-button';
 import StompHeaders from '@/features/connections/components/stomp/stomp-headers';
@@ -8,20 +7,13 @@ import StompSubsciptions from '@/features/connections/components/stomp/stomp-sub
 import useConnectionStore from '@/store/connection-store';
 import { connectStomp, disconnectStomp } from '@/utils/stomp-util';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDownIcon } from 'lucide-react';
 import { Controller, FormProvider, useForm, useFormState, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router';
 import * as z from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
-import { WS_URL_SCHEME, type StompConnection } from '@/types/connection';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/common/dropdown-menu';
-import { InputGroup, InputGroupAddon, InputGroupButton } from '@/components/common/input-group';
+import { type StompConnection } from '@/types/connection';
+import { InputGroup } from '@/components/common/input-group';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import { VariableInput } from '@/components/common/variable-input';
@@ -67,53 +59,22 @@ function StompConnectionView() {
     <div className="max-h-full h-full flex flex-col">
       <FormProvider {...form}>
         <form className="h-full" noValidate>
-          <div className="flex gap-2 m-2 h-10">
-            <Controller
-              name="prefix"
-              control={form.control}
-              render={({ field }) => (
-                <InputGroup>
-                  <InputGroupAddon>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <InputGroupButton
-                          variant="ghost"
-                          className="-ml-1.5 pr-1.5! w-20 flex items-center justify-between text-foreground h-full"
-                        >
-                          <span className={URL_SCHEME_COLORS[field.value]}>{field.value}</span>
-                          <ChevronDownIcon className="size-3" />
-                        </InputGroupButton>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                        {Object.values(WS_URL_SCHEME).map((scheme) => (
-                          <DropdownMenuItem
-                            key={scheme}
-                            onClick={() => field.onChange(scheme)}
-                            className={URL_SCHEME_COLORS[scheme]}
-                          >
-                            {scheme}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </InputGroupAddon>
-
-                  <Controller
-                    name="url"
-                    control={form.control}
-                    render={({ field: urlField, fieldState }) => (
-                      <VariableInput
-                        placeholder="Enter URL"
-                        className="pl-1.5 text-sm!"
-                        value={urlField.value}
-                        onChange={urlField.onChange}
-                        aria-invalid={!!fieldState.error}
-                      />
-                    )}
+          <div className="p-2 w-full flex items-center justify-between gap-2 h-10">
+            <InputGroup>
+              <Controller
+                name="url"
+                control={form.control}
+                render={({ field: urlField, fieldState }) => (
+                  <VariableInput
+                    placeholder="Enter URL"
+                    className="pl-1.5 text-sm!"
+                    value={urlField.value}
+                    onChange={urlField.onChange}
+                    aria-invalid={!!fieldState.error}
                   />
-                </InputGroup>
-              )}
-            />
+                )}
+              />
+            </InputGroup>
             <ConnectionButton
               connection={connection}
               onConnect={() =>

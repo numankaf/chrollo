@@ -1,13 +1,12 @@
 import * as z from 'zod';
 
 import { BASE_MODEL_TYPE } from '@/types/base';
-import { CONNECTION_TYPE, WS_URL_SCHEME, type StompConnection, type WsUrlScheme } from '@/types/connection';
+import { CONNECTION_TYPE, type StompConnection } from '@/types/connection';
 
 const STOMP_VALIDATION_SCHEMA = z.object({
   id: z.string(),
   name: z.string(),
   workspaceId: z.string(),
-  prefix: z.enum(Object.values(WS_URL_SCHEME) as [WsUrlScheme, ...WsUrlScheme[]]),
   url: z.string().min(1, 'URL is required.'),
   settings: z.object({
     connectionTimeout: z
@@ -57,7 +56,6 @@ const STOMP_VALIDATION_SCHEMA = z.object({
 
 const STOMP_DEFAULT_VALUES: Omit<StompConnection, 'id' | 'name' | 'workspaceId'> = {
   connectionType: CONNECTION_TYPE.STOMP,
-  prefix: WS_URL_SCHEME.WS,
   url: '',
   modelType: BASE_MODEL_TYPE.CONNECTION,
   settings: {

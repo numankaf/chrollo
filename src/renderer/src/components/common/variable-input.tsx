@@ -96,15 +96,33 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
   const { activeEnvironment, globalEnvironment } = useActiveItem();
   const { openTab } = useTabNavigation();
   const scriptLocalVarKeys = useActiveRequestLocalVarKeys();
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const envVars = activeEnvironment?.variables.filter((v) => v.enabled) ?? [];
   const globalVars = globalEnvironment?.variables.filter((v) => v.enabled) ?? [];
+
+  const handleVariableMouseDown = (e: React.MouseEvent, offset: number, part: string) => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+
+      // Calculate character index within the variable part
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const charWidth = rect.width / part.length;
+      const localOffset = Math.round(x / charWidth);
+
+      const finalOffset = offset + localOffset;
+      inputRef.current.setSelectionRange(finalOffset, finalOffset);
+
+      e.preventDefault();
+    }
+  };
 
   const renderMirror = () => {
     const parts = currentText.split(new RegExp(`(${ENVIRONMENT_VARIABLE_MATCH_REGEX.source})`, 'g')).filter(Boolean);
     let charOffset = 0;
     return parts.map((part) => {
-      const key = charOffset;
+      const currentOffset = charOffset;
       charOffset += part.length;
 
       const match = ENVIRONMENT_VARIABLE_CAPTURE_REGEX.exec(part);
@@ -115,9 +133,10 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
         const found = !!source;
 
         return (
-          <Tooltip key={key} delayDuration={500}>
+          <Tooltip key={currentOffset} delayDuration={500}>
             <TooltipTrigger asChild>
               <span
+                onMouseDown={(e) => handleVariableMouseDown(e, currentOffset, part)}
                 className={cn(
                   'pointer-events-auto cursor-text transition-colors rounded-md',
                   found ? 'text-primary bg-primary/10' : 'text-destructive bg-destructive/10'
@@ -141,16 +160,25 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
           </Tooltip>
         );
       }
-      return <span key={key}>{part}</span>;
+      return <span key={currentOffset}>{part}</span>;
     });
   };
 
   return (
     <TooltipProvider delayDuration={500}>
-      <div className={cn('relative flex-1 group overflow-hidden caret-foreground rounded-md', containerClassName)}>
+      <div
+        className={cn('relative flex-1 group overflow-hidden caret-foreground rounded-md', containerClassName)}
+        onMouseDown={(e) => {
+          // Only focus if clicking the container itself or the mirror,
+          // not when clicking things inside tooltips or elsewhere.
+          if (e.target === e.currentTarget || (e.target as HTMLElement).closest('[aria-hidden="true"]')) {
+            inputRef.current?.focus();
+          }
+        }}
+      >
         <div
           className={cn(
-            'absolute inset-0 flex items-center bg-transparent px-3 py-1 pointer-events-none overflow-hidden h-full select-none',
+            'absolute inset-0 flex items-center bg-transparent px-3 py-1 pointer-events-none overflow-hidden h-full select-none z-10',
             className
           )}
           aria-hidden="true"
@@ -159,12 +187,13 @@ function VariableInput({ className, containerClassName, value, onChange, ...prop
         </div>
 
         <Input
+          ref={inputRef}
           value={currentText}
           onChange={onChange}
           spellCheck={false}
           autoComplete="off"
           className={cn(
-            'bg-transparent! selection:bg-primary/30 caret-foreground',
+            'bg-transparent! selection:bg-primary/30 selection:text-transparent caret-foreground relative z-0',
             currentText.length > 0 && 'text-transparent',
             className
           )}

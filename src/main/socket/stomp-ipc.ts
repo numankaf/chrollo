@@ -11,9 +11,9 @@ import SockJS from 'sockjs-client';
 
 import { REQUEST_BODY_TYPE, type Request } from '@/types/collection';
 import {
+  CONNECTION_PREFIX,
   CONNECTION_STATUS,
   CONNECTION_TYPE,
-  WS_URL_SCHEME,
   type ConnectionStatus,
   type ConnectionStatusData,
   type StompConnection,
@@ -154,7 +154,7 @@ export function initStompIpc() {
       runtime.stomp.runPreConnect(ctx);
     });
 
-    const { id, name, prefix, url, connectHeaders, subscriptions } = connection;
+    const { id, name, url, connectHeaders, subscriptions } = connection;
     connectionWorkspaceMap[id] = connection.workspaceId;
     if (stompClients[id]) {
       await stompClients[id].deactivate();
@@ -165,24 +165,16 @@ export function initStompIpc() {
       .filter((h) => h.enabled)
       .reduce((acc, h) => ({ ...acc, [resolveVariables(h.key)]: resolveVariables(h.value.trim()) }), {});
 
-    const connectionUrl = stripAllWhitespace(prefix + resolveVariables(url));
+    const connectionUrl = stripAllWhitespace(resolveVariables(url));
 
     let socketFactory: () => WebSocket | InstanceType<typeof SockJS>;
-    switch (prefix) {
-      case WS_URL_SCHEME.WS:
-      case WS_URL_SCHEME.WSS:
-        socketFactory = () => new WebSocket(connectionUrl);
-        break;
-
-      case WS_URL_SCHEME.HTTP:
-      case WS_URL_SCHEME.HTTPS:
-        socketFactory = () => new SockJS(connectionUrl);
-        break;
-
-      //FALLBACK: Normally this should never happen
-      default:
-        mainWindow.webContents.send('console:error', `Unsupported URL scheme: ${prefix}`);
-        return;
+    if (connectionUrl.startsWith(CONNECTION_PREFIX.WS) || connectionUrl.startsWith(CONNECTION_PREFIX.WSS)) {
+      socketFactory = () => new WebSocket(connectionUrl);
+    } else if (connectionUrl.startsWith(CONNECTION_PREFIX.HTTP) || connectionUrl.startsWith(CONNECTION_PREFIX.HTTPS)) {
+      socketFactory = () => new SockJS(connectionUrl);
+    } else {
+      mainWindow.webContents.send('console:error', `Unsupported URL scheme: ${connectionUrl}`);
+      return;
     }
     const client = new Client({
       webSocketFactory: socketFactory,
@@ -219,21 +211,24 @@ export function initStompIpc() {
       // ------------------------------
       // ADD ENABLED SUBSCRIBTIONS
       // ------------------------------
-      for (const subscription of subscriptions) {
-        if (subscription.enabled) {
-          const resolvedTopic = resolveVariables(subscription.topic);
-          const ctx = {
-            connectionId: id,
-            subscriptionId: subscription.id,
-            topic: resolvedTopic,
-            subscribe: subscribeInternal,
-          };
-          const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
-          if (!defaultDisabled) {
-            subscribeInternal(id, subscription.id, resolvedTopic);
+      chrolloEngine.executeWithContext(connectionWorkspaceMap[id], () => {
+        const runtime = chrolloEngine.getRuntime();
+        for (const subscription of subscriptions) {
+          if (subscription.enabled) {
+            const resolvedTopic = resolveVariables(subscription.topic);
+            const ctx = {
+              connectionId: id,
+              subscriptionId: subscription.id,
+              topic: resolvedTopic,
+              subscribe: subscribeInternal,
+            };
+            const { defaultDisabled } = runtime.stomp.runPreSubscribe(ctx);
+            if (!defaultDisabled) {
+              subscribeInternal(id, subscription.id, resolvedTopic);
+            }
           }
         }
-      }
+      });
     };
 
     client.onDisconnect = (frame) => {

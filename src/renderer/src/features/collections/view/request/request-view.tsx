@@ -82,7 +82,7 @@ function RequestView() {
                 <RequestBody />
               </TabsContent>
               <TabsContent value="scripts" className="h-full absolute inset-0">
-                <RequestScripts />
+                <RequestScripts key={request.id} />
               </TabsContent>
             </div>
           </Tabs>
