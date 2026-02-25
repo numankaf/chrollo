@@ -45,7 +45,7 @@ mac:
   hardenedRuntime: true
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
-  notarize: false
+  notarize: true
 
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
