@@ -25,12 +25,12 @@ function RequestSettings() {
 
   return (
     <div>
-      <div className="m-2 text-lg font-semibold">Request</div>
+      <div className="my-2 text-lg font-semibold">Request</div>
       <Separator />
 
       {REQUEST_SETTINGS.map((item) => (
         <Fragment key={item.key}>
-          <Item className="p-2">
+          <Item className="py-2 px-0">
             <ItemContent>
               <ItemTitle>{item.title}</ItemTitle>
               <ItemDescription>{item.description}</ItemDescription>
@@ -38,7 +38,7 @@ function RequestSettings() {
 
             <ItemActions>
               <Switch
-                checked={applicationSettings[item.key]}
+                checked={applicationSettings[item.key] as boolean}
                 onCheckedChange={(value) => updateApplicationSetting(item.key, value)}
               />
             </ItemActions>

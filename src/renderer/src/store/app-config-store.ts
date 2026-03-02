@@ -26,6 +26,14 @@ export const useAppConfigStore = create<AppConfigState>()(
     }),
     {
       name: 'app-config',
+      merge: (persisted, current) => ({
+        ...current,
+        ...(persisted as object),
+        applicationSettings: {
+          ...current.applicationSettings,
+          ...((persisted as AppConfigState)?.applicationSettings ?? {}),
+        },
+      }),
     }
   )
 );

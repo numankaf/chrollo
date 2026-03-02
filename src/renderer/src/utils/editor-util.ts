@@ -1,24 +1,63 @@
 import { cssVar } from '@/utils/css-util';
-import { vscodeDarkInit, vscodeLightInit } from '@uiw/codemirror-theme-vscode';
+import {
+  draculaInit,
+  eclipseInit,
+  githubDarkInit,
+  githubLightInit,
+  materialDarkInit,
+  materialLightInit,
+  sublimeInit,
+  tokyoNightDayInit,
+  tokyoNightInit,
+  vscodeDarkInit,
+  vscodeLightInit,
+  xcodeDarkInit,
+  xcodeLightInit,
+} from '@uiw/codemirror-themes-all';
 import { js_beautify } from 'js-beautify';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
 import { ENVIRONMENT_VARIABLE_MATCH_REGEX } from '@/types/common';
+import type { EditorTheme } from '@/types/setting';
 
-export function getEditorTheme(theme: string | undefined) {
+const THEME_INIT_MAP: Record<EditorTheme, { dark: typeof vscodeDarkInit; light: typeof vscodeLightInit }> = {
+  vscode: { dark: vscodeDarkInit, light: vscodeLightInit },
+  xcode: { dark: xcodeDarkInit, light: xcodeLightInit },
+  material: { dark: materialDarkInit, light: materialLightInit },
+  github: { dark: githubDarkInit, light: githubLightInit },
+  tokyoNight: { dark: tokyoNightInit, light: tokyoNightDayInit },
+  dracula: { dark: draculaInit, light: draculaInit },
+  eclipse: { dark: eclipseInit, light: eclipseInit },
+  sublime: { dark: sublimeInit, light: sublimeInit },
+};
+
+export function getEditorTheme(
+  editorThemeName: EditorTheme,
+  resolvedTheme: string | undefined,
+  nativeBackground: boolean
+) {
+  const isDark = resolvedTheme !== 'light';
+
+  const pair = THEME_INIT_MAP[editorThemeName] ?? THEME_INIT_MAP.vscode;
+  const themeInit = isDark ? pair.dark : pair.light;
+
+  if (nativeBackground) {
+    return themeInit({});
+  }
+
   const settings = {
-    background: cssVar('--background', theme === 'dark' ? '#1e1e1e' : '#ffffff'),
-    foreground: cssVar('--foreground', theme === 'dark' ? '#d4d4d4' : '#000000'),
-    caret: cssVar('--foreground', theme === 'dark' ? '#569CD6' : '#5d00ff'),
-    selection: cssVar('--accent', theme === 'dark' ? '#264f78' : '#e0e0e0'),
-    selectionMatch: cssVar('--accent', theme === 'dark' ? '#264f78' : '#e0e0e0'),
-    gutterBackground: cssVar('--background', theme === 'dark' ? '#1e1e1e' : '#fafafa'),
-    gutterForeground: cssVar('--muted-foreground', theme === 'dark' ? '#858585' : '#8a919966'),
-    gutterBorder: cssVar('--border', theme === 'dark' ? '#2a2d2e' : '#e0e0e0'),
-    gutterActiveForeground: cssVar('--foreground', theme === 'dark' ? '#cccccc' : '#e0e0e0'),
+    background: cssVar('--background', isDark ? '#1e1e1e' : '#ffffff'),
+    foreground: cssVar('--foreground', isDark ? '#d4d4d4' : '#000000'),
+    caret: cssVar('--foreground', isDark ? '#569CD6' : '#5d00ff'),
+    selection: cssVar('--accent', isDark ? '#264f78' : '#e0e0e0'),
+    selectionMatch: cssVar('--accent', isDark ? '#264f78' : '#e0e0e0'),
+    gutterBackground: cssVar('--background', isDark ? '#1e1e1e' : '#fafafa'),
+    gutterForeground: cssVar('--muted-foreground', isDark ? '#858585' : '#8a919966'),
+    gutterBorder: cssVar('--border', isDark ? '#2a2d2e' : '#e0e0e0'),
+    gutterActiveForeground: cssVar('--foreground', isDark ? '#cccccc' : '#e0e0e0'),
   };
 
-  return theme === 'dark' ? vscodeDarkInit({ settings }) : vscodeLightInit({ settings });
+  return themeInit({ settings });
 }
 
 export function formatJs(text: string) {

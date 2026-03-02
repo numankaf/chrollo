@@ -180,7 +180,7 @@ function ConsoleMessage({
 
   return (
     <AccordionItem value={message.id.toString()}>
-      <AccordionTrigger className="rounded-xs hover:bg-secondary hover:no-underline p-0 px-2 [&>svg]:h-full">
+      <AccordionTrigger className="rounded-xs hover:bg-accent hover:no-underline p-0 px-2 [&>svg]:h-full">
         <div className="p-2.5 flex w-full items-center gap-4 group relative">
           <SocketConsoleMessageIcon messageType={message.type} size={18} />
           <span className="flex-1 truncate w-0 text-start">{message.data}</span>
@@ -188,7 +188,7 @@ function ConsoleMessage({
           <div className="flex items-center gap-1 shrink-0">
             <div className="hidden group-hover:flex items-center gap-1 h-4">
               {isReqRes && (
-                <Button asChild variant="ghost" size="icon" className="size-6 rounded-md">
+                <Button asChild variant="ghost" size="icon" className="size-6 rounded-md hover:bg-secondary!">
                   <span
                     role="button"
                     tabIndex={0}
@@ -201,7 +201,7 @@ function ConsoleMessage({
                   </span>
                 </Button>
               )}
-              <Button asChild variant="ghost" size="icon" className="size-6 rounded-md hover:text-destructive">
+              <Button asChild variant="ghost" size="icon" className="size-6 rounded-md hover:bg-destructive!">
                 <span
                   role="button"
                   tabIndex={0}
