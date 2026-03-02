@@ -35,12 +35,12 @@ function UserInterfaceSettings() {
 
   return (
     <div>
-      <div className="m-2 text-lg font-semibold">User Interface</div>
+      <div className="my-2 text-lg font-semibold">User Interface</div>
       <Separator />
 
       {UI_SETTINGS.map((item) => (
         <Fragment key={item.key}>
-          <Item className="p-2">
+          <Item className="py-2 px-0">
             <ItemContent>
               <ItemTitle>{item.title}</ItemTitle>
               <ItemDescription>{item.description}</ItemDescription>
@@ -48,7 +48,7 @@ function UserInterfaceSettings() {
 
             <ItemActions>
               <Switch
-                checked={applicationSettings[item.key]}
+                checked={applicationSettings[item.key] as boolean}
                 onCheckedChange={(value) => updateApplicationSetting(item.key, value)}
               />
             </ItemActions>
