@@ -50,7 +50,7 @@ function InterceptionScriptView() {
         <BeautifyButton onClick={onBeautify} />
       </div>
       <div className="flex-1 mx-2 mb-2 border rounded-lg h-full" style={{ height: 'calc(100% - 4rem)' }}>
-        <ScrollArea className="p-0.5 min-h-full h-full">
+        <ScrollArea className="min-h-full h-full">
           <CodeEditor
             value={script.script}
             bodyType={EDITOR_BODY_TYPE.JAVASCRIPT}
