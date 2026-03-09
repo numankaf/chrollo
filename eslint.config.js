@@ -1,7 +1,7 @@
 import js from '@eslint/js';
+import eslintReact from '@eslint-react/eslint-plugin';
 import checkFilePlugin from 'eslint-plugin-check-file';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
-import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -15,6 +15,7 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommended,
+      eslintReact.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
@@ -28,43 +29,19 @@ export default defineConfig([
       },
     },
     settings: {
-      react: {
-        version: 'detect',
-      },
       'import/resolver': {
         typescript: {},
       },
     },
     plugins: {
-      react: reactPlugin,
       'check-file': checkFilePlugin,
       'jsx-a11y': jsxA11y,
     },
     rules: {
-      // Function component definitions: named components as function declarations, unnamed as function expressions
-      'react/function-component-definition': [
-        'error',
-        {
-          namedComponents: 'function-declaration',
-          unnamedComponents: 'function-expression',
-        },
-      ],
-      'react/jsx-filename-extension': ['warn', { extensions: ['.tsx', '.jsx'] }],
-      'react/jsx-wrap-multilines': 'warn',
-      'react/jsx-props-no-spreading': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/jsx-closing-bracket-location': ['error', { selfClosing: 'line-aligned', nonEmpty: 'line-aligned' }],
-      'react/jsx-closing-tag-location': 'error',
+      // JSX file extension enforcement (was react/jsx-filename-extension)
+      '@eslint-react/naming-convention/filename-extension': ['warn', { extensions: ['.tsx', '.jsx'] }],
+
       'jsx-quotes': ['error', 'prefer-double'],
-
-      // Spacing in self-closing tags
-      'react/jsx-tag-spacing': 'error',
-
-      // Self-close components with no children
-      'react/self-closing-comp': 'error',
-
-      // Spacing inside JSX curly braces
-      'react/jsx-curly-spacing': ['error', { when: 'never', children: true, allowMultiline: true }],
 
       // Prevent extra spaces anywhere
       'no-multi-spaces': 'error',
@@ -84,14 +61,11 @@ export default defineConfig([
       'jsx-a11y/aria-role': ['error', { allowedRoles: [] }],
       'jsx-a11y/no-access-key': 'error',
 
-      // Avoid array index as key
-      'react/no-array-index-key': 'error',
+      // Avoid array index as key (was react/no-array-index-key)
+      '@eslint-react/no-array-index-key': 'error',
 
-      // camelCase prop names (enforce consistent JS props)
-      'react/jsx-props-no-multi-spaces': 'error',
-
-      // Enforce PascalCase for React component names
-      'react/jsx-pascal-case': 'error',
+      // Enforce PascalCase for React component names (was react/jsx-pascal-case)
+      '@eslint-react/naming-convention/component-name': 'error',
 
       // Enforce file naming convention to be kebab-case
       'check-file/filename-naming-convention': [
@@ -108,6 +82,7 @@ export default defineConfig([
           'src/**/': 'KEBAB_CASE',
         },
       ],
+      '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
       'react-refresh/only-export-components': 'off',
     },
   },

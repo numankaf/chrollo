@@ -48,7 +48,7 @@ function Tabs({
   const resolvedDefault = selectionId ? (initialStoredValue ?? defaultValue) : defaultValue;
 
   return (
-    <TabsVariantContext.Provider value={variant ?? 'default'}>
+    <TabsVariantContext value={variant ?? 'default'}>
       <TabsPrimitive.Root
         data-slot="tabs"
         className={cn('flex flex-col gap-2', className)}
@@ -57,7 +57,7 @@ function Tabs({
         onValueChange={handleValueChange}
         {...props}
       />
-    </TabsVariantContext.Provider>
+    </TabsVariantContext>
   );
 }
 
@@ -72,7 +72,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
-  const variant = React.useContext(TabsVariantContext);
+  const variant = React.use(TabsVariantContext);
 
   return (
     <TabsPrimitive.Trigger data-slot="tabs-trigger" className={cn(tabVariants({ variant }), className)} {...props} />

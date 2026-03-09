@@ -49,53 +49,63 @@ interface ToolbarButtonProps extends React.ComponentProps<typeof Button> {
   tooltip: string;
 }
 
-const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
-  ({ tooltip, children, className, ...props }, ref) => {
-    return (
-      <Tooltip delayDuration={1000}>
-        <TooltipTrigger asChild>
-          <Button ref={ref} variant="outline" size="icon-sm" className={className} {...props}>
-            {children}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" className="bg-card text-xs">
-          {tooltip}
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-);
+const ToolbarButton = ({
+  ref,
+  tooltip,
+  children,
+  className,
+  ...props
+}: ToolbarButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+  return (
+    <Tooltip delayDuration={1000}>
+      <TooltipTrigger asChild>
+        <Button ref={ref} variant="outline" size="icon-sm" className={className} {...props}>
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="bg-card text-xs">
+        {tooltip}
+      </TooltipContent>
+    </Tooltip>
+  );
+};
 ToolbarButton.displayName = 'ToolbarButton';
 
 interface ToolbarToggleProps extends React.ComponentProps<typeof Toggle> {
   tooltip: string;
 }
 
-const ToolbarToggle = React.forwardRef<HTMLButtonElement, ToolbarToggleProps>(
-  ({ tooltip, pressed, onPressedChange, children, className, ...props }, ref) => {
-    return (
-      <Tooltip delayDuration={1000}>
-        <TooltipTrigger asChild>
-          <Toggle
-            {...props}
-            ref={ref}
-            data-state={pressed ? 'on' : 'off'}
-            pressed={pressed}
-            onPressedChange={onPressedChange}
-            className={className}
-            size="icon-sm"
-            variant="outline"
-          >
-            {children}
-          </Toggle>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" className="bg-card text-xs">
-          {tooltip}
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-);
+const ToolbarToggle = ({
+  ref,
+  tooltip,
+  pressed,
+  onPressedChange,
+  children,
+  className,
+  ...props
+}: ToolbarToggleProps & { ref?: React.RefObject<HTMLButtonElement | null> }) => {
+  return (
+    <Tooltip delayDuration={1000}>
+      <TooltipTrigger asChild>
+        <Toggle
+          {...props}
+          ref={ref}
+          data-state={pressed ? 'on' : 'off'}
+          pressed={pressed}
+          onPressedChange={onPressedChange}
+          className={className}
+          size="icon-sm"
+          variant="outline"
+        >
+          {children}
+        </Toggle>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="bg-card text-xs">
+        {tooltip}
+      </TooltipContent>
+    </Tooltip>
+  );
+};
 ToolbarToggle.displayName = 'ToolbarToggle';
 
 const HEADINGS = [

@@ -13,7 +13,7 @@ const DEFAULT_EXPANDED_SIZE = 50;
 
 function AppConsoleLayout() {
   const consolePanelRef = useRef<PanelImperativeHandle>(null);
-  const lastExpandedSize = useRef(Number(localStorage.getItem(CONSOLE_EXPANDED_SIZE_KEY)) || DEFAULT_EXPANDED_SIZE);
+  const lastExpandedSizeRef = useRef(Number(localStorage.getItem(CONSOLE_EXPANDED_SIZE_KEY)) || DEFAULT_EXPANDED_SIZE);
   const [isConsoleCollapsed, setIsConsoleCollapsed] = useState(false);
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: 'resizeable-console-group',
@@ -26,10 +26,10 @@ function AppConsoleLayout() {
       if (!panel) return;
 
       if (panel.isCollapsed()) {
-        panel.resize(`${lastExpandedSize.current}%`);
+        panel.resize(`${lastExpandedSizeRef.current}%`);
       } else {
-        lastExpandedSize.current = panel.getSize().asPercentage;
-        localStorage.setItem(CONSOLE_EXPANDED_SIZE_KEY, String(lastExpandedSize.current));
+        lastExpandedSizeRef.current = panel.getSize().asPercentage;
+        localStorage.setItem(CONSOLE_EXPANDED_SIZE_KEY, String(lastExpandedSizeRef.current));
         panel.collapse();
       }
     });
@@ -48,7 +48,7 @@ function AppConsoleLayout() {
 
     if (!collapsed) {
       const size = panel.getSize().asPercentage;
-      lastExpandedSize.current = size;
+      lastExpandedSizeRef.current = size;
       localStorage.setItem(CONSOLE_EXPANDED_SIZE_KEY, String(size));
     }
   };
