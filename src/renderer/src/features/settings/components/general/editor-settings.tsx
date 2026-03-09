@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -17,6 +18,8 @@ function EditorSettings() {
       updateApplicationSetting: state.updateApplicationSetting,
     }))
   );
+  const [tabSizeInput, setTabSizeInput] = useState(String(applicationSettings.editorTabSize));
+  const [fontSizeInput, setFontSizeInput] = useState(String(applicationSettings.editorFontSize));
 
   return (
     <div>
@@ -73,10 +76,15 @@ function EditorSettings() {
             min={1}
             max={8}
             className="w-20 h-8"
-            value={applicationSettings.editorTabSize}
-            onChange={(e) => {
-              const val = parseInt(e.target.value, 10);
-              if (val >= 1 && val <= 8) updateApplicationSetting('editorTabSize', val);
+            value={tabSizeInput}
+            onChange={(e) => setTabSizeInput(e.target.value)}
+            onBlur={() => {
+              const val = parseInt(tabSizeInput, 10);
+              if (val >= 1 && val <= 8) {
+                updateApplicationSetting('editorTabSize', val);
+              } else {
+                setTabSizeInput(String(applicationSettings.editorTabSize));
+              }
             }}
           />
         </ItemActions>
@@ -94,10 +102,15 @@ function EditorSettings() {
             min={8}
             max={32}
             className="w-20 h-8"
-            value={applicationSettings.editorFontSize}
-            onChange={(e) => {
-              const val = parseInt(e.target.value, 10);
-              if (val >= 8 && val <= 32) updateApplicationSetting('editorFontSize', val);
+            value={fontSizeInput}
+            onChange={(e) => setFontSizeInput(e.target.value)}
+            onBlur={() => {
+              const val = parseInt(fontSizeInput, 10);
+              if (val >= 8 && val <= 32) {
+                updateApplicationSetting('editorFontSize', val);
+              } else {
+                setFontSizeInput(String(applicationSettings.editorFontSize));
+              }
             }}
           />
         </ItemActions>

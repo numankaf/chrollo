@@ -1,3 +1,4 @@
+import { useAppConfigStore } from '@/store/app-config-store';
 import { cssVar } from '@/utils/css-util';
 import {
   draculaInit,
@@ -60,6 +61,10 @@ export function getEditorTheme(
   return themeInit({ settings });
 }
 
+function getIndentSize(): number {
+  return useAppConfigStore.getState().applicationSettings.editorTabSize;
+}
+
 export function formatJs(text: string) {
   try {
     // Protect {{VAR}} tokens from being mangled by beautifier
@@ -70,7 +75,7 @@ export function formatJs(text: string) {
     });
 
     const formatted = js_beautify(protectedText, {
-      indent_size: 2,
+      indent_size: getIndentSize(),
       space_in_empty_paren: true,
       e4x: false,
       end_with_newline: true,
@@ -99,7 +104,7 @@ export function formatJson(text: string): string {
     );
 
     const parsed = JSON.parse(protectedText);
-    const formatted = JSON.stringify(parsed, null, 2) + '\n';
+    const formatted = JSON.stringify(parsed, null, getIndentSize()) + '\n';
 
     // Restore original tokens, re-wrapping in quotes if originally quoted
     return formatted.replace(/"__CHROLLO_VAR_(\d+)__"/g, (_, index) => {

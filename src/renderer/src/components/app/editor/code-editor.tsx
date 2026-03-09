@@ -2,12 +2,12 @@ import { use, useLayoutEffect, useMemo, useState } from 'react';
 import { ActiveThemeProviderContext } from '@/provider/active-theme-provider';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { getEditorTheme } from '@/utils/editor-util';
-import { autocompletion, closeBrackets } from '@codemirror/autocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
 import { indentWithTab } from '@codemirror/commands';
 import { esLint, javascript, javascriptLanguage } from '@codemirror/lang-javascript';
 import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { linter, lintGutter, type Diagnostic } from '@codemirror/lint';
-import CodeMirror, { EditorState, EditorView, keymap, lineNumbers } from '@uiw/react-codemirror';
+import CodeMirror, { EditorView, keymap } from '@uiw/react-codemirror';
 import { Linter } from 'eslint-linter-browserify';
 import globals from 'globals';
 import { useTheme } from 'next-themes';
@@ -86,20 +86,11 @@ function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...pr
     const _extensions = [
       lineWrap,
       keymap.of([indentWithTab]),
-      EditorState.tabSize.of(editorSettings.editorTabSize),
       EditorView.theme({
         '&': { fontSize: `${editorSettings.editorFontSize}px` },
         '.cm-gutters': { fontSize: `${editorSettings.editorFontSize}px` },
       }),
     ];
-
-    if (editorSettings.editorShowLineNumbers) {
-      _extensions.push(lineNumbers());
-    }
-
-    if (editorSettings.editorAutoCloseBrackets) {
-      _extensions.push(closeBrackets());
-    }
 
     if (!readOnly) {
       _extensions.push(lintGutter());
@@ -161,10 +152,7 @@ function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...pr
     globalEnvironment,
     scriptLocalVarKeys,
     openTab,
-    editorSettings.editorTabSize,
     editorSettings.editorFontSize,
-    editorSettings.editorAutoCloseBrackets,
-    editorSettings.editorShowLineNumbers,
   ]);
 
   useLayoutEffect(() => {
@@ -182,6 +170,11 @@ function CodeEditor({ readOnly, height, bodyType, enableVariables = false, ...pr
       extensions={extensions}
       theme={cmTheme}
       height={height || 'auto'}
+      basicSetup={{
+        lineNumbers: editorSettings.editorShowLineNumbers,
+        closeBrackets: editorSettings.editorAutoCloseBrackets,
+        tabSize: editorSettings.editorTabSize,
+      }}
       {...props}
     />
   );
