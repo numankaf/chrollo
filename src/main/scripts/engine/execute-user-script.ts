@@ -33,6 +33,7 @@ export function executeUserScript(script: string, context: Record<string, unknow
     eval: undefined,
   });
 
+  // eslint-disable-next-line @eslint-react/naming-convention/context-name
   const vmContext = vm.createContext(sandbox);
 
   vm.runInContext(script, vmContext, { timeout: 1000 });

@@ -50,8 +50,8 @@ export function ActiveThemeProvider({
   };
 
   return (
-    <ActiveThemeProviderContext.Provider {...props} value={value}>
+    <ActiveThemeProviderContext {...props} value={value}>
       {children}
-    </ActiveThemeProviderContext.Provider>
+    </ActiveThemeProviderContext>
   );
 }

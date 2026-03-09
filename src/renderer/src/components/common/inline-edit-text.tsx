@@ -16,12 +16,14 @@ function InlineEditText({ value, editing, onComplete, textProps, inputProps }: I
   const ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editing) {
-      setTimeout(() => {
-        ref.current?.focus();
-        ref.current?.select();
-      }, 0);
-    }
+    if (!editing) return;
+
+    const timer = setTimeout(() => {
+      ref.current?.focus();
+      ref.current?.select();
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [editing]);
 
   function complete() {

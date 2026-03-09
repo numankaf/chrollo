@@ -60,7 +60,7 @@ function SentAndReceivedMessageContent({ message }: { message: SocketMessage }) 
       applicationSettings: state.applicationSettings,
     }))
   );
-  const [bodyType, setBodyType] = useState<RequestBodyType>(getMessageContentType(message.meta?.headers));
+  const [bodyType, setBodyType] = useState<RequestBodyType>(() => getMessageContentType(message.meta?.headers));
 
   const parsedStringResponse =
     bodyType === REQUEST_BODY_TYPE.JSON

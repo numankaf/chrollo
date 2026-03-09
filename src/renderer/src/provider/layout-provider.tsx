@@ -101,5 +101,5 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
     toggleSidebar,
   };
 
-  return <LayoutProviderContext.Provider value={value}>{children}</LayoutProviderContext.Provider>;
+  return <LayoutProviderContext value={value}>{children}</LayoutProviderContext>;
 }

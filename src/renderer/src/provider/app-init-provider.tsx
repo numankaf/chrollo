@@ -75,9 +75,5 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  return (
-    <AppContext.Provider value={{ appLoaded, workspacesLoaded, loadingText, loadWorkspace }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext value={{ appLoaded, workspacesLoaded, loadingText, loadWorkspace }}>{children}</AppContext>;
 }

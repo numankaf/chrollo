@@ -33,7 +33,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   selectTabItemOnMainSidebar: true,
   editorTheme: 'vscode',
   editorTabSize: 2,
-  editorFontSize: 14,
+  editorFontSize: 13,
   editorAutoCloseBrackets: true,
   editorShowLineNumbers: true,
   editorNativeThemeBackground: false,
