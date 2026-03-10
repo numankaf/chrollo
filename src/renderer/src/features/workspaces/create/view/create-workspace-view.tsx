@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 
 import { WORKSPACE_DEFAULT_VALUES, WORKSPACE_TYPE, type Workspace } from '@/types/workspace';
+import { useLoadAndNavigateWorkspace } from '@/hooks/workspace/use-load-and-navigate-workspace';
 import { Button } from '@/components/common/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/common/card';
 import { Field, FieldError, FieldLabel } from '@/components/common/field';
@@ -26,7 +27,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateWorkspaceView() {
   const navigate = useNavigate();
-  const { createWorkspace, setActiveWorkspace } = useWorkspaceStore();
+
+  const loadAndNavigateWorkspace = useLoadAndNavigateWorkspace();
+
+  const { createWorkspace } = useWorkspaceStore();
 
   const {
     control,
@@ -51,10 +55,8 @@ export default function CreateWorkspaceView() {
       };
 
       await createWorkspace(workspace);
-      await setActiveWorkspace(workspace.id);
-
+      await loadAndNavigateWorkspace(workspace.id);
       toast.success('Workspace created successfully');
-      navigate('/main/workspace/' + workspace.id);
     } catch {
       toast.error('Failed to create workspace');
     }

@@ -68,7 +68,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const interceptionScripts = await window.api.interceptionScript.load(workspaceId);
       await useInterceptionScriptStore.getState().initInterceptionScriptStore(interceptionScripts);
 
-      setActiveWorkspace(workspaceId);
+      await setActiveWorkspace(workspaceId);
       setAppLoaded(true);
     } catch (err) {
       console.error('Failed to init workspace data:', err);

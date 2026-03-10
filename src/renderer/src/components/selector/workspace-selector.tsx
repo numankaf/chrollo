@@ -63,6 +63,7 @@ function WorkspaceSelector() {
                 <Button
                   key={workspace.id}
                   onClick={async () => {
+                    if (workspace.id === activeWorkspaceId) return;
                     await loadAndNavigateWorkspace(workspace.id);
                   }}
                   variant="ghost"
