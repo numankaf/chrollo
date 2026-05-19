@@ -42,6 +42,8 @@ function RequestBody() {
     name: BODY_TYPE_PROPERTY_KEY,
   });
 
+  if (!bodyType) return null;
+
   const formatRequestData = () => {
     const data = form.getValues(BODY_DATA_PROPERTY_KEY);
     const formatted = formatCode(bodyType, data);

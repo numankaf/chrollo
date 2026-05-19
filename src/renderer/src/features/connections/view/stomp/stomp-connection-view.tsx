@@ -58,7 +58,7 @@ function StompConnectionView() {
   return (
     <div className="max-h-full h-full flex flex-col">
       <FormProvider {...form}>
-        <form className="h-full" noValidate>
+        <form className="h-full flex flex-col" noValidate>
           <div className="p-2 w-full flex items-center justify-between gap-2 h-10">
             <InputGroup>
               <Controller
@@ -88,7 +88,7 @@ function StompConnectionView() {
           <Tabs
             defaultValue="settings"
             selectionId="stomp-connection-view-tab"
-            className="w-full mt-3 h-full flex-1"
+            className="w-full mt-3 min-h-0 flex-1 flex flex-col"
             variant="link"
           >
             <TabsList className="mx-2">
@@ -96,7 +96,7 @@ function StompConnectionView() {
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
             </TabsList>
-            <ScrollArea style={{ height: 'calc(100% - 6.5rem)' }}>
+            <ScrollArea className="min-h-0 flex-1">
               <TabsContent className="mx-2" value="settings">
                 <StompSettings />
               </TabsContent>

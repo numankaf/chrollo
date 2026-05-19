@@ -368,10 +368,10 @@ function SocketResponseConsole() {
 
   const isLoading = !!(trackedRequest && trackedRequest.status === REQUEST_STATUS.PENDING);
   return (
-    <div className="flex flex-col w-full px-2 flex-1 min-h-0 h-full relative">
+    <div className="flex flex-col w-full flex-1 min-h-0 h-full relative">
       {!lastTrackedRequest && (
-        <div>
-          <div className="flex items-center justify-end h-7">
+        <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex items-center justify-end h-7 px-2">
             {isLoading && (
               <Button
                 variant="error-bordered-ghost"
@@ -384,10 +384,10 @@ function SocketResponseConsole() {
               </Button>
             )}
           </div>
-          <div className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+          <ScrollArea className="flex-1 min-h-0 relative">
             <LoadingOverlay isLoading={isLoading} />
             <NoResponseFound />
-          </div>
+          </ScrollArea>
         </div>
       )}
 
@@ -398,7 +398,7 @@ function SocketResponseConsole() {
           defaultValue="body"
           className="w-full flex-1 flex flex-col min-h-0"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-2">
             <TabsList>
               <TabsTrigger value="body">Body</TabsTrigger>
               <TabsTrigger value="headers">
@@ -433,7 +433,7 @@ function SocketResponseConsole() {
             )}
           </div>
 
-          <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+          <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative px-2">
             <LoadingOverlay isLoading={isLoading} />
             <div className="flex justify-between mb-1 items-center">
               <BodyTypeSelector
@@ -449,12 +449,12 @@ function SocketResponseConsole() {
             </div>
           </TabsContent>
 
-          <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+          <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative px-2">
             <LoadingOverlay isLoading={isLoading} />
             <MessageHeadersTable headers={headers as Record<string, unknown>} />
           </TabsContent>
 
-          <TabsContent value="test-results" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative">
+          <TabsContent value="test-results" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative px-2">
             <LoadingOverlay isLoading={isLoading} />
             <TestResultsPanel testResults={testResults} />
           </TabsContent>
