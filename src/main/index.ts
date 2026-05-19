@@ -17,6 +17,13 @@ import icon from '../../resources/app-logo.png?asset';
 
 logger.info('Chrollo application starting...');
 
+// Enforce single instance — if another instance is already running, quit immediately
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+}
+
 //Disable https certificate validation
 https.globalAgent.options.rejectUnauthorized = false;
 
@@ -66,6 +73,15 @@ function createWindow(): void {
 export function getMainWindow(): BrowserWindow | null {
   return mainWindow;
 }
+
+// When a second instance is launched, focus the existing window instead
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+});
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
