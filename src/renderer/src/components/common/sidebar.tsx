@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   FOOTER_BOTTOM_OFFSET,
   SIDEBAR_COOKIE_MAX_AGE,
@@ -12,19 +13,18 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 import { Slot } from 'radix-ui';
-import * as React from 'react';
 
+import { COMMANDS } from '@/lib/command';
+import { commandBus } from '@/lib/command-bus';
+import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/common/use-mobile';
+import { useLayout } from '@/hooks/layout/use-layout';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Separator } from '@/components/common/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/common/sheet';
 import { Skeleton } from '@/components/common/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
-import { useIsMobile } from '@/hooks/common/use-mobile';
-import { useLayout } from '@/hooks/layout/use-layout';
-import { COMMANDS } from '@/lib/command';
-import { commandBus } from '@/lib/command-bus';
-import { cn } from '@/lib/utils';
 
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
@@ -596,11 +596,9 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<'div'> & {
   showIcon?: boolean;
 }) {
-  const [width, setWidth] = React.useState('70%');
-
-  React.useEffect(() => {
-    setWidth(`${Math.floor(Math.random() * 40) + 50}%`);
-  }, []);
+  const [width] = React.useState(() => {
+    return `${Math.floor(Math.random() * 40) + 50}%`;
+  });
 
   return (
     <div
@@ -705,6 +703,5 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar
+  useSidebar,
 };
-

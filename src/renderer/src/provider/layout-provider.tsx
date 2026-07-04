@@ -89,6 +89,7 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
     const match = SIDEBAR_ITEMS.find((item) => item.modelType === activeTab.modelType);
 
     if (match) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect, @eslint-react/set-state-in-effect
       setActiveItem(match);
     }
   }, [activeTab, applicationSettings.selectTabItemOnMainSidebar]);

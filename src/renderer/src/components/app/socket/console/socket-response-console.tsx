@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { formatCode } from '@/utils/editor-util';
 import { getMessageContentType } from '@/utils/socket-message-util';
@@ -322,25 +322,9 @@ function SocketResponseConsole() {
     }))
   );
 
-  const [lastTrackedRequest, setLastTrackedRequest] = useState<TrackedRequest | undefined>(undefined);
-  const [trackedRequest, setTrackedRequest] = useState<TrackedRequest | undefined>(undefined);
-
-  const updateTrackedRequest = useEffectEvent((request: TrackedRequest | undefined) => {
-    setTrackedRequest(request);
-  });
-
-  const updateLastTrackedRequest = useEffectEvent((request: TrackedRequest | undefined) => {
-    setLastTrackedRequest(request);
-  });
-
-  useEffect(() => {
-    if (!activeTab) return;
-    const request = getByRequestId(activeTab.id);
-    updateTrackedRequest(request);
-
-    const lastResolvedRequest = getLastResolvedByRequestId(activeTab.id);
-    updateLastTrackedRequest(lastResolvedRequest);
-  }, [activeTab, getByRequestId, getLastResolvedByRequestId]);
+  // Derived directly from the store — getByRequestId / getLastResolvedByRequestId are reactive.
+  const trackedRequest = activeTab ? getByRequestId(activeTab.id) : undefined;
+  const lastTrackedRequest = activeTab ? getLastResolvedByRequestId(activeTab.id) : undefined;
 
   const message = lastTrackedRequest?.response;
   const headers = message?.meta?.headers || {};
@@ -351,15 +335,12 @@ function SocketResponseConsole() {
 
   const [bodyType, setBodyType] = useState<RequestBodyType>(bodyTypeRetrieved);
 
-  const updateBodyType = useEffectEvent((c: RequestBodyType) => {
-    setBodyType(c);
-  });
-
-  useEffect(() => {
-    if (message) {
-      updateBodyType(bodyTypeRetrieved);
-    }
-  }, [bodyTypeRetrieved, message]);
+  // Reset the body type to the response's content type whenever a new response arrives.
+  const [prevMessage, setPrevMessage] = useState(message);
+  if (message && message !== prevMessage) {
+    setPrevMessage(message);
+    setBodyType(bodyTypeRetrieved);
+  }
 
   const parsedStringResponse =
     message && bodyType === REQUEST_BODY_TYPE.JSON

@@ -13,9 +13,12 @@ interface ColorPickerProps {
 export function ColorPicker({ color, onChange }: ColorPickerProps) {
   const [inputValue, setInputValue] = React.useState(color);
 
-  React.useEffect(() => {
+  // Sync the input with the color prop when it changes externally (picker, eyedropper).
+  const [prevColor, setPrevColor] = React.useState(color);
+  if (color !== prevColor) {
+    setPrevColor(color);
     setInputValue(color);
-  }, [color]);
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;

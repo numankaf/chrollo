@@ -417,6 +417,7 @@ export default function CollectionSidebar() {
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     updateCount(tree?.visibleNodes.length ?? 0);
   }, [tree, collectionItemMap, debouncedSearch]);
 

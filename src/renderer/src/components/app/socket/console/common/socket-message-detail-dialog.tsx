@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useState } from 'react';
 import { TIME_FORMAT_HH_MM_SS_MMM } from '@/constants/date-constants';
 import { useAppConfigStore } from '@/store/app-config-store';
 import { formatCode } from '@/utils/editor-util';
@@ -34,15 +34,12 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
 
   const [bodyType, setBodyType] = useState<RequestBodyType>(bodyTypeRetrieved);
 
-  const updateBodyType = useEffectEvent((c: RequestBodyType) => {
-    setBodyType(c);
-  });
-
-  useEffect(() => {
-    if (message) {
-      updateBodyType(bodyTypeRetrieved);
-    }
-  }, [bodyTypeRetrieved, message]);
+  // Reset the body type to the message's content type whenever a new message is shown.
+  const [prevMessage, setPrevMessage] = useState(message);
+  if (message && message !== prevMessage) {
+    setPrevMessage(message);
+    setBodyType(bodyTypeRetrieved);
+  }
 
   if (!message) return null;
 

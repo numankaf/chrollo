@@ -74,9 +74,12 @@ function EditableTextCell<T>({ getValue, row, column, table }: CellContext<T, un
     table.options.meta?.updateData(row.index, column.id, value);
   };
 
-  React.useEffect(() => {
+  // Sync the local value when the row's underlying value changes externally.
+  const [prevInitialValue, setPrevInitialValue] = React.useState(initialValue);
+  if (initialValue !== prevInitialValue) {
+    setPrevInitialValue(initialValue);
     setValue(initialValue);
-  }, [initialValue]);
+  }
 
   const meta = column.columnDef.meta as { placeholder?: string; validationRegex?: RegExp } | undefined;
   const placeholder = meta?.placeholder;
@@ -108,9 +111,12 @@ function EditableVariableTextCell<T>({ getValue, row, column, table }: CellConte
     table.options.meta?.updateData(row.index, column.id, value);
   };
 
-  React.useEffect(() => {
+  // Sync the local value when the row's underlying value changes externally.
+  const [prevInitialValue, setPrevInitialValue] = React.useState(initialValue);
+  if (initialValue !== prevInitialValue) {
+    setPrevInitialValue(initialValue);
     setValue(initialValue);
-  }, [initialValue]);
+  }
 
   const placeholder = (column.columnDef.meta as { placeholder?: string } | undefined)?.placeholder;
 
