@@ -37,7 +37,7 @@ function SocketConsole({ isCollapsed }: { isCollapsed: boolean }) {
 
   return (
     <div className="h-full flex flex-col">
-      <header className="flex items-center justify-between p-1 h-8 shrink-0 relative z-10">
+      <header className="flex items-center justify-between pl-2 p-1 h-8 shrink-0 relative z-10">
         <div className="flex items-center gap-2">
           <Select value={consoleType} onValueChange={(v) => setConsoleType(v as ConsoleType)}>
             <SelectTrigger size="sm" className="h-6! text-sm">

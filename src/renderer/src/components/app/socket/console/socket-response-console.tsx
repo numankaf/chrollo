@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
 import { ScrollArea } from '@/components/common/scroll-area';
-import { Separator } from '@/components/common/seperator';
+import { Separator } from '@/components/common/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
 import CodeEditor from '@/components/app/editor/code-editor';

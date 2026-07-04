@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   FOOTER_BOTTOM_OFFSET,
   SIDEBAR_COOKIE_MAX_AGE,
@@ -10,21 +9,22 @@ import {
   SIDEBAR_WIDTH_MOBILE,
   SIDEBAR_WORKSPACE_OFFSET,
 } from '@/constants/layout-constants';
-import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
+import { Slot } from 'radix-ui';
+import * as React from 'react';
 
-import { COMMANDS } from '@/lib/command';
-import { commandBus } from '@/lib/command-bus';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/common/use-mobile';
-import { useLayout } from '@/hooks/layout/use-layout';
 import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
 import { Separator } from '@/components/common/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/common/sheet';
 import { Skeleton } from '@/components/common/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/tooltip';
+import { useIsMobile } from '@/hooks/common/use-mobile';
+import { useLayout } from '@/hooks/layout/use-layout';
+import { COMMANDS } from '@/lib/command';
+import { commandBus } from '@/lib/command-bus';
+import { cn } from '@/lib/utils';
 
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
@@ -390,7 +390,7 @@ function SidebarGroupLabel({
   asChild = false,
   ...props
 }: React.ComponentProps<'div'> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : 'div';
+  const Comp = asChild ? Slot.Root : 'div';
 
   return (
     <Comp
@@ -411,7 +411,7 @@ function SidebarGroupAction({
   asChild = false,
   ...props
 }: React.ComponentProps<'button'> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp
@@ -500,7 +500,7 @@ function SidebarMenuButton({
   const { isMobile, state } = useSidebar();
 
   const button = asChild ? (
-    <Slot>
+    <Slot.Root>
       <button
         data-slot="sidebar-menu-button"
         data-sidebar="menu-button"
@@ -509,7 +509,7 @@ function SidebarMenuButton({
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
       />
-    </Slot>
+    </Slot.Root>
   ) : (
     <button
       data-slot="sidebar-menu-button"
@@ -547,7 +547,7 @@ function SidebarMenuAction({
   asChild?: boolean;
   showOnHover?: boolean;
 }) {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp
@@ -660,7 +660,7 @@ function SidebarMenuSubButton({
   size?: 'sm' | 'md';
   isActive?: boolean;
 }) {
-  const Comp = asChild ? Slot : 'a';
+  const Comp = asChild ? Slot.Root : 'a';
 
   return (
     <Comp
@@ -705,5 +705,6 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  useSidebar
 };
+

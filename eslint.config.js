@@ -1,5 +1,5 @@
-import js from '@eslint/js';
 import eslintReact from '@eslint-react/eslint-plugin';
+import js from '@eslint/js';
 import checkFilePlugin from 'eslint-plugin-check-file';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -38,9 +38,6 @@ export default defineConfig([
       'jsx-a11y': jsxA11y,
     },
     rules: {
-      // JSX file extension enforcement (was react/jsx-filename-extension)
-      '@eslint-react/naming-convention/filename-extension': ['warn', { extensions: ['.tsx', '.jsx'] }],
-
       'jsx-quotes': ['error', 'prefer-double'],
 
       // Prevent extra spaces anywhere
@@ -63,9 +60,6 @@ export default defineConfig([
 
       // Avoid array index as key (was react/no-array-index-key)
       '@eslint-react/no-array-index-key': 'error',
-
-      // Enforce PascalCase for React component names (was react/jsx-pascal-case)
-      '@eslint-react/naming-convention/component-name': 'error',
 
       // Enforce file naming convention to be kebab-case
       'check-file/filename-naming-convention': [

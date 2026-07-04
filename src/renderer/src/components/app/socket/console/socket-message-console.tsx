@@ -276,7 +276,7 @@ function SocketMessageConsole() {
 
   return (
     <>
-      <header className="flex items-center gap-2 py-2 h-8 px-3">
+      <header className="flex items-center gap-2 py-2 h-8 px-2">
         <SearchBar
           placeholder="Search messages"
           className="flex-1 max-w-60"

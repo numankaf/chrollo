@@ -1,8 +1,8 @@
 import path, { resolve } from 'path';
+import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
-import ReactCompiler from 'babel-plugin-react-compiler';
-import { defineConfig, externalizeDepsPlugin, loadEnv } from 'electron-vite';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import { defineConfig, loadEnv } from 'electron-vite';
 import svgr from 'vite-plugin-svgr';
 
 import packageJson from './package.json';
@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     main: {
-      plugins: [externalizeDepsPlugin()],
       resolve: {
         alias: {
           '@/types': resolve('src/types'),
@@ -23,7 +22,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     preload: {
-      plugins: [externalizeDepsPlugin()],
       resolve: {
         alias: {
           '@/types': resolve('src/types'),
@@ -50,10 +48,9 @@ export default defineConfig(({ mode }) => {
         APP_VERSION: JSON.stringify(packageJson.version),
       },
       plugins: [
-        react({
-          babel: {
-            plugins: [ReactCompiler],
-          },
+        react(),
+        babel({
+          presets: [reactCompilerPreset()],
         }),
         tailwindcss(),
         svgr(),

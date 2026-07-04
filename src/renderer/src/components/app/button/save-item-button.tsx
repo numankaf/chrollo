@@ -37,14 +37,14 @@ function SaveItemButton() {
 
   const dirty = activeTab ? dirtyBeforeSaveByTab[activeTab.id] : false;
   useEffect(() => {
-    if (!activeTab) {
-      setPersistedItem(undefined);
-      return;
-    }
-
     let cancelled = false;
 
     (async () => {
+      if (!activeTab) {
+        setPersistedItem(undefined);
+        return;
+      }
+
       setLoading(true);
       const persisted = await getPersistedTabItem(activeTab);
       if (!cancelled) {
