@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SIDEBAR_WORKSPACE_OFFSET } from '@/constants/layout-constants';
 import useCollectionItemStore from '@/store/collection-item-store';
 import useTabsStore from '@/store/tab-store';
@@ -45,6 +45,22 @@ function SortableTabItem({ tab, isActive, dirtyBeforeSave, onOpenTab, onCloseTab
     id: tab.id,
   });
 
+  const nodeRef = useRef<HTMLDivElement | null>(null);
+
+  const combinedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      nodeRef.current = node;
+      setNodeRef(node);
+    },
+    [setNodeRef]
+  );
+
+  useEffect(() => {
+    if (isActive && nodeRef.current) {
+      nodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
+  }, [isActive]);
+
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
@@ -53,7 +69,7 @@ function SortableTabItem({ tab, isActive, dirtyBeforeSave, onOpenTab, onCloseTab
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="h-full flex items-center">
+    <div ref={combinedRef} style={style} className="h-full flex items-center">
       <div
         className={`w-40 p-1 [&:hover>#tabs-close]:opacity-100 cursor-pointer inline-flex flex-1 items-center justify-between gap-1 rounded-lg whitespace-nowrap border border-transparent hover:text-accent-foreground hover:bg-card
         ${isActive ? 'text-primary hover:text-primary border-primary/30! bg-primary/10 hover:bg-primary/10' : 'text-muted-foreground '}`}
