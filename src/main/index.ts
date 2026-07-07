@@ -8,6 +8,7 @@ import { initEnvironmentIpc } from '@/main/environment/environment-ipc';
 import { initInterceptionScriptIpc } from '@/main/interception-script/interception-script-ipc';
 import { logger } from '@/main/lib/logger';
 import { initStompIpc } from '@/main/socket/stomp-ipc';
+import { initWebSocketIpc } from '@/main/socket/websocket-ipc';
 import { initWorkspaceIpc } from '@/main/workspace/workspace-ipc';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { app, BrowserWindow, ipcMain, nativeImage, shell } from 'electron';
@@ -161,6 +162,7 @@ app.whenReady().then(() => {
   });
 
   initStompIpc();
+  initWebSocketIpc();
   initWorkspaceIpc();
   initConnectionIpc();
   initCollectionIpc();

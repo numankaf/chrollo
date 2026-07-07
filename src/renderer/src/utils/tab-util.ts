@@ -48,6 +48,9 @@ export function getTabRoute(tab: Tab | null | undefined): string {
 
     case BASE_MODEL_TYPE.CONNECTION:
       switch (item.connectionType) {
+        case CONNECTION_TYPE.RAW_WEBSOCKET:
+          return `/main/connection/websocket/${item.id}`;
+
         case CONNECTION_TYPE.STOMP:
           return `/main/connection/stomp/${item.id}`;
 

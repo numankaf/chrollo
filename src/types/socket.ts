@@ -30,5 +30,11 @@ export type SocketMessage = {
     headers?: StompHeaders;
     isBinaryBody?: boolean;
     binaryBody?: Uint8Array<ArrayBufferLike>;
+
+    // Raw WebSocket specific fields
+    size?: number; // message size in bytes
+    protocol?: string; // negotiated subprotocol
+    closeCode?: number; // WS close code (1000, 1006, etc.)
+    closeReason?: string; // WS close reason string
   };
 };

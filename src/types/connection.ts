@@ -48,6 +48,19 @@ export interface StompConnection extends Connection {
   subscriptions: StompSubscription[];
 }
 
+export interface WebSocketSettings {
+  reconnectOnClose: boolean;
+  reconnectDelay: number;
+  maxReconnectAttempts: number; // 0 = infinite
+}
+
+export interface WebSocketConnection extends Connection {
+  connectionType: 'RAW_WEBSOCKET';
+  settings: WebSocketSettings;
+  connectHeaders: Header[]; // sent as HTTP headers during WS handshake
+  protocols: string[]; // WebSocket subprotocols (e.g., ["graphql-ws"])
+}
+
 export const CONNECTION_STATUS = {
   CONNECTED: 'connected',
   DISCONNECTED: 'disconnected',

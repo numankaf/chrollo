@@ -1,7 +1,7 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 
 import type { CollectionItem, Request } from '@/types/collection';
-import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
+import type { Connection, ConnectionStatusData, StompConnection, WebSocketConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
 import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
@@ -37,6 +37,12 @@ declare global {
         subscribe: (connectionId: string, subscriptionId: string, topic: string) => void;
         unsubscribe: (connectionId: string, subscriptionId: string, topic: string) => void;
         send: (id: string, data: Request) => void;
+      };
+      ws: {
+        connect: (connection: WebSocketConnection) => void;
+        disconnect: (id: string) => void;
+        disconnectAll: () => void;
+        send: (id: string, data: string) => void;
       };
       workspace: {
         save: (workspace: Workspace) => Promise<void>;
@@ -87,6 +93,10 @@ declare global {
         onMessage: (callback: (data: SocketMessage) => void) => () => void;
         onRequestPending: (callback: (data: RequestPendingEvent) => void) => () => void;
         onRequestResolved: (callback: (data: RequestResolvedEvent) => void) => () => void;
+      };
+      ws: {
+        onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
+        onMessage: (callback: (data: SocketMessage) => void) => () => void;
       };
       environment: {
         onUpdated: (callback: (data: Environment) => void) => () => void;

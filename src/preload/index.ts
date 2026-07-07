@@ -2,7 +2,7 @@ import { electronAPI, type ElectronAPI } from '@electron-toolkit/preload';
 import { contextBridge, ipcRenderer } from 'electron';
 
 import type { CollectionItem, Request } from '@/types/collection';
-import type { Connection, ConnectionStatusData, StompConnection } from '@/types/connection';
+import type { Connection, ConnectionStatusData, StompConnection, WebSocketConnection } from '@/types/connection';
 import type { Environment } from '@/types/environment';
 import type { InterceptionScript } from '@/types/interception-script';
 import type { RequestPendingEvent, RequestResolvedEvent } from '@/types/request-response';
@@ -48,6 +48,13 @@ const api = {
     unsubscribe: (connectionId: string, subscriptionId: string, topic: string) =>
       ipcRenderer.send('stomp:unsubscribe', { connectionId, subscriptionId, topic }),
     send: (id: string, data: Request) => ipcRenderer.send('stomp:send', id, data),
+  },
+
+  ws: {
+    connect: (connection: WebSocketConnection) => ipcRenderer.send('ws:connect', connection),
+    disconnect: (id: string) => ipcRenderer.send('ws:disconnect', id),
+    disconnectAll: () => ipcRenderer.send('ws:disconnectAll'),
+    send: (id: string, data: string) => ipcRenderer.send('ws:send', id, data),
   },
 
   workspace: {
@@ -128,6 +135,19 @@ const listener = {
       const handler = (_: Electron.IpcRendererEvent, data: RequestResolvedEvent) => callback(data);
       ipcRenderer.on('stomp:request-resolved', handler);
       return () => ipcRenderer.removeListener('stomp:request-resolved', handler);
+    },
+  },
+
+  ws: {
+    onStatus: (callback: (data: ConnectionStatusData) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);
+      ipcRenderer.on('ws:status', handler);
+      return () => ipcRenderer.removeListener('ws:status', handler);
+    },
+    onMessage: (callback: (data: SocketMessage) => void) => {
+      const handler = (_: Electron.IpcRendererEvent, data: SocketMessage) => callback(data);
+      ipcRenderer.on('ws:message', handler);
+      return () => ipcRenderer.removeListener('ws:message', handler);
     },
   },
 

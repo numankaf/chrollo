@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { STOMP_DEFAULT_VALUES } from '@/constants/connection/stomp/stomp-schema';
+import { WEBSOCKET_DEFAULT_VALUES } from '@/constants/connection/websocket/websocket-schema';
 import useConnectionStore from '@/store/connection-store';
 import useWorkspaceStore from '@/store/workspace-store';
 import { Plus } from 'lucide-react';
@@ -7,7 +8,7 @@ import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
-import { CONNECTION_TYPE, type ConnectionType, type StompConnection } from '@/types/connection';
+import { CONNECTION_TYPE, type ConnectionType, type StompConnection, type WebSocketConnection } from '@/types/connection';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';
@@ -49,8 +50,19 @@ function AddConnectionPanel() {
     }
     try {
       switch (dialogInfo?.connectionType) {
-        case CONNECTION_TYPE.RAW_WEBSOCKET:
+        case CONNECTION_TYPE.RAW_WEBSOCKET: {
+          const connectionPayload: WebSocketConnection = {
+            id: nanoid(),
+            name: values.name,
+            workspaceId: activeWorkspaceId,
+            ...WEBSOCKET_DEFAULT_VALUES,
+          };
+
+          const newConnection = await saveConnection(connectionPayload);
+          openTab(newConnection);
+          closeDialog();
           break;
+        }
 
         case CONNECTION_TYPE.STOMP: {
           const connectionPayload: StompConnection = {
@@ -88,10 +100,8 @@ function AddConnectionPanel() {
         <Button
           size="sm"
           variant="ghost"
-          className="text-sm flex flex-col items-center w-18 h-18 [&>svg]:w-7! [&>svg]:h-7! disabled:cursor-not-allowed disabled:pointer-events-auto"
+          className="text-sm flex flex-col items-center w-18 h-18 [&>svg]:w-7! [&>svg]:h-7!"
           onClick={() => openDialog(CONNECTION_TYPE.RAW_WEBSOCKET, 'WebSocket')}
-          disabled
-          title="Coming Soon"
         >
           <WebSocketIcon />
           WebSocket

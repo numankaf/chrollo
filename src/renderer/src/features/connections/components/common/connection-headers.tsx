@@ -21,7 +21,7 @@ import { TanstackDataTable } from '@/components/common/tanstack-data-table';
 const PROPERTY_KEY = 'connectHeaders';
 const COLUMN_VISIBILITY_STORAGE_KEY = 'stomp-headers-column-visibility';
 
-function StompHeaders({ headers }: { headers: Header[] }) {
+function ConnectionHeaders({ headers }: { headers: Header[] }) {
   const form = useFormContext();
   const [columnVisibility, setColumnVisibility] = useColumnVisibility(COLUMN_VISIBILITY_STORAGE_KEY);
   const columns = useMemo(
@@ -188,4 +188,4 @@ function StompHeaders({ headers }: { headers: Header[] }) {
   );
 }
 
-export default StompHeaders;
+export default ConnectionHeaders;

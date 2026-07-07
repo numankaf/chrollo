@@ -2,6 +2,7 @@ import CollectionView from '@/features/collections/view/collection/collection-vi
 import FolderView from '@/features/collections/view/folder/folder-view';
 import RequestView from '@/features/collections/view/request/request-view';
 import StompConnectionView from '@/features/connections/view/stomp/stomp-connection-view';
+import WebsocketConnectionView from '@/features/connections/view/websocket/websocket-connection-view';
 import EnvironmentView from '@/features/environment/view/environment-view';
 import HistoryView from '@/features/history/view/history-view';
 import HomeView from '@/features/home/view/home-view';
@@ -31,6 +32,10 @@ function App() {
                 {
                   path: '/main/connection/stomp/:id',
                   element: <StompConnectionView />,
+                },
+                {
+                  path: '/main/connection/websocket/:id',
+                  element: <WebsocketConnectionView />,
                 },
                 {
                   path: '/main/collection/folder/request/:id',

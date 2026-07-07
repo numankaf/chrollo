@@ -171,7 +171,7 @@ export function initStompIpc() {
     if (connectionUrl.startsWith(CONNECTION_PREFIX.WS) || connectionUrl.startsWith(CONNECTION_PREFIX.WSS)) {
       socketFactory = () => new WebSocket(connectionUrl);
     } else if (connectionUrl.startsWith(CONNECTION_PREFIX.HTTP) || connectionUrl.startsWith(CONNECTION_PREFIX.HTTPS)) {
-      socketFactory = () => new SockJS(connectionUrl);
+      socketFactory = () => new SockJS(connectionUrl, null, { transports: ['websocket'] });
     } else {
       mainWindow.webContents.send('console:error', `Unsupported URL scheme: ${connectionUrl}`);
       return;
