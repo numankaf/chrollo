@@ -8,7 +8,12 @@ import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
-import { CONNECTION_TYPE, type ConnectionType, type StompConnection, type WebSocketConnection } from '@/types/connection';
+import {
+  CONNECTION_TYPE,
+  type ConnectionType,
+  type StompConnection,
+  type WebSocketConnection,
+} from '@/types/connection';
 import { useTabNavigation } from '@/hooks/app/use-tab-navigation';
 import { Button } from '@/components/common/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/popover';

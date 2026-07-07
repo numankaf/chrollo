@@ -2,6 +2,7 @@ import { getMainWindow } from '@/main/index';
 import logger from '@/main/lib/logger';
 import { chrolloEngine } from '@/main/scripts/engine';
 import type { StompMessageCtx } from '@/main/scripts/runtime/stomp-runtime';
+import { emitMessage, emitStatus } from '@/main/socket/socket-emitter';
 import { stripAllWhitespace } from '@/main/utils/common-util';
 import { CONTENT_TYPE_MAP, isJsonContentType } from '@/main/utils/message-util';
 import { resolveJsonPayload, resolveVariables } from '@/main/utils/variable-resolver-util';
@@ -15,7 +16,6 @@ import {
   CONNECTION_STATUS,
   CONNECTION_TYPE,
   type ConnectionStatus,
-  type ConnectionStatusData,
   type StompConnection,
 } from '@/types/connection';
 import type { RequestResolvedEvent } from '@/types/request-response';
@@ -83,7 +83,7 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
 
           runtime.request.endMessageContext();
 
-          mainWindow.webContents.send('stomp:message', socketReceivedMessage);
+          emitMessage(socketReceivedMessage);
 
           try {
             const data = isJsonContentType(msg.headers) ? JSON.parse(msg.body) : msg.body;
@@ -109,7 +109,7 @@ function subscribeInternal(connectionId: string, subscriptionId: string, topic: 
     },
   };
 
-  mainWindow.webContents.send('stomp:message', socketSubscribedMessage);
+  emitMessage(socketSubscribedMessage);
 }
 
 function unSubscribeInternal(connectionId: string, subscriptionId: string, topic: string) {
@@ -130,7 +130,7 @@ function unSubscribeInternal(connectionId: string, subscriptionId: string, topic
       },
     };
 
-    mainWindow.webContents.send('stomp:message', socketUnsubscribedMessage);
+    emitMessage(socketUnsubscribedMessage);
   }
 }
 
@@ -188,11 +188,7 @@ export function initStompIpc() {
     let lastStompStatus: ConnectionStatus | null = null;
     client.onConnect = (frame) => {
       lastStompStatus = CONNECTION_STATUS.CONNECTED;
-      mainWindow.webContents.send('stomp:status', {
-        connectionId: id,
-        status: lastStompStatus,
-        timestamp: Date.now(),
-      } as ConnectionStatusData);
+      emitStatus(id, CONNECTION_STATUS.CONNECTED);
       const socketConnectedMessage: SocketMessage = {
         id: nextSeq(),
         connectionId: id,
@@ -206,7 +202,7 @@ export function initStompIpc() {
         },
       };
 
-      mainWindow.webContents.send('stomp:message', socketConnectedMessage);
+      emitMessage(socketConnectedMessage);
 
       // ------------------------------
       // ADD ENABLED SUBSCRIBTIONS
@@ -233,11 +229,7 @@ export function initStompIpc() {
 
     client.onDisconnect = (frame) => {
       lastStompStatus = CONNECTION_STATUS.DISCONNECTED;
-      mainWindow.webContents.send('stomp:status', {
-        connectionId: id,
-        status: lastStompStatus,
-        timestamp: Date.now(),
-      } as ConnectionStatusData);
+      emitStatus(id, CONNECTION_STATUS.DISCONNECTED);
       const socketDisconnectedMessage: SocketMessage = {
         id: nextSeq(),
         connectionId: id,
@@ -251,7 +243,7 @@ export function initStompIpc() {
         },
       };
 
-      mainWindow.webContents.send('stomp:message', socketDisconnectedMessage);
+      emitMessage(socketDisconnectedMessage);
     };
 
     client.onStompError = (frame: IFrame) => {
@@ -270,7 +262,7 @@ export function initStompIpc() {
         },
       };
 
-      mainWindow.webContents.send('stomp:message', socketStompErrorMessage);
+      emitMessage(socketStompErrorMessage);
     };
 
     client.onWebSocketClose = (frame) => {
@@ -283,13 +275,9 @@ export function initStompIpc() {
         data: `${JSON.stringify(frame)}`,
       };
 
-      mainWindow.webContents.send('stomp:message', socketStompErrorMessage);
+      emitMessage(socketStompErrorMessage);
       if (lastStompStatus !== CONNECTION_STATUS.DISCONNECTED) {
-        mainWindow.webContents.send('stomp:status', {
-          connectionId: id,
-          status: CONNECTION_STATUS.CLOSED,
-          timestamp: Date.now(),
-        } as ConnectionStatusData);
+        emitStatus(id, CONNECTION_STATUS.CLOSED);
       }
     };
     client.activate();
@@ -346,7 +334,6 @@ export function initStompIpc() {
   ipcMain.on('stomp:send', async (_, id: string, request: Request) => {
     await chrolloEngine.executeWithContext(connectionWorkspaceMap[id], () => {
       const runtime = chrolloEngine.getRuntime();
-      const mainWindow = getMainWindow();
 
       runtime.request.beginSendContext(id, request);
 
@@ -395,9 +382,7 @@ export function initStompIpc() {
             },
           },
         };
-        if (mainWindow) {
-          mainWindow.webContents.send('stomp:message', socketSentMessage);
-        }
+        emitMessage(socketSentMessage);
       } else {
         logger.info(` STOMP (${id}) not connected`);
       }
@@ -417,11 +402,7 @@ export function initStompIpc() {
     }
     const runtime = chrolloEngine.getRuntime();
     runtime.request.clearPendingRequests();
-    mainWindow.webContents.send('stomp:status', {
-      connectionId: id,
-      status: CONNECTION_STATUS.DISCONNECTED,
-      timestamp: Date.now(),
-    } as ConnectionStatusData);
+    emitStatus(id, CONNECTION_STATUS.DISCONNECTED);
   });
 
   // ------------------------------

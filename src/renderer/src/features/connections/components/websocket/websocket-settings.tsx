@@ -80,6 +80,28 @@ function WebsocketSettings() {
             </Field>
           )}
         />
+        <Controller
+          name="settings.maxMessageSize"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field orientation="horizontal" data-invalid={fieldState.invalid}>
+              <FieldContent>
+                <FieldLabel htmlFor="ws-max-message-size">Max Message Size</FieldLabel>
+                <FieldDescription>Maximum allowed incoming message size in MB. Set to 0 for no limit.</FieldDescription>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldContent>
+              <Input
+                id="ws-max-message-size"
+                type="number"
+                className="w-30"
+                aria-invalid={fieldState.invalid}
+                {...field}
+                min={0}
+                onChange={(e) => field.onChange(e.target.valueAsNumber)}
+              />
+            </Field>
+          )}
+        />
       </FieldGroup>
     </div>
   );

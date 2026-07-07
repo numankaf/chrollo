@@ -1,17 +1,12 @@
 import { getMainWindow } from '@/main/index';
 import logger from '@/main/lib/logger';
+import { emitMessage, emitStatus } from '@/main/socket/socket-emitter';
 import { stripAllWhitespace } from '@/main/utils/common-util';
 import { resolveVariables } from '@/main/utils/variable-resolver-util';
 import { ipcMain } from 'electron';
 import WS from 'ws';
 
-import {
-  CONNECTION_PREFIX,
-  CONNECTION_STATUS,
-  CONNECTION_TYPE,
-  type ConnectionStatusData,
-  type WebSocketConnection,
-} from '@/types/connection';
+import { CONNECTION_PREFIX, CONNECTION_STATUS, CONNECTION_TYPE, type WebSocketConnection } from '@/types/connection';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
 
 let seq = 0;
@@ -26,22 +21,6 @@ interface ManagedWebSocket {
 }
 
 const webSockets: Record<string, ManagedWebSocket> = {};
-
-function emitStatus(connectionId: string, status: (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS]) {
-  const mainWindow = getMainWindow();
-  if (!mainWindow) return;
-  mainWindow.webContents.send('ws:status', {
-    connectionId,
-    status,
-    timestamp: Date.now(),
-  } as ConnectionStatusData);
-}
-
-function emitMessage(message: SocketMessage) {
-  const mainWindow = getMainWindow();
-  if (!mainWindow) return;
-  mainWindow.webContents.send('ws:message', message);
-}
 
 function connectWebSocket(connection: WebSocketConnection, existingManaged?: ManagedWebSocket) {
   const { id, name, url, connectHeaders, protocols, settings } = connection;
@@ -65,7 +44,8 @@ function connectWebSocket(connection: WebSocketConnection, existingManaged?: Man
 
   const resolvedProtocols = protocols.map((p) => resolveVariables(p)).filter(Boolean);
 
-  const ws = new WS(connectionUrl, resolvedProtocols, { headers });
+  const maxPayload = settings.maxMessageSize > 0 ? settings.maxMessageSize * 1024 * 1024 : 0;
+  const ws = new WS(connectionUrl, resolvedProtocols, { headers, maxPayload });
 
   const managed: ManagedWebSocket = existingManaged
     ? { ...existingManaged, ws, intentionalClose: false }

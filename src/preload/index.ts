@@ -115,16 +115,16 @@ const listener = {
       ipcRenderer.on('window:fullscreen-changed', (_, value) => callback(value));
     },
   },
-  stomp: {
+  socket: {
     onStatus: (callback: (data: ConnectionStatusData) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);
-      ipcRenderer.on('stomp:status', handler);
-      return () => ipcRenderer.removeListener('stomp:status', handler);
+      ipcRenderer.on('socket:status', handler);
+      return () => ipcRenderer.removeListener('socket:status', handler);
     },
     onMessage: (callback: (data: SocketMessage) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: SocketMessage) => callback(data);
-      ipcRenderer.on('stomp:message', handler);
-      return () => ipcRenderer.removeListener('stomp:message', handler);
+      ipcRenderer.on('socket:message', handler);
+      return () => ipcRenderer.removeListener('socket:message', handler);
     },
     onRequestPending: (callback: (data: RequestPendingEvent) => void) => {
       const handler = (_: Electron.IpcRendererEvent, data: RequestPendingEvent) => callback(data);
@@ -135,19 +135,6 @@ const listener = {
       const handler = (_: Electron.IpcRendererEvent, data: RequestResolvedEvent) => callback(data);
       ipcRenderer.on('stomp:request-resolved', handler);
       return () => ipcRenderer.removeListener('stomp:request-resolved', handler);
-    },
-  },
-
-  ws: {
-    onStatus: (callback: (data: ConnectionStatusData) => void) => {
-      const handler = (_: Electron.IpcRendererEvent, data: ConnectionStatusData) => callback(data);
-      ipcRenderer.on('ws:status', handler);
-      return () => ipcRenderer.removeListener('ws:status', handler);
-    },
-    onMessage: (callback: (data: SocketMessage) => void) => {
-      const handler = (_: Electron.IpcRendererEvent, data: SocketMessage) => callback(data);
-      ipcRenderer.on('ws:message', handler);
-      return () => ipcRenderer.removeListener('ws:message', handler);
     },
   },
 

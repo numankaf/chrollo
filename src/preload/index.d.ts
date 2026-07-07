@@ -88,15 +88,11 @@ declare global {
         onMaximizeChange: (callback: (data: boolean) => void) => () => void;
         onFullscreenChange: (callback: (data: boolean) => void) => () => void;
       };
-      stomp: {
+      socket: {
         onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
         onMessage: (callback: (data: SocketMessage) => void) => () => void;
         onRequestPending: (callback: (data: RequestPendingEvent) => void) => () => void;
         onRequestResolved: (callback: (data: RequestResolvedEvent) => void) => () => void;
-      };
-      ws: {
-        onStatus: (callback: (data: ConnectionStatusData) => void) => () => void;
-        onMessage: (callback: (data: SocketMessage) => void) => () => void;
       };
       environment: {
         onUpdated: (callback: (data: Environment) => void) => () => void;

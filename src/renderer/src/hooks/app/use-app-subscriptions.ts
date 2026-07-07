@@ -6,56 +6,56 @@ import useSocketMessageStatusStore from '@/store/socket-message-store';
 
 export function useAppSubscriptions() {
   useEffect(() => {
-    const unsubscribeConsoleLog = window.listener.console.log((...args) => {
-      console.log(...args);
-    });
+    const unsubs: (() => void)[] = [];
 
-    const unsubscribeConsoleInfo = window.listener.console.info((...args) => {
-      console.info(...args);
-    });
+    // Console forwarding
+    for (const level of ['log', 'info', 'warn', 'error'] as const) {
+      unsubs.push(
+        window.listener.console[level]((...args) => {
+          console[level](...args);
+        })
+      );
+    }
 
-    const unsubscribeConsoleWarn = window.listener.console.warn((...args) => {
-      console.warn(...args);
-    });
+    // Environment
+    unsubs.push(
+      window.listener.environment.onUpdated((environment) => {
+        useEnvironmentStore.getState().updateEnvironment(environment);
+      })
+    );
 
-    const unsubscribeConsoleError = window.listener.console.error((...args) => {
-      console.error(...args);
-    });
+    // Unified socket status & message
+    unsubs.push(
+      window.listener.socket.onStatus((data) => {
+        useConnectionStatusStore.getState().setStatus(data.connectionId, data.status);
+      })
+    );
 
-    const unsubscribeEnvironmentUpdated = window.listener.environment.onUpdated((environment) => {
-      useEnvironmentStore.getState().updateEnvironment(environment);
-    });
+    unsubs.push(
+      window.listener.socket.onMessage((data) => {
+        useSocketMessageStatusStore.getState().addMessage(data);
+      })
+    );
 
-    const unsubscribeStompMessage = window.listener.stomp.onMessage((data) => {
-      useSocketMessageStatusStore.getState().addMessage(data);
-    });
+    // Request-Response tracking
+    unsubs.push(
+      window.listener.socket.onRequestPending((data) => {
+        const { requestKey, requestId, connectionId, request } = data;
+        useRequestResponseStore.getState().addPendingRequest(requestKey, requestId, connectionId, request);
+      })
+    );
 
-    const unsubscribeStompStatus = window.listener.stomp.onStatus((data) => {
-      const { connectionId, status } = data;
-      useConnectionStatusStore.getState().setStatus(connectionId, status);
-    });
-
-    // Request-Response tracking listeners
-    const unsubscribeRequestPending = window.listener.stomp.onRequestPending((data) => {
-      const { requestKey, requestId, connectionId, request } = data;
-      useRequestResponseStore.getState().addPendingRequest(requestKey, requestId, connectionId, request);
-    });
-
-    const unsubscribeRequestResolved = window.listener.stomp.onRequestResolved((data) => {
-      const { requestKey, response, responseTime, testResults } = data;
-      useRequestResponseStore.getState().resolveRequest(requestKey, response, responseTime, testResults);
-    });
+    unsubs.push(
+      window.listener.socket.onRequestResolved((data) => {
+        const { requestKey, response, responseTime, testResults } = data;
+        useRequestResponseStore.getState().resolveRequest(requestKey, response, responseTime, testResults);
+      })
+    );
 
     return () => {
-      unsubscribeConsoleLog();
-      unsubscribeConsoleInfo();
-      unsubscribeConsoleWarn();
-      unsubscribeConsoleError();
-      unsubscribeEnvironmentUpdated();
-      unsubscribeStompStatus();
-      unsubscribeStompMessage();
-      unsubscribeRequestPending();
-      unsubscribeRequestResolved();
+      for (const unsub of unsubs) {
+        unsub();
+      }
     };
   }, []);
 }

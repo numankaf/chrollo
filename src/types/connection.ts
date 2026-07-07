@@ -52,6 +52,7 @@ export interface WebSocketSettings {
   reconnectOnClose: boolean;
   reconnectDelay: number;
   maxReconnectAttempts: number; // 0 = infinite
+  maxMessageSize: number; // max incoming message size in MB, 0 = no limit
 }
 
 export interface WebSocketConnection extends Connection {

@@ -18,6 +18,7 @@ const WEBSOCKET_VALIDATION_SCHEMA = z.object({
       .number('Max reconnect attempts is required.')
       .int('Max reconnect attempts must be an integer.')
       .min(0, 'Max reconnect attempts cannot be negative.'),
+    maxMessageSize: z.number('Max message size is required.').min(0, 'Max message size cannot be negative.'),
   }),
   connectHeaders: z.array(
     z.object({
@@ -39,6 +40,7 @@ const WEBSOCKET_DEFAULT_VALUES: Omit<WebSocketConnection, 'id' | 'name' | 'works
     reconnectOnClose: false,
     reconnectDelay: 5000,
     maxReconnectAttempts: 0,
+    maxMessageSize: 10,
   },
   connectHeaders: [],
   protocols: [],
