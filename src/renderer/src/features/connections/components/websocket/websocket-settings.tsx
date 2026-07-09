@@ -2,7 +2,6 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/common/field';
 import { Input } from '@/components/common/input';
-import { Toggle } from '@/components/common/toggle';
 
 function WebsocketSettings() {
   const form = useFormContext();
@@ -11,35 +10,15 @@ function WebsocketSettings() {
     <div className="p-1 space-y-4">
       <FieldGroup>
         <Controller
-          name="settings.reconnectOnClose"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field orientation="horizontal" data-invalid={fieldState.invalid}>
-              <FieldContent>
-                <FieldLabel>Reconnect on Close</FieldLabel>
-                <FieldDescription>Automatically reconnect when the connection is closed unexpectedly.</FieldDescription>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </FieldContent>
-              <Toggle
-                data-state={field.value ? 'on' : 'off'}
-                variant="ghost"
-                onClick={() => field.onChange(!field.value)}
-                className="w-30"
-              >
-                {field.value ? 'Enabled' : 'Disabled'}
-              </Toggle>
-            </Field>
-          )}
-        />
-
-        <Controller
           name="settings.reconnectDelay"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field orientation="horizontal" data-invalid={fieldState.invalid}>
               <FieldContent>
                 <FieldLabel htmlFor="ws-reconnect-delay">Reconnection Delay</FieldLabel>
-                <FieldDescription>Delay in milliseconds before attempting to reconnect.</FieldDescription>
+                <FieldDescription>
+                  Automatically reconnect with delay in milliseconds, set to 0 to disable.
+                </FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
               <Input

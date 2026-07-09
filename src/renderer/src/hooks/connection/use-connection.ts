@@ -1,5 +1,6 @@
 import useConnectionStatusStore from '@/store/connection-status-store';
 import { sendStompMessage } from '@/utils/stomp-util';
+import { sendWebSocketMessage } from '@/utils/ws-util';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -35,6 +36,10 @@ export function useConnection() {
     switch (activeConnection.connectionType) {
       case CONNECTION_TYPE.STOMP: {
         sendStompMessage(activeConnection.id, request);
+        break;
+      }
+      case CONNECTION_TYPE.RAW_WEBSOCKET: {
+        sendWebSocketMessage(activeConnection.id, request);
         break;
       }
       default:

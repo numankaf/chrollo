@@ -7,6 +7,7 @@ import { ChevronDown, Ellipsis, Loader2Icon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
+import { CONNECTION_TYPE } from '@/types/connection';
 import { REQUEST_STATUS, type TestResult, type TrackedRequest } from '@/types/request-response';
 import { SOCKET_MESSAGE_TYPE } from '@/types/socket';
 import { calculateStringSize, cn, deepParseJson, formatBytes } from '@/lib/utils';
@@ -311,8 +312,8 @@ function TestResultsPanel({ testResults }: { testResults: TestResult[] }) {
 }
 
 function SocketResponseConsole() {
-  const { activeConnection } = useActiveItem();
-  const { activeTab } = useActiveItem();
+  const { activeConnection, activeTab } = useActiveItem();
+  const isStompConnection = activeConnection?.connectionType === CONNECTION_TYPE.STOMP;
 
   const { getByRequestId, getLastResolvedByRequestId, cancel } = useRequestResponse(activeConnection?.id);
 
@@ -382,9 +383,11 @@ function SocketResponseConsole() {
           <div className="flex items-center justify-between px-2">
             <TabsList>
               <TabsTrigger value="body">Body</TabsTrigger>
-              <TabsTrigger value="headers">
-                Headers <span className="text-primary">({Object.keys(headers).length})</span>
-              </TabsTrigger>
+              {isStompConnection && (
+                <TabsTrigger value="headers">
+                  Headers <span className="text-primary">({Object.keys(headers).length})</span>
+                </TabsTrigger>
+              )}
               <TabsTrigger value="test-results">
                 Test Results
                 {testResults.length > 0 && (
@@ -430,10 +433,12 @@ function SocketResponseConsole() {
             </div>
           </TabsContent>
 
-          <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative px-2">
-            <LoadingOverlay isLoading={isLoading} />
-            <MessageHeadersTable headers={headers as Record<string, unknown>} />
-          </TabsContent>
+          {isStompConnection && (
+            <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative px-2">
+              <LoadingOverlay isLoading={isLoading} />
+              <MessageHeadersTable headers={headers as Record<string, unknown>} />
+            </TabsContent>
+          )}
 
           <TabsContent value="test-results" className="flex-1 flex flex-col min-h-0 mb-2 h-full relative px-2">
             <LoadingOverlay isLoading={isLoading} />

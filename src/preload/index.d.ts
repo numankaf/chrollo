@@ -42,7 +42,7 @@ declare global {
         connect: (connection: WebSocketConnection) => void;
         disconnect: (id: string) => void;
         disconnectAll: () => void;
-        send: (id: string, data: string) => void;
+        send: (id: string, data: Request) => void;
       };
       workspace: {
         save: (workspace: Workspace) => Promise<void>;

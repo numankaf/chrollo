@@ -2,10 +2,11 @@ import { getMainWindow } from '@/main/index';
 import logger from '@/main/lib/logger';
 import { emitMessage, emitStatus } from '@/main/socket/socket-emitter';
 import { stripAllWhitespace } from '@/main/utils/common-util';
-import { resolveVariables } from '@/main/utils/variable-resolver-util';
+import { resolveJsonPayload, resolveVariables } from '@/main/utils/variable-resolver-util';
 import { ipcMain } from 'electron';
 import WS from 'ws';
 
+import { REQUEST_BODY_TYPE, type Request } from '@/types/collection';
 import { CONNECTION_PREFIX, CONNECTION_STATUS, CONNECTION_TYPE, type WebSocketConnection } from '@/types/connection';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
 
@@ -129,8 +130,8 @@ function connectWebSocket(connection: WebSocketConnection, existingManaged?: Man
 
     emitStatus(id, CONNECTION_STATUS.CLOSED);
 
-    // Reconnect logic
-    if (settings.reconnectOnClose) {
+    // Reconnect logic — reconnectDelay > 0 enables reconnection
+    if (settings.reconnectDelay > 0) {
       const maxAttempts = settings.maxReconnectAttempts;
       if (maxAttempts === 0 || managed.reconnectAttempts < maxAttempts) {
         managed.reconnectAttempts++;
@@ -183,15 +184,18 @@ export function initWebSocketIpc() {
   // ------------------------------
   // SEND
   // ------------------------------
-  ipcMain.on('ws:send', (_, id: string, data: string) => {
+  ipcMain.on('ws:send', (_, id: string, request: Request) => {
     const managed = webSockets[id];
     if (!managed || managed.ws.readyState !== WS.OPEN) {
       logger.info(`WebSocket (${id}) not connected`);
       return;
     }
 
-    managed.ws.send(data);
-    const size = Buffer.byteLength(data);
+    const { body } = request;
+    const payload = body.type === REQUEST_BODY_TYPE.JSON ? resolveJsonPayload(body.data) : resolveVariables(body.data);
+
+    managed.ws.send(payload);
+    const size = Buffer.byteLength(payload);
 
     const message: SocketMessage = {
       id: nextSeq(),
@@ -199,7 +203,7 @@ export function initWebSocketIpc() {
       connectionType: CONNECTION_TYPE.RAW_WEBSOCKET,
       type: SOCKET_MESSAGE_TYPE.SENT,
       timestamp: Date.now(),
-      data,
+      data: payload,
       meta: {
         size,
       },

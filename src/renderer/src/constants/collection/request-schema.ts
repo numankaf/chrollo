@@ -1,11 +1,12 @@
 import * as z from 'zod';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
+import { CONNECTION_TYPE, type ConnectionType } from '@/types/connection';
 
-const REQUEST_VALIDATION_SCHEMA = z.object({
+const BASE_REQUEST_SCHEMA = {
   id: z.string(),
   workspaceId: z.string(),
-  destination: z.string().min(1, 'Request path is required.'),
+  destination: z.string(),
   headers: z.array(
     z.object({
       id: z.string(),
@@ -24,6 +25,16 @@ const REQUEST_VALIDATION_SCHEMA = z.object({
     postResponse: z.string().optional(),
   }),
   documentation: z.string().optional(),
-});
+};
 
-export { REQUEST_VALIDATION_SCHEMA };
+function getRequestValidationSchema(connectionType?: ConnectionType) {
+  return z.object({
+    ...BASE_REQUEST_SCHEMA,
+    destination: connectionType === CONNECTION_TYPE.STOMP ? z.string().min(1, 'Destination is required.') : z.string(),
+  });
+}
+
+// Default schema for type inference
+const REQUEST_VALIDATION_SCHEMA = getRequestValidationSchema();
+
+export { REQUEST_VALIDATION_SCHEMA, getRequestValidationSchema };

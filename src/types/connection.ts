@@ -49,8 +49,7 @@ export interface StompConnection extends Connection {
 }
 
 export interface WebSocketSettings {
-  reconnectOnClose: boolean;
-  reconnectDelay: number;
+  reconnectDelay: number; // ms, 0 = disable reconnect
   maxReconnectAttempts: number; // 0 = infinite
   maxMessageSize: number; // max incoming message size in MB, 0 = no limit
 }

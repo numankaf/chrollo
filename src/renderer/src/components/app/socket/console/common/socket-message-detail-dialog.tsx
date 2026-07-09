@@ -6,8 +6,10 @@ import { getMessageContentType } from '@/utils/socket-message-util';
 import { useShallow } from 'zustand/react/shallow';
 
 import { REQUEST_BODY_TYPE, type RequestBodyType } from '@/types/collection';
+import { CONNECTION_TYPE } from '@/types/connection';
 import { SOCKET_MESSAGE_TYPE, type SocketMessage } from '@/types/socket';
 import { cn, deepParseJson } from '@/lib/utils';
+import { useActiveItem } from '@/hooks/app/use-active-item';
 import { Badge } from '@/components/common/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/common/dialog';
 import { ScrollArea } from '@/components/common/scroll-area';
@@ -28,6 +30,8 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
     }))
   );
 
+  const { activeConnection } = useActiveItem();
+  const isStompConnection = activeConnection?.connectionType === CONNECTION_TYPE.STOMP;
   const headers = message?.meta?.headers || {};
 
   const bodyTypeRetrieved = getMessageContentType(headers);
@@ -79,7 +83,7 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
           <Tabs variant="link" defaultValue="body" className="w-full mt-3 flex-1 flex flex-col min-h-0">
             <TabsList>
               <TabsTrigger value="body">Body</TabsTrigger>
-              <TabsTrigger value="headers">Headers</TabsTrigger>
+              {isStompConnection && <TabsTrigger value="headers">Headers</TabsTrigger>}
             </TabsList>
 
             <TabsContent value="body" className="flex-1 flex flex-col min-h-0 mb-4 h-full">
@@ -97,9 +101,11 @@ export function SocketMessageDetailDialog({ message, onOpenChange }: SocketMessa
               </div>
             </TabsContent>
 
-            <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-4 h-full">
-              <MessageHeadersTable headers={headers as Record<string, unknown>} />
-            </TabsContent>
+            {isStompConnection && (
+              <TabsContent value="headers" className="flex-1 flex flex-col min-h-0 mb-4 h-full">
+                <MessageHeadersTable headers={headers as Record<string, unknown>} />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </DialogContent>

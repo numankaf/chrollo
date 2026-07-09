@@ -9,7 +9,6 @@ const WEBSOCKET_VALIDATION_SCHEMA = z.object({
   workspaceId: z.string(),
   url: z.string().min(1, 'URL is required.'),
   settings: z.object({
-    reconnectOnClose: z.boolean(),
     reconnectDelay: z
       .number('Reconnect delay is required.')
       .int('Reconnect delay must be an integer.')
@@ -37,7 +36,6 @@ const WEBSOCKET_DEFAULT_VALUES: Omit<WebSocketConnection, 'id' | 'name' | 'works
   url: '',
   modelType: BASE_MODEL_TYPE.CONNECTION,
   settings: {
-    reconnectOnClose: false,
     reconnectDelay: 5000,
     maxReconnectAttempts: 0,
     maxMessageSize: 10,

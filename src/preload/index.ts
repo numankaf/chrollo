@@ -54,7 +54,7 @@ const api = {
     connect: (connection: WebSocketConnection) => ipcRenderer.send('ws:connect', connection),
     disconnect: (id: string) => ipcRenderer.send('ws:disconnect', id),
     disconnectAll: () => ipcRenderer.send('ws:disconnectAll'),
-    send: (id: string, data: string) => ipcRenderer.send('ws:send', id, data),
+    send: (id: string, data: Request) => ipcRenderer.send('ws:send', id, data),
   },
 
   workspace: {
